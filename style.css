@@ -1,0 +1,101 @@
+
+body{
+    background: linear-gradient(45deg, #c800ff, #fff700);
+    font-family: "Arial", sans-serif;
+    color: #ff0000;
+}
+
+header {
+    background-color: #00ffe3;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #000000;
+}
+
+article {
+    background: linear-gradient(45deg, #fff700, #c800ff);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #ff6f00;
+}
+
+article h2 {
+    color: #00ff26;
+    font-weight: bold;
+    text-decoration: underline;
+    letter-spacing: 2px;
+    text-align: righ;
+
+    
+}
+article ul li{
+    list-style-type: square;
+    padding-left: 20px;
+    color: #fff700;
+    text-decoration: none;
+    letter-spacing: 3px;
+    line-height: 3;
+}
+article ul li a{
+    color : #ff0000;
+    text-decoration: none;
+    border-width: 7px;
+    border-style: solid;
+    border-color: #a2ff00;
+}
+
+table {
+    background-color: #fff700;
+    margin-bottom: 20px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #09ff00;
+}
+
+table thead {
+    background:linear-gradient(45deg, #3835ff, #a1e7ff);
+    color: #000000;
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(3) td:nth-child(2) {
+
+   background-color: aqua;
+
+}
+.sans-decoration{
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.text-center{
+    text-align: center;
+}
+
+.image-center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbar{
+    background-color: #ff00bf;
+    font-weight: bold;
+    color: #f6ff00;
+    font-family: "Century Gothic";
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.navbar a{
+    color: #00ff00;
+    text-decoration: none;
+    margin: 0 10px;
+}
