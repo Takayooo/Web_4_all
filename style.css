@@ -66,6 +66,14 @@ border-radius:20px;
 cursor:pointer;
 }
 
+footer {
+    margin-top: 60px;
+    color: white;
+    font-size: 14px;
+    background: rgb(13, 12, 110);
+    padding: 15px 0px;
+}
+
 .pagination{
 margin-top:40px;
 text-align:center;
@@ -84,3 +92,14 @@ color:#333;
 background:#0d0c6e;
 color:white;
 }
+
+.postuler-btn{
+display:inline-block;
+margin-top:15px;
+background:#0d0c6e;
+color:white;
+padding:10px 20px;
+border-radius:20px;
+text-decoration:none;
+}
+

@@ -4,7 +4,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Web4All</title>
+<title >Web4All</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,7 +13,7 @@
 <header>
 
 <div class="container header-content">
-<h1 class="logo">Web4All.</h1>
+<h1 class="logo"><a href="index.php?page=1">Web4All.</a></h1>
 <button class="login-btn">Se connecter</button>
 </div>
 
@@ -26,7 +26,7 @@
 
 <div class="cards">
 
-<?php foreach ($annoncesPage as $annonce): ?>
+<?php foreach ($annoncesPage as $index => $annonce): ?>
 
 <div class="card">
 
@@ -41,7 +41,9 @@ Secteur : <?= htmlspecialchars($annonce['secteur']) ?><br>
 Ville : <?= htmlspecialchars($annonce['ville']) ?>
 </p>
 
-<button>Postuler</button>
+<a class="postuler-btn" href="postuler.php?id=<?= $debut + $index ?>">
+Postuler
+</a>
 
 </div>
 
@@ -71,6 +73,22 @@ Ville : <?= htmlspecialchars($annonce['ville']) ?>
 </div>
 
 </section>
+
+<footer>
+
+<div class="container footer">
+
+<p>WEB4ALL - Tous droits réservés</p>
+
+<div>
+<a href="#">Mentions légales</a>
+<a href="#">Politique de cookies</a>
+<a href="#">Nous contacter</a>
+</div>
+
+</div>
+
+</footer>
 
 </body>
 </html>
