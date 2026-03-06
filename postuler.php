@@ -63,8 +63,8 @@ Ville : <?= htmlspecialchars($entreprise['ville']) ?>
 <p>WEB4ALL - Tous droits réservés</p>
 
 <div>
-<a href="#">Mentions légales</a>
-<a href="#">Politique de cookies</a>
+<a href="mentions-legales.html">Mentions légales</a>
+<a href="politique-cookies.html">Politique de cookies</a>
 <a href="#">Nous contacter</a>
 </div>
 
