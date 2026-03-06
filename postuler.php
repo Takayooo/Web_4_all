@@ -31,6 +31,8 @@ $entreprise = $entreprises[$id];
 
 <section class="container">
 
+
+<h1><?= htmlspecialchars($entreprise['titre']) ?></h1>
 <h2>Postuler chez <?= htmlspecialchars($entreprise['nom']) ?></h2>
 
 <p>

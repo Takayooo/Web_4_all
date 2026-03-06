@@ -30,10 +30,10 @@
 
 <div class="card">
 
-<h3>Stage - Développeur Web</h3>
+<h3><?= htmlspecialchars($annonce['titre']) ?></h3>
 
 <p class="company">
-<?= htmlspecialchars($annonce['nom']) ?> ⭐ 4.0
+<?= htmlspecialchars($annonce['nom']) ?> ⭐ <?= htmlspecialchars($annonce['note']) ?>
 </p>
 
 <p>

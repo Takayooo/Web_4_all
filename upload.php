@@ -11,7 +11,7 @@ if ($id === null || !isset($entreprises[$id])) {
 $entreprise = $entreprises[$id];
 
 $maxSize = 2 * 1024 * 1024;
-$uploadDir = "uploads/";
+$uploadDir = "uploads/" . $id . "/";
 
 if (!isset($_FILES['fichier'])) {
     die("Aucun fichier n'a été envoyé.");
