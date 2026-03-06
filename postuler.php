@@ -21,9 +21,12 @@ $entreprise = $entreprises[$id];
 <body>
 
 <header>
+
 <div class="container header-content">
-<h1 class="logo"><a href="index.php?page=1">Web4All.</a></h1>   
+<h1 class="logo"><a href="index.php?page=1">Web4All.</a></h1>
+<button class="login-btn">Se connecter</button>
 </div>
+
 </header>
 
 <section class="container">
