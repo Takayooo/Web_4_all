@@ -1,0 +1,61 @@
+<header>
+
+<div class="container header-content">
+
+<h1 class="logo">
+<a href="index.php?page=1">Web4All.</a>
+</h1>
+
+<nav class="nav">
+<a href="index.php?page=1" class="nav-link">Accueil</a>
+<a href="offres.php" class="nav-link">Offres</a>
+<a href="entreprises.php" class="nav-link">Entreprises</a>
+{% if user %}
+    <a href="dashboard.php" class="nav-link">Tableau de bord</a>
+{% endif %}
+</nav>
+
+<div class="header-actions">
+
+
+{% if user %}
+    <a href="logout.php" class="btn btn-white">Se déconnecter</a>
+{% else %}
+    <a href="#" id="open-login" class="btn btn-white">Se connecter</a>
+{% endif %}
+
+</div>
+
+</div>
+
+</header>
+
+<div id="login-modal" class="modal">
+
+<div class="modal-content">
+
+<span class="close">&times;</span>
+
+<h2>Connexion</h2>
+
+<div class="role-switch">
+<button class="role-btn active">Élève</button>
+<button class="role-btn">Pilote</button>
+<button class="role-btn">Entreprise</button>
+</div>
+
+<form action="login.php" method="POST" class="login-form">
+
+<input type="email" name="email" placeholder="Email" required>
+
+<input type="password" name="password" placeholder="Mot de passe" required>
+
+<button type="submit">Se connecter</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script src="/js/loginmodal.js"></script>

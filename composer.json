@@ -1,0 +1,11 @@
+{
+    "name": "root/projet",
+    "autoload": {
+        "psr-4": {
+            "Root\\Projet\\": "src/"
+        }
+    },
+    "require": {
+        "twig/twig": "^3.23"
+    }
+}
