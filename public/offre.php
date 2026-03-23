@@ -7,7 +7,7 @@ if (!$id) {
     die("Offre introuvable");
 }
 
-// retrouver l'offre
+// trouver l'offre
 $offreTrouvee = null;
 
 foreach ($offres as $offre) {
@@ -21,6 +21,10 @@ if (!$offreTrouvee) {
     die("Offre introuvable");
 }
 
+if (!isset($offreTrouvee['statut']) || $offreTrouvee['statut'] !== 'active') {
+    die("Offre inactive");
+}
+
 $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 ?>
 
@@ -28,9 +32,7 @@ $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Postuler - <?= htmlspecialchars($offreTrouvee['titre']) ?></title>
-
-<!-- CSS -->
+<title><?= htmlspecialchars($offreTrouvee['titre']) ?></title>
 <link rel="stylesheet" href="/style.css">
 </head>
 
@@ -42,26 +44,18 @@ $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 
 <h1><?= htmlspecialchars($offreTrouvee['titre']) ?></h1>
 
-<h2>Postuler chez <?= htmlspecialchars($entreprise['nom']) ?></h2>
+<div class="entreprise-header">
 
-<p>
-⭐ <?= htmlspecialchars($entreprise['note']) ?><br>
-<?= htmlspecialchars($entreprise['secteur']) ?> - <?= htmlspecialchars($entreprise['ville']) ?>
-</p>
+<p><strong>Entreprise :</strong> <?= htmlspecialchars($entreprise['nom']) ?></p>
+<p><strong>Note :</strong> ⭐ <?= $entreprise['note'] ?></p>
+<p><strong>Secteur :</strong> <?= $entreprise['secteur'] ?></p>
+<p><strong>Ville :</strong> <?= $entreprise['ville'] ?></p>
 
-<br>
+</div>
 
-<h3>Téléverser votre CV (PDF - 2 Mo max)</h3>
-
-<form action="upload.php?id=<?= $offreTrouvee['id'] ?>" method="POST" enctype="multipart/form-data">
-
-<input type="file" name="fichier" accept="application/pdf" required>
-
-<br><br>
-
-<button type="submit">Envoyer mon CV</button>
-
-</form>
+<a class="postuler-btn" href="postuler.php?id=<?= $offreTrouvee['id'] ?>">
+Postuler à cette offre
+</a>
 
 </section>
 

@@ -14,15 +14,6 @@
     <?php include 'header.php'; ?>
 </header>
 
-<section class="hero">
-<div class="container hero-content">
-<h2>Faites votre recherche avec VOS critères :</h2>
-<form class="search-form" action="index.php" method="get">
-<input type="text" name="search" placeholder="Rechercher une annonce...">
-<button type="submit">Rechercher</button>
-</form>
-</div>
-</section>
 
 
 <section class="annonces container">
@@ -31,7 +22,19 @@
 
 <div class="cards">
 
-<?php foreach ($offresPage as $index => $offre): 
+<?php
+$activeOffres = array_filter($offres, function($o) {
+    return isset($o['statut']) && $o['statut'] === 'active';
+});
+
+usort($activeOffres, function($a, $b) {
+    return $b['id'] <=> $a['id'];
+});
+
+$last4 = array_slice($activeOffres, 0, 4);
+?>
+
+<?php foreach ($last4 as $offre):
 
 $entreprise = $entreprises[$offre['entreprise_id']];
 
@@ -50,34 +53,13 @@ Secteur : <?= htmlspecialchars($entreprise['secteur']) ?><br>
 Ville : <?= htmlspecialchars($entreprise['ville']) ?>
 </p>
 
-<a class="postuler-btn" href="postuler.php?id=<?= $debut + $index + 1 ?>">
+<a class="postuler-btn" href="offre.php?id=<?= $offre['id'] ?>">
 Postuler
 </a>
 
 </div>
 
 <?php endforeach; ?>
-
-</div>
-
-
-<div class="pagination">
-
-<?php if ($page > 1): ?>
-<a href="?page=<?= $page - 1 ?>">Précédent</a>
-<?php endif; ?>
-
-<?php for ($i = 1; $i <= $totalPages; $i++): ?>
-
-<a href="?page=<?= $i ?>" class="<?= ($i === $page) ? 'active' : '' ?>">
-<?= $i ?>
-</a>
-
-<?php endfor; ?>
-
-<?php if ($page < $totalPages): ?>
-<a href="?page=<?= $page + 1 ?>">Suivant</a>
-<?php endif; ?>
 
 </div>
 

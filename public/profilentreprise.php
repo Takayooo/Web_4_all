@@ -10,15 +10,39 @@ if (!$id || !isset($entreprises[$id])) {
 $entreprise = $entreprises[$id];
 ?>
 
-<h1><?= $entreprise['nom'] ?></h1>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title><?= htmlspecialchars($entreprise['nom']) ?></title>
+
+<!-- 🔥 CSS IMPORTANT -->
+<link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+
+<?php include 'header.php'; ?>
+
+<section class="container">
 
 <div class="entreprise-header">
-<p>⭐ <?= $entreprise['note'] ?></p>
-<p><?= $entreprise['secteur'] ?> - <?= $entreprise['ville'] ?></p>
-<p><?= $entreprise['description'] ?></p>
+
+<h1><?= htmlspecialchars($entreprise['nom']) ?></h1>
+
+<div class="entreprise-meta">
+⭐ <?= $entreprise['note'] ?> |
+<?= $entreprise['secteur'] ?> - <?= $entreprise['ville'] ?>
 </div>
 
-<h2>Offres de cette entreprise</h2>
+<div class="entreprise-description">
+<?= htmlspecialchars($entreprise['description']) ?>
+</div>
+
+</div>
+
+<h2 class="offres-title">Offres disponibles</h2>
 
 <div class="cards">
 
@@ -27,11 +51,13 @@ $entreprise = $entreprises[$id];
 <?php if ($offre['entreprise_id'] == $id): ?>
 
 <div class="card">
-<h3><?= $offre['titre'] ?></h3>
 
-<a href="postuler.php?id=<?= $offre['id'] ?>">
+<h3><?= htmlspecialchars($offre['titre']) ?></h3>
+
+<a class="postuler-btn" href="postuler.php?id=<?= $offre['id'] ?>">
 Postuler
 </a>
+
 </div>
 
 <?php endif; ?>
@@ -39,3 +65,11 @@ Postuler
 <?php endforeach; ?>
 
 </div>
+
+</section>
+
+<?php include 'footer.php'; ?>
+<script src="js/loginmodal.js"></script>
+
+</body>
+</html>

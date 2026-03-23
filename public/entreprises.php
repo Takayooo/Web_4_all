@@ -18,7 +18,7 @@
 
 <div class="cards">
 
-<?php foreach ($entreprises as $entreprise): ?>
+<?php foreach ($entreprises as $id => $entreprise): ?>
 
 <div class="card">
 
@@ -29,7 +29,7 @@
 <?= htmlspecialchars($entreprise['secteur']) ?> - <?= htmlspecialchars($entreprise['ville']) ?>
 </p>
 
-<a class="postuler-btn" href="entreprise.php?id=<?= $entreprise['id'] ?>">
+<a class="postuler-btn" href="profilentreprise.php?id=<?= $id ?>">
 Voir le profil
 </a>
 

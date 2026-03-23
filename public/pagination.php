@@ -5,10 +5,10 @@
 ------------------------ */
 
 $entreprises = [
-    1 => ['nom' => 'TechCorp', 'note' => 4.0, 'secteur' => 'Technologie', 'ville' => 'Paris'],
-    2 => ['nom' => 'FinSoft', 'note' => 4.2, 'secteur' => 'Finance', 'ville' => 'Londres'],
-    3 => ['nom' => 'GreenEnergy', 'note' => 4.1, 'secteur' => 'Énergie', 'ville' => 'Berlin'],
-    4 => ['nom' => 'HealthPlus', 'note' => 4.3, 'secteur' => 'Santé', 'ville' => 'Madrid'],
+    1 => ['id' => 1, 'nom' => 'TechCorp', 'note' => 4.0, 'secteur' => 'Technologie', 'ville' => 'Paris'],
+    2 => ['id' => 2, 'nom' => 'FinSoft', 'note' => 4.2, 'secteur' => 'Finance', 'ville' => 'Londres'],
+    3 => ['id' => 3, 'nom' => 'GreenEnergy', 'note' => 4.1, 'secteur' => 'Énergie', 'ville' => 'Berlin'],
+    4 => ['id' => 4, 'nom' => 'HealthPlus', 'note' => 4.3, 'secteur' => 'Santé', 'ville' => 'Madrid'],
 ];
 
 /* ------------------------
@@ -16,17 +16,21 @@ $entreprises = [
 ------------------------ */
 
 $offres = [
-    ['titre' => 'Stage - Développeur Web', 'entreprise_id' => 1],
-    ['titre' => 'Stage - Designer UI/UX', 'entreprise_id' => 2],
-    ['titre' => 'Stage - Ingénieur Logiciel', 'entreprise_id' => 3],
-    ['titre' => 'Stage - Médecin Généraliste', 'entreprise_id' => 4],
+    ['id' => 1, 'titre' => 'Stage - Développeur Web', 'entreprise_id' => 1, 'contrat' => 'stage', 'statut' => 'active'],
+    ['id' => 2, 'titre' => 'Stage - Designer UI/UX', 'entreprise_id' => 2, 'contrat' => 'stage', 'statut' => 'active'],
+    ['id' => 3, 'titre' => 'Alternance - Ingénieur Logiciel', 'entreprise_id' => 3, 'contrat' => 'alternance', 'statut' => 'active'],
+    ['id' => 4, 'titre' => 'Alternance - Médecin Généraliste', 'entreprise_id' => 4, 'contrat' => 'alternance', 'statut' => 'active'],
 ];
 
 /* Génération jusqu’à 50 offres */
+$contracts = ['stage', 'alternance'];
 for ($i = 5; $i <= 50; $i++) {
     $offres[] = [
+        'id' => $i,
         'titre' => "Stage - Poste $i",
-        'entreprise_id' => rand(1, 4) // lien aléatoire
+        'entreprise_id' => rand(1, 4),
+        'contrat' => $contracts[array_rand($contracts)],
+        'statut' => 'active' // par défaut inactives pour tester le filtre
     ];
 }
 
@@ -35,32 +39,50 @@ for ($i = 5; $i <= 50; $i++) {
 ------------------------ */
 
 $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS);
+$contrat = filter_input(INPUT_GET, 'contrat', FILTER_SANITIZE_SPECIAL_CHARS);
+$secteur = filter_input(INPUT_GET, 'secteur', FILTER_SANITIZE_SPECIAL_CHARS);
+$ville = filter_input(INPUT_GET, 'ville', FILTER_SANITIZE_SPECIAL_CHARS);
 
-if ($search) {
+// garder uniquement les offres actives
+$offresActives = array_filter($offres, function ($offre) {
+    return isset($offre['statut']) && $offre['statut'] === 'active';
+});
 
-    usort($offres, function ($a, $b) use ($search, $entreprises) {
+// filtre recherche/contract/secteur/ville
+$offresFiltrees = array_filter($offresActives, function ($offre) use ($search, $contrat, $secteur, $ville, $entreprises) {
+    $entreprise = $entreprises[$offre['entreprise_id']];
 
-        $entrepriseA = $entreprises[$a['entreprise_id']];
-        $entrepriseB = $entreprises[$b['entreprise_id']];
+    if ($search) {
+        $mot = stripos($offre['titre'], $search) !== false ||
+               stripos($entreprise['nom'], $search) !== false ||
+               stripos($entreprise['secteur'], $search) !== false ||
+               stripos($entreprise['ville'], $search) !== false;
+        if (!$mot) {
+            return false;
+        }
+    }
 
-        $aMatch =
-            stripos($a['titre'], $search) !== false ||
-            stripos($entrepriseA['nom'], $search) !== false ||
-            stripos($entrepriseA['secteur'], $search) !== false ||
-            stripos($entrepriseA['ville'], $search) !== false;
+    if ($contrat && $offre['contrat'] !== $contrat) {
+        return false;
+    }
 
-        $bMatch =
-            stripos($b['titre'], $search) !== false ||
-            stripos($entrepriseB['nom'], $search) !== false ||
-            stripos($entrepriseB['secteur'], $search) !== false ||
-            stripos($entrepriseB['ville'], $search) !== false;
+    if ($secteur && stripos($entreprise['secteur'], $secteur) === false) {
+        return false;
+    }
 
-        if ($aMatch && !$bMatch) return -1;
-        if (!$aMatch && $bMatch) return 1;
+    if ($ville && stripos($entreprise['ville'], $ville) === false) {
+        return false;
+    }
 
-        return 0;
-    });
-}
+    return true;
+});
+
+// tri sur l'ID croissant (pour pagination) pour offres page
+usort($offresFiltrees, function ($a, $b) {
+    return $a['id'] <=> $b['id'];
+});
+
+$offres = array_values($offresFiltrees);
 
 /* ------------------------
    PAGINATION
