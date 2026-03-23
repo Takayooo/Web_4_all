@@ -31,22 +31,26 @@
 
 <div class="cards">
 
-<?php foreach ($annoncesPage as $index => $annonce): ?>
+<?php foreach ($offresPage as $index => $offre): 
+
+$entreprise = $entreprises[$offre['entreprise_id']];
+
+?>
 
 <div class="card">
 
-<h3><?= htmlspecialchars($annonce['titre']) ?></h3>
+<h3><?= htmlspecialchars($offre['titre']) ?></h3>
 
 <p class="company">
-<?= htmlspecialchars($annonce['nom']) ?> ⭐ <?= htmlspecialchars($annonce['note']) ?>
+<?= htmlspecialchars($entreprise['nom']) ?> ⭐ <?= htmlspecialchars($entreprise['note']) ?>
 </p>
 
 <p>
-Secteur : <?= htmlspecialchars($annonce['secteur']) ?><br>
-Ville : <?= htmlspecialchars($annonce['ville']) ?>
+Secteur : <?= htmlspecialchars($entreprise['secteur']) ?><br>
+Ville : <?= htmlspecialchars($entreprise['ville']) ?>
 </p>
 
-<a class="postuler-btn" href="postuler.php?id=<?= $debut + $index ?>">
+<a class="postuler-btn" href="postuler.php?id=<?= $debut + $index + 1 ?>">
 Postuler
 </a>
 
@@ -80,6 +84,6 @@ Postuler
 </section>
 
 <?php include 'footer.php'; ?>
-
+<script src="/js/loginmodal.js?v=3"></script>
 </body>
 </html>

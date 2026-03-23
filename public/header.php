@@ -1,13 +1,14 @@
 <?php
-
 session_start();
 
-//simulation user
-if (isset($_GET['testuser'])) {
-    $_SESSION['user'] = [
-        'nom' => 'Test User'
-    ];
-}
+// récupérer erreur
+$error = $_SESSION['error'] ?? null;
+
+// IMPORTANT : ne supprimer qu'après usage
+$hasError = !empty($error);
+
+// supprimer après
+unset($_SESSION['error']);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -17,11 +18,10 @@ use Twig\Environment;
 $loader = new FilesystemLoader(__DIR__ . '/../templates');
 $twig = new Environment($loader);
 
-// récupérer l'utilisateur (ou null)
 $user = $_SESSION['user'] ?? null;
 
-// afficher le header
 echo $twig->render('partials/header.twig', [
-    'user' => $user
+    'user' => $user,
+    'error' => $error,
+    'hasError' => $hasError
 ]);
-

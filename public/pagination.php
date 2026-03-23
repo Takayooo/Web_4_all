@@ -1,34 +1,75 @@
 <?php
 
-// Tableau de 50 entreprises
+/* ------------------------
+   ENTREPRISES
+------------------------ */
+
 $entreprises = [
-    ['titre' => 'Stage - Développeur Web', 'nom' => 'TechCorp','note' => 4.0, 'secteur' => 'Technologie', 'ville' => 'Paris'],
-    ['titre' => 'Stage - Designer UI/UX', 'nom' => 'FinSoft', 'note' => 4.2, 'secteur' => 'Finance', 'ville' => 'Londres'],
-    ['titre' => 'Stage - Ingénieur Logiciel', 'nom' => 'GreenEnergy', 'note' => 4.1, 'secteur' => 'Énergie', 'ville' => 'Berlin'],
-    ['titre' => 'Stage - Médecin Généraliste', 'nom' => 'HealthPlus', 'note' => 4.3, 'secteur' => 'Santé', 'ville' => 'Madrid'],
-    ['titre' => 'Stage - Architecte Logiciel', 'nom' => 'BuildPro', 'note' => 4.0, 'secteur' => 'Construction', 'ville' => 'Rome'],
-    ['titre' => 'Stage - Chef de Projet Agroalimentaire', 'nom' => 'FoodExpress', 'note' => 4.2, 'secteur' => 'Agroalimentaire', 'ville' => 'Bruxelles'],
-    ['titre' => 'Stage - Ingénieur en Systèmes', 'nom' => 'AutoDrive', 'note' => 4.1, 'secteur' => 'Automobile', 'ville' => 'Munich'],
-    ['titre' => 'Stage - Consultant Télécommunications', 'nom' => 'SkyNet', 'note' => 4.2, 'secteur' => 'Télécommunications', 'ville' => 'Amsterdam'],
-    ['titre' => 'Stage - Formateur en Éducation', 'nom' => 'EduSmart', 'note' => 4.0, 'secteur' => 'Éducation', 'ville' => 'Dublin'],
-    ['titre' => 'Stage - Analyste en Cybersécurité', 'nom' => 'SecureIT', 'note' => 4.3, 'secteur' => 'Cybersécurité', 'ville' => 'Zurich'],
+    1 => ['nom' => 'TechCorp', 'note' => 4.0, 'secteur' => 'Technologie', 'ville' => 'Paris'],
+    2 => ['nom' => 'FinSoft', 'note' => 4.2, 'secteur' => 'Finance', 'ville' => 'Londres'],
+    3 => ['nom' => 'GreenEnergy', 'note' => 4.1, 'secteur' => 'Énergie', 'ville' => 'Berlin'],
+    4 => ['nom' => 'HealthPlus', 'note' => 4.3, 'secteur' => 'Santé', 'ville' => 'Madrid'],
 ];
 
-// Génération jusqu’à 50 entreprises
-for ($i = 11; $i <= 50; $i++) {
-    $entreprises[] = [
+/* ------------------------
+   OFFRES (liées aux entreprises)
+------------------------ */
+
+$offres = [
+    ['titre' => 'Stage - Développeur Web', 'entreprise_id' => 1],
+    ['titre' => 'Stage - Designer UI/UX', 'entreprise_id' => 2],
+    ['titre' => 'Stage - Ingénieur Logiciel', 'entreprise_id' => 3],
+    ['titre' => 'Stage - Médecin Généraliste', 'entreprise_id' => 4],
+];
+
+/* Génération jusqu’à 50 offres */
+for ($i = 5; $i <= 50; $i++) {
+    $offres[] = [
         'titre' => "Stage - Poste $i",
-        'nom' => "Entreprise$i",
-        'secteur' => "Secteur$i",
-        'ville' => "Ville$i",
-        'note' => 4.0
+        'entreprise_id' => rand(1, 4) // lien aléatoire
     ];
 }
 
-$annoncesParPage = 12;
+/* ------------------------
+   RECHERCHE
+------------------------ */
 
-$totalAnnonces = count($entreprises);
-$totalPages = ceil($totalAnnonces / $annoncesParPage);
+$search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS);
+
+if ($search) {
+
+    usort($offres, function ($a, $b) use ($search, $entreprises) {
+
+        $entrepriseA = $entreprises[$a['entreprise_id']];
+        $entrepriseB = $entreprises[$b['entreprise_id']];
+
+        $aMatch =
+            stripos($a['titre'], $search) !== false ||
+            stripos($entrepriseA['nom'], $search) !== false ||
+            stripos($entrepriseA['secteur'], $search) !== false ||
+            stripos($entrepriseA['ville'], $search) !== false;
+
+        $bMatch =
+            stripos($b['titre'], $search) !== false ||
+            stripos($entrepriseB['nom'], $search) !== false ||
+            stripos($entrepriseB['secteur'], $search) !== false ||
+            stripos($entrepriseB['ville'], $search) !== false;
+
+        if ($aMatch && !$bMatch) return -1;
+        if (!$aMatch && $bMatch) return 1;
+
+        return 0;
+    });
+}
+
+/* ------------------------
+   PAGINATION
+------------------------ */
+
+$offresParPage = 12;
+
+$totalOffres = count($offres);
+$totalPages = ceil($totalOffres / $offresParPage);
 
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, [
     'options' => ['min_range' => 1]
@@ -42,6 +83,6 @@ if ($page > $totalPages) {
     $page = $totalPages;
 }
 
-$debut = ($page - 1) * $annoncesParPage;
+$debut = ($page - 1) * $offresParPage;
 
-$annoncesPage = array_slice($entreprises, $debut, $annoncesParPage);
+$offresPage = array_slice($offres, $debut, $offresParPage);

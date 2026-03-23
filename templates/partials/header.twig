@@ -19,7 +19,7 @@
 
 
 {% if user %}
-    <a href="logout.php" class="btn btn-white">Se déconnecter</a>
+<a href="logout.php" id="open-logout" class="btn btn-white">Se déconnecter</a>
 {% else %}
     <a href="#" id="open-login" class="btn btn-white">Se connecter</a>
 {% endif %}
@@ -30,13 +30,16 @@
 
 </header>
 
-<div id="login-modal" class="modal">
+<div id="login-modal" class="modal" data-error="{{ hasError ? 'true' : 'false' }}">
 
 <div class="modal-content">
 
 <span class="close">&times;</span>
 
-<h2>Connexion</h2>
+<h2 style="color:#0d0c6e;">Connexion</h2>
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
 
 <div class="role-switch">
 <button class="role-btn active">Élève</button>
@@ -45,6 +48,8 @@
 </div>
 
 <form action="login.php" method="POST" class="login-form">
+
+<input type="hidden" name="role" id="role-input" value="eleve">
 
 <input type="email" name="email" placeholder="Email" required>
 
@@ -57,5 +62,3 @@
 </div>
 
 </div>
-
-<script src="/js/loginmodal.js"></script>
