@@ -4,6 +4,8 @@
 
 <h1 class="logo">
 <a href="index.php?page=1">Web4All.</a>
+<link rel="style.css">
+<script src="js/loginmodal.js"></script>
 </h1>
 
 <nav class="nav">
@@ -19,7 +21,13 @@
 
 
 {% if user %}
-<a href="logout.php" id="open-logout" class="btn btn-white">Se déconnecter</a>
+<div class="user-menu">
+    <a href="#" id="user-menu-btn" class="btn btn-white">{{user.prenom}} {{user.nom}} &#x25BE;</a>
+    <div id="user-menu-dropdown" class="user-menu-dropdown" aria-label="Menu utilisateur">
+        <a href="parametres.php" class="user-menu-item">Paramètres</a>
+        <a href="logout.php" class="user-menu-item">Se déconnecter</a>
+    </div>
+</div>
 {% else %}
     <a href="#" id="open-login" class="btn btn-white">Se connecter</a>
 {% endif %}
@@ -29,6 +37,33 @@
 </div>
 
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('user-menu-btn');
+        const dropdown = document.getElementById('user-menu-dropdown');
+
+        if (!btn || !dropdown) return;
+
+        btn.setAttribute('aria-expanded', 'false');
+
+        btn.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const isOpen = dropdown.classList.toggle('open');
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!dropdown.classList.contains('open')) return;
+            if (btn.contains(event.target) || dropdown.contains(event.target)) return;
+            dropdown.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+        });
+    });
+</script>
+
+
 
 <div id="login-modal" class="modal" data-error="{{ hasError ? 'true' : 'false' }}">
 

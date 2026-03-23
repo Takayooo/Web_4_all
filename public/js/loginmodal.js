@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const closeBtn = document.querySelector(".close");
 
         if (!modal) {
-            // ⏳ on réessaie jusqu’à ce que le DOM soit prêt
             setTimeout(tryInit, 50);
             return;
         }
@@ -38,6 +37,28 @@ document.addEventListener("DOMContentLoaded", function () {
         if (modal.dataset.error == "true") {
              modal.style.display = "flex";
             }
+
+        // Gestion des boutons de rôle
+        const roleBtns = modal.querySelectorAll('.role-btn');
+        const roleInput = modal.querySelector('#role-input');
+
+        roleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Retirer la classe active de tous les boutons
+                roleBtns.forEach(b => b.classList.remove('active'));
+                // Ajouter la classe active au bouton cliqué
+                this.classList.add('active');
+                // Mettre à jour la valeur du champ caché
+                const role = this.textContent.toLowerCase();
+                if (role === 'élève') {
+                    roleInput.value = 'eleve';
+                } else if (role === 'pilote') {
+                    roleInput.value = 'pilote';
+                } else if (role === 'entreprise') {
+                    roleInput.value = 'entreprise';
+                }
+            });
+        });
     };
 
     tryInit();

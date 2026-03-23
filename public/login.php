@@ -6,26 +6,7 @@ session_start();
    "FAUSSE BASE DE DONNÉES"
 ------------------------ */
 
-$users = [
-    [
-        'email' => 'eleve@test.com',
-        'password' => '1234',
-        'role' => 'eleve',
-        'nom' => 'Eleve Test'
-    ],
-    [
-        'email' => 'pilote@test.com',
-        'password' => '1234',
-        'role' => 'pilote',
-        'nom' => 'Pilote Test'
-    ],
-    [
-        'email' => 'entreprise@test.com',
-        'password' => '1234',
-        'role' => 'entreprise',
-        'nom' => 'Entreprise Test'
-    ]
-];
+$users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
 
 /* ------------------------
    RÉCUPÉRATION DES DONNÉES
@@ -62,6 +43,7 @@ if ($foundUser) {
     $_SESSION['user'] = [
         'email' => $foundUser['email'],
         'nom' => $foundUser['nom'],
+        'prenom' => $foundUser['prenom'],
         'role' => $foundUser['role']
     ];
 

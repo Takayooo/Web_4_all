@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Paramètres - Web4All</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+{% include 'partials/header.twig' %}
+
+<main class="container">
+    <h1>{% if canDelete %}Paramètres - Gestion des comptes étudiants{% else %}Paramètres - Mon compte{% endif %}</h1>
+
+    {% if message %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <section>
+        <h2>{% if canDelete %}Comptes étudiants{% else %}Mon compte{% endif %}</h2>
+        {% if eleves %}
+            <div class="eleves-list">
+                {% for eleve in eleves %}
+                    <div class="eleve-card">
+                        <h3>{{ eleve.prenom }} {{ eleve.nom }}</h3>
+                        <p>Email: {{ eleve.email }}</p>
+                        <div class="actions">
+                            <button onclick="editEleve({{ eleve.id }}, '{{ eleve.nom }}', '{{ eleve.prenom }}', '{{ eleve.email }}')">Modifier</button>
+                            {% if canDelete %}
+                            <form method="post" style="display: inline;">
+                                <input type="hidden" name="action" value="supprimer">
+                                <input type="hidden" name="id" value="{{ eleve.id }}">
+                                <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce compte ?')">Supprimer</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>{% if canDelete %}Aucun compte étudiant trouvé.{% else %}Votre compte n'a pas été trouvé.{% endif %}</p>
+        {% endif %}
+    </section>
+
+    <!-- Modal pour modification -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>{% if canDelete %}Modifier le compte étudiant{% else %}Modifier mon compte{% endif %}</h2>
+            <form method="post">
+                <input type="hidden" name="action" value="modifier">
+                <input type="hidden" name="id" id="editId">
+                <div>
+                    <label for="nom">Nom:</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+                <div>
+                    <label for="prenom">Prénom:</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="submit">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+{% include 'partials/footer.twig' %}
+
+<script>
+function editEleve(id, nom, prenom, email) {
+    document.getElementById('editId').value = id;
+    document.getElementById('nom').value = nom;
+    document.getElementById('prenom').value = prenom;
+    document.getElementById('email').value = email;
+    document.getElementById('editModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Fermer la modal si clic en dehors
+window.onclick = function(event) {
+    const modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+.eleves-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.eleve-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background: #f9f9f9;
+    width: 300px;
+}
+
+.actions {
+    margin-top: 10px;
+}
+
+.actions button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "email": "eleve@test.com",
+        "password": "1234",
+        "role": "eleve",
+        "nom": "Test",
+        "prenom": "Eleve"
+    },
+    {
+        "id": 2,
+        "email": "pilote@test.com",
+        "password": "1234",
+        "role": "pilote",
+        "nom": "Test",
+        "prenom": "Pilote"
+    },
+    {
+        "id": 3,
+        "email": "entreprise@test.com",
+        "password": "1234",
+        "role": "entreprise",
+        "nom": "Test",
+        "prenom": "Entreprise"
+    },
+    {
+        "id": 4,
+        "email": "eleve2@test.com",
+        "password": "1234",
+        "role": "eleve",
+        "nom": "Dupont",
+        "prenom": "Jean"
+    }
+]
