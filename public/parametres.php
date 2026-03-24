@@ -106,4 +106,6 @@ echo $twig->render('parametres.twig', [
     'message' => $message,
     'canDelete' => $canDelete
 ]);
+
+
 ?>

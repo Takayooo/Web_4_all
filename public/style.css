@@ -324,6 +324,43 @@ text-decoration:none;
 border: #0d0c6e 2px solid;
 }
 
+.register-role-switch {
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+}
+
+.register-role-btn {
+    flex:1;
+    border: 1px solid #0d0c6e;
+    background: white;
+    color: #0d0c6e;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.register-role-btn.active,
+.register-role-btn:hover {
+    background: #0d0c6e;
+    color: white;
+}
+
+.create-account-button {
+    background:#0d0c6e;
+    color:white;
+    padding:12px;
+    border: 2px solid #0d0c6e !important;
+    border-radius:8px;
+}
+
+.create-account-button:hover{
+    background: white !important;
+    color: #0d0c6e !important;
+    transition-duration: 200ms;
+    transform: scale(1.02);
+}
 
 .user-menu {
     position: relative;

@@ -5,7 +5,9 @@
         "password": "1234",
         "role": "eleve",
         "nom": "nathan",
-        "prenom": "Eleve"
+        "prenom": "Eleve",
+        "pilote_id": 2,
+        "created_at": "2026-03-24T10:00:00"
     },
     {
         "id": 2,
@@ -13,7 +15,13 @@
         "password": "1234",
         "role": "pilote",
         "nom": "Test",
-        "prenom": "Pilote"
+        "prenom": "Pilote",
+        "eleves": [
+            1,
+            4,
+            5
+        ],
+        "created_at": "2026-03-24T10:00:00"
     },
     {
         "id": 3,
@@ -21,7 +29,12 @@
         "password": "1234",
         "role": "entreprise",
         "nom": "Test",
-        "prenom": "Entreprise"
+        "prenom": "",
+        "entreprise_id": 3,
+        "secteur": "Technologie",
+        "ville": "Paris",
+        "note": 0,
+        "created_at": "2026-03-24T10:00:00"
     },
     {
         "id": 4,
@@ -29,6 +42,64 @@
         "password": "1234",
         "role": "eleve",
         "nom": "Dupond",
-        "prenom": "Jean"
+        "prenom": "Jean",
+        "pilote_id": 2,
+        "created_at": "2026-03-24T10:00:00"
+    },
+    {
+        "id": 5,
+        "email": "mateo@oui.fr",
+        "password": "1234",
+        "role": "eleve",
+        "nom": "mateo",
+        "prenom": "mignot",
+        "pilote_id": 2,
+        "created_at": "2026-03-24 12:35:36"
+    },
+    {
+        "id": 6,
+        "email": "raddad@cesi.fr",
+        "password": "1234",
+        "role": "pilote",
+        "nom": "Raddad",
+        "prenom": "Torreto",
+        "eleves": [
+            7,
+            9
+        ],
+        "created_at": "2026-03-24 12:36:09"
+    },
+    {
+        "id": 7,
+        "email": "nathan@oui.fr",
+        "password": "1234",
+        "role": "eleve",
+        "nom": "nathan",
+        "prenom": "bouget",
+        "pilote_id": 6,
+        "created_at": "2026-03-24 12:36:42"
+    },
+    {
+        "id": 8,
+        "email": "mateobeau@oui.fr",
+        "password": "1234",
+        "role": "entreprise",
+        "nom": "MateoCorp",
+        "prenom": "",
+        "entreprise_id": 8,
+        "secteur": "TOUT",
+        "ville": "lyon",
+        "note": 0,
+        "created_at": "2026-03-24 12:37:40"
+    },
+    {
+        "id": 9,
+        "email": "eliot@cesi.fr",
+        "password": "1234",
+        "role": "eleve",
+        "nom": "eliot",
+        "prenom": "escalier",
+        "pilote_id": 6,
+        "created_at": "2026-03-24 12:38:38"
     }
 ]

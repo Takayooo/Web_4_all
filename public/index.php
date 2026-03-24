@@ -26,6 +26,13 @@ $activeOffres = array_filter($offres, function($o) {
     <?php include 'header.php'; ?>
 </header>
 
+<?php if (isset($_SESSION['success'])): ?>
+    <div style="margin:20px auto; width:90%; max-width:1200px; padding:15px; border:1px solid #28a745; color:#155724; background:#d4edda; border-radius:8px;">
+        <?= htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8') ?>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
 <section class="stats container">
 <a href="offres.php" class="stats-box">
 <p><?= count($activeOffres) ?></p>

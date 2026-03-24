@@ -4,12 +4,26 @@
    ENTREPRISES
 ------------------------ */
 
+$usersFromFile = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
+
 $entreprises = [
     1 => ['id' => 1, 'nom' => 'TechCorp', 'note' => 4.0, 'secteur' => 'Technologie', 'ville' => 'Paris'],
     2 => ['id' => 2, 'nom' => 'FinSoft', 'note' => 4.2, 'secteur' => 'Finance', 'ville' => 'Londres'],
     3 => ['id' => 3, 'nom' => 'GreenEnergy', 'note' => 4.1, 'secteur' => 'Énergie', 'ville' => 'Berlin'],
     4 => ['id' => 4, 'nom' => 'HealthPlus', 'note' => 4.3, 'secteur' => 'Santé', 'ville' => 'Madrid'],
 ];
+
+foreach ($usersFromFile as $u) {
+    if (isset($u['role']) && $u['role'] === 'entreprise') {
+        $entreprises[$u['id']] = [
+            'id' => $u['id'],
+            'nom' => $u['nom'] ?? 'Entreprise',
+            'note' => isset($u['note']) ? (float)$u['note'] : 0,
+            'secteur' => $u['secteur'] ?? 'Non renseigné',
+            'ville' => $u['ville'] ?? 'Non renseigné',
+        ];
+    }
+}
 
 /* ------------------------
    OFFRES (liées aux entreprises)
