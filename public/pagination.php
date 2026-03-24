@@ -28,7 +28,7 @@ for ($i = 5; $i <= 50; $i++) {
     $offres[] = [
         'id' => $i,
         'titre' => "Stage - Poste $i",
-        'entreprise_id' => rand(1, 4),
+        'entreprise_id' => (($i - 5) % 4) + 1,
         'contrat' => $contracts[array_rand($contracts)],
         'statut' => 'active' // par défaut inactives pour tester le filtre
     ];

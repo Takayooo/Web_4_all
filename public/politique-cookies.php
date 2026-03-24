@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Politique de cookies</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 
 <body>

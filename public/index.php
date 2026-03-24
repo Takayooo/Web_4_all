@@ -1,11 +1,23 @@
 <?php require 'pagination.php'; ?>
 
+<?php
+$users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
+$eleves = array_filter($users, function($u) {
+    return $u['role'] === 'eleve';
+});
+$nbEleves = count($eleves);
+
+$activeOffres = array_filter($offres, function($o) {
+    return isset($o['statut']) && $o['statut'] === 'active';
+});
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title >Web4All</title>
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 
 <body>
@@ -14,7 +26,20 @@
     <?php include 'header.php'; ?>
 </header>
 
-
+<section class="stats container">
+<a href="offres.php" class="stats-box">
+<p><?= count($activeOffres) ?></p>
+<h3>Offres</h3>
+</a>
+<a href="entreprises.php" class="stats-box">
+<p><?= count($entreprises) ?></p>
+<h3>Entreprises</h3>
+</a>
+<a href="login.php" class="stats-box">
+<p><?= $nbEleves ?></p>
+<h3>Etudiants Inscrits</h3>
+</a>
+</section>
 
 <section class="annonces container">
 
@@ -23,10 +48,6 @@
 <div class="cards">
 
 <?php
-$activeOffres = array_filter($offres, function($o) {
-    return isset($o['statut']) && $o['statut'] === 'active';
-});
-
 usort($activeOffres, function($a, $b) {
     return $b['id'] <=> $a['id'];
 });

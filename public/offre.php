@@ -33,7 +33,7 @@ $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 <head>
 <meta charset="UTF-8">
 <title><?= htmlspecialchars($offreTrouvee['titre']) ?></title>
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=6">
 </head>
 
 <body>

@@ -31,7 +31,7 @@ $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 <title>Postuler - <?= htmlspecialchars($offreTrouvee['titre']) ?></title>
 
 <!-- CSS -->
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=4">
 </head>
 
 <body>

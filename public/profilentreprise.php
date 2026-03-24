@@ -8,6 +8,29 @@ if (!$id || !isset($entreprises[$id])) {
 }
 
 $entreprise = $entreprises[$id];
+
+$offresEntreprise = array_filter($offres, function($o) use ($id) {
+    return $o['entreprise_id'] == $id && isset($o['statut']) && $o['statut'] === 'active';
+});
+
+$offresParPage = 12;
+$totalOffres = count($offresEntreprise);
+$totalPages = ceil($totalOffres / $offresParPage);
+
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, [
+    'options' => ['min_range' => 1]
+]);
+
+if (!$page) {
+    $page = 1;
+}
+
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
+
+$debut = ($page - 1) * $offresParPage;
+$offresPage = array_slice(array_values($offresEntreprise), $debut, $offresParPage);
 ?>
 
 <!DOCTYPE html>
@@ -16,8 +39,7 @@ $entreprise = $entreprises[$id];
 <meta charset="UTF-8">
 <title><?= htmlspecialchars($entreprise['nom']) ?></title>
 
-<!-- 🔥 CSS IMPORTANT -->
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=13">
 
 </head>
 
@@ -46,23 +68,35 @@ $entreprise = $entreprises[$id];
 
 <div class="cards">
 
-<?php foreach ($offres as $offre): ?>
-
-<?php if ($offre['entreprise_id'] == $id): ?>
+<?php foreach ($offresPage as $offre): ?>
 
 <div class="card">
 
 <h3><?= htmlspecialchars($offre['titre']) ?></h3>
 
-<a class="postuler-btn" href="postuler.php?id=<?= $offre['id'] ?>">
-Postuler
+<a class="postuler-btn" href="offre.php?id=<?= $offre['id'] ?>">
+Voir l'offre
 </a>
 
 </div>
 
+<?php endforeach; ?>
+
+</div>
+
+<div class="pagination">
+
+<?php if ($page > 1): ?>
+<a href="?id=<?= $id ?>&page=<?= $page - 1 ?>">Précédent</a>
 <?php endif; ?>
 
-<?php endforeach; ?>
+<?php for ($i = 1; $i <= $totalPages; $i++): ?>
+    <a href="?id=<?= $id ?>&page=<?= $i ?>" class="<?= ($i === $page) ? 'active' : '' ?>"><?= $i ?></a>
+<?php endfor; ?>
+
+<?php if ($page < $totalPages): ?>
+<a href="?id=<?= $id ?>&page=<?= $page + 1 ?>">Suivant</a>
+<?php endif; ?>
 
 </div>
 
