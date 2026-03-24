@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
 
 
 <section class="contact-content">
-    <div class="container">
+    <div class="containercontact">
         <div class="contact-form">
             <h2>Envoyez un message</h2>
             <form action="https://formspree.io/f/mnjgonba" method="POST">
@@ -39,16 +39,19 @@
             <h2>Mes coordonnées</h2>
             <div class="info-card">
                 <h3>Informations personnelles</h3>
-                <p><strong>Nom :</strong> Nathan Bouget</p>
-                <p><strong>Téléphone :</strong> 06.65.53.26.08</p>
-                <p><strong>Email :</strong> nbouget0106@gmail.com</p>
-                <p><strong>Adresse :</strong> Saint Maurice de Gourdans (01800)</p>
+                <p><strong>Nom de Société :</strong> Web4All.</p>
+                <p><strong>Numéro de SIRET :</strong> 123 456 789 00012</p>
+                <p><strong>Téléphone :</strong> 01 23 45 67 89</p>
+                <p><strong>Email :</strong> contact@web4all.fr</p>
+                <p><strong>Adresse :</strong> Villeurbanne (69100)</p>
             </div>
             <div class="info-card">
                 <h3>Réseaux sociaux</h3>
-                <p>Pour voir mes projets et mon CV, n'hésitez pas à visiter les autres pages de ce portfolio. Vous pouvez également me contacter via :</p>
-                <a href="https://www.linkedin.com/in/nathan-bouget-9b1a4b1b6/" target="_blank" class="social-link">LinkedIn</a>
-                <a href="https://github.com/nathanbouget" target="_blank" class="social-link">GitHub</a>
+                <p>Pour suivre notre communication sur les réseaux :</p>
+                <a href="https://www.facebook.com/" target="_blank" class="social-link">Facebook</a>
+                <a href="https://www.linkedin.com/" target="_blank" class="social-link">LinkedIn</a>
+                <a href="https://www.twitter.com/" target="_blank" class="social-link">Twitter</a>
+                <a href="https://www.github.com/Takayooo/Web_4_All/" target="_blank" class="social-link">GitHub</a>
             </div>
         </div>
     </div>

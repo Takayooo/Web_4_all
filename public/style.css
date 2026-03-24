@@ -394,7 +394,7 @@ border: #0d0c6e 2px solid;
     background: #f4f4f4;
 }
 
-.container {
+.containercontact {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -454,7 +454,3 @@ border: #0d0c6e 2px solid;
 .social-link:hover {
     text-decoration: underline;
 }
-
-
-
-

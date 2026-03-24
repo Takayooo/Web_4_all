@@ -17,7 +17,7 @@ $activeOffres = array_filter($offres, function($o) {
 <head>
 <meta charset="UTF-8">
 <title >Web4All</title>
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 
 <body>
@@ -75,7 +75,7 @@ Ville : <?= htmlspecialchars($entreprise['ville']) ?>
 </p>
 
 <a class="postuler-btn" href="offre.php?id=<?= $offre['id'] ?>">
-Postuler
+Voir l'offre
 </a>
 
 </div>
