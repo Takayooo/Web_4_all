@@ -4,8 +4,8 @@
 
 <h1 class="logo">
 <a href="index.php?page=1">Web4All.</a>
-<link rel="style.css">
 <script src="js/loginmodal.js"></script>
+<script src="js/header.js"></script>
 </h1>
 
 <nav class="nav">
@@ -38,51 +38,15 @@
 
 </header>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const btn = document.getElementById('user-menu-btn');
-        const dropdown = document.getElementById('user-menu-dropdown');
-
-        if (!btn || !dropdown) return;
-
-        btn.setAttribute('aria-expanded', 'false');
-
-        btn.addEventListener('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            const isOpen = dropdown.classList.toggle('open');
-            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!dropdown.classList.contains('open')) return;
-            if (btn.contains(event.target) || dropdown.contains(event.target)) return;
-            dropdown.classList.remove('open');
-            btn.setAttribute('aria-expanded', 'false');
-        });
-    });
-</script>
-
-<style>
-.menu-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    vertical-align: middle;
-}
-</style>
-
-
-
 <div id="login-modal" class="modal" data-error="{{ hasError ? 'true' : 'false' }}">
 
 <div class="modal-content">
 
 <span class="close">&times;</span>
 
-<h2 style="color:#0d0c6e;">Connexion</h2>
+<h2 class="login-modal-title">Connexion</h2>
 {% if error %}
-<p style="color:red;">{{ error }}</p>
+<p class="login-error">{{ error }}</p>
 {% endif %}
 
 <div class="role-switch">
@@ -103,7 +67,7 @@
 
 </form>
 
-<p style="margin-top: 12px; text-align: center;">Pas encore de compte ? <a href="create_account.php" style="color:#0d0c6e; font-weight:600;">Créer un compte</a></p>
+<p class="login-signup-link">Pas encore de compte ? <a href="create_account.php">Créer un compte</a></p>
 
 </div>
 

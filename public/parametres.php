@@ -11,8 +11,8 @@ $twig = new Environment($loader);
 
 $user = $_SESSION['user'] ?? null;
 
-// Vérifier si l'utilisateur est connecté et a le rôle approprié (pilote ou eleve)
-if (!$user || !in_array($user['role'], ['pilote', 'eleve'])) {
+// Vérifier si l'utilisateur est connecté et a le rôle approprié (pilote, eleve ou entreprise)
+if (!$user || !in_array($user['role'], ['pilote', 'eleve', 'entreprise'])) {
     header("Location: index.php");
     exit;
 }
@@ -36,6 +36,13 @@ if ($user['role'] === 'pilote') {
         }
     }
     $canDelete = true;
+} elseif ($user['role'] === 'entreprise') {
+    $own = array_filter($users, function($u) use ($user) { 
+        return $u['role'] === 'entreprise' && $u['email'] === $user['email']; 
+    });
+    $own = $own ? $own[array_key_first($own)] : null;
+    $students = [];
+    $canDelete = false;
 } else { // eleve
     $own = array_filter($users, function($u) use ($user) { 
         return $u['role'] === 'eleve' && $u['email'] === $user['email']; 
@@ -53,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'modifier' && isset($_POST['id'])) {
             $id = (int)$_POST['id'];
             $nom = trim($_POST['nom'] ?? '');
-            $prenom = trim($_POST['prenom'] ?? '');
             $email = trim($_POST['email'] ?? '');
 
             // Vérifier les permissions
@@ -62,22 +68,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $allowed = true;
             } elseif ($user['role'] === 'eleve') {
                 // Vérifier que c'est son propre compte
-                $allowed = in_array($id, array_column($eleves, 'id'));
+                $allowed = ($own && $own['id'] === $id);
+            } elseif ($user['role'] === 'entreprise') {
+                // Vérifier que c'est son propre compte
+                $allowed = ($own && $own['id'] === $id);
             }
 
-            if ($allowed && $nom && $prenom && $email) {
+            if ($allowed && $nom && $email) {
                 foreach ($users as &$u) {
-                    if ($u['id'] === $id && $u['role'] === 'eleve') {
-                        $u['nom'] = $nom;
-                        $u['prenom'] = $prenom;
-                        $u['email'] = $email;
+                    if ($u['id'] === $id) {
+                        if ($u['role'] === 'eleve') {
+                            $prenom = trim($_POST['prenom'] ?? '');
+                            if ($prenom) {
+                                $u['nom'] = $nom;
+                                $u['prenom'] = $prenom;
+                                $u['email'] = $email;
+                            }
+                        } elseif ($u['role'] === 'entreprise') {
+                            $secteur = trim($_POST['secteur'] ?? '');
+                            $ville = trim($_POST['ville'] ?? '');
+                            if ($secteur && $ville) {
+                                $u['nom'] = $nom;
+                                $u['secteur'] = $secteur;
+                                $u['ville'] = $ville;
+                                $u['email'] = $email;
+                            }
+                        }
                         file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
-                        $message = 'Compte étudiant modifié avec succès.';
+                        $message = 'Compte modifié avec succès.';
                         // Mettre à jour la session si c'est son propre compte
-                        if ($user['role'] === 'eleve' && $u['email'] === $user['email']) {
+                        if ($u['email'] === $user['email']) {
                             $_SESSION['user']['nom'] = $nom;
-                            $_SESSION['user']['prenom'] = $prenom;
                             $_SESSION['user']['email'] = $email;
+                            if ($u['role'] === 'entreprise') {
+                                $_SESSION['user']['secteur'] = $secteur;
+                                $_SESSION['user']['ville'] = $ville;
+                            } elseif ($u['role'] === 'eleve') {
+                                $_SESSION['user']['prenom'] = $prenom;
+                            }
                         }
                         header("Location: parametres.php");
                         exit;

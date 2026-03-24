@@ -1,366 +1,129 @@
-html, body{
-height:100%;
-margin:0;
+/* ========================================
+   STYLES DE BASE ET MISE EN PAGE
+   ======================================== */
+
+html, body {
+    height: 100%;
+    margin: 0;
 }
 
-body{
-font-family: Arial, sans-serif;
-background:#f4f4f4;
-margin:0;
-display:flex;
-flex-direction:column;
-min-height: 100vh;
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-a{
-color:inherit;
-text-decoration:none;
+a {
+    color: inherit;
+    text-decoration: none;
 }
-    
-
-.container{
-width:90%;
-max-width:1200px;
-margin:auto;
-}
-
-header{
-background:#0d0c6e;
-padding:15px 0;
-color:white;
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    margin-bottom: 40px;
 }
 
-.header-content{
-display:flex;
-justify-content:space-between;
-align-items:center;
+.create-account-section {
+    padding: 40px 0;
 }
 
-.logo{
-font-size:40px;
-font-weight:bold;
-}
+/* ========================================
+   EN-TÊTE ET NAVIGATION
+   ======================================== */
 
-.logo a{
-color:rgb(255, 255, 255);
-}
-
-/* NAVIGATION */
-
-.nav{
-display:flex;
-gap:25px;
-margin-left: auto;
-margin-right: 35px;
-}
-
-.nav-link{
-color:white;
-font-weight:500;
-position:relative;
-}
-
-/* petit effet underline au hover */
-.nav-link::after{
-content:"";
-position:absolute;
-left:0;
-bottom:-5px;
-width:0%;
-height:2px;
-background:white;
-transition:0.3s;
-}
-
-.nav-link:hover::after{
-width:100%;
-}
-
-/* ACTIONS (boutons) */
-
-.header-actions{
-display:flex;
-gap:15px;
-}
-
-/* bouton général */
-.btn{
-padding:10px 18px;
-border-radius:6px;
-font-weight:500;
-transition:0.3s;
-}
-
-/* bouton bleu (même couleur que le header) */
-.btn-blue{
-background:#0d0c6e;
-color:white;
-border:2px solid white;
-}
-
-.btn-blue:hover{
-background:white;
-color:#0d0c6e;
-}
-
-/* bouton blanc (login) */
-.btn-white{
-background:white;
-color:#0d0c6e;
-border:2px solid white;
-}
-
-.btn-white:hover{
-background:#0d0c6e;
-color: white;
-}
-
-
-/* OVERLAY */
-.modal{
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.6);
-justify-content:center;
-align-items:center;
-z-index:1000;
-}
-
-/* BOITE */
-.modal-content{
-background:white;
-padding:30px;
-border-radius:15px;
-width:400px;
-max-width:90%;
-text-align:center;
-position:relative;
-animation:fadeIn 0.3s ease;
-}
-
-/* animation */
-@keyframes fadeIn{
-from{transform:translateY(-20px);opacity:0;}
-to{transform:translateY(0);opacity:1;}
-}
-
-/* bouton fermer */
-.close{
-position:absolute;
-top:10px;
-right:15px;
-font-size:22px;
-cursor:pointer;
-}
-
-/* roles */
-.role-switch{
-display:flex;
-justify-content:space-between;
-margin-bottom:20px;
-}
-
-.role-btn{
-flex:1;
-margin:0 5px;
-padding:10px;
-border:none;
-background:#eee;
-cursor:pointer;
-border-radius:8px;
-}
-
-.role-btn.active{
-background:#0d0c6e;
-color:white;
-}
-
-/* form */
-.login-form{
-display:flex;
-flex-direction:column;
-gap:15px;
-}
-
-.login-form input{
-padding:12px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-.login-form button{
-background:#0d0c6e;
-color:white;
-border:none;
-padding:12px;
-border-radius:8px;
-cursor:pointer;
-}
-
-.login-form button:hover{
-background:#1a18a8;
-}
-
-
-.annonces{
-margin-top:40px;
-margin-bottom:40px;
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-margin-top:20px;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-}
-
-.card h3{
-color:#0d0c6e;
-}
-
-.card button{
-margin-top:15px;
-background:#0d0c6e;
-color:white;
-border:none;
-padding:10px;
-border-radius:20px;
-cursor:pointer;
-}
-
-footer {
+header {
+    background: #0d0c6e;
+    padding: 15px 0;
     color: white;
-    font-size: 14px;
-    background: rgb(13, 12, 110);
-    padding: 15px 0px;
 }
 
-.stats{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
-margin-top:40px;
-margin-bottom:40px;
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.stats-box{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-text-align:center;
-text-decoration:none;
-color:inherit;
-display:block;
-transition:transform 0.3s;
+.logo {
+    font-size: 40px;
+    font-weight: bold;
 }
 
-.stats-box:hover{
-transform:scale(1.05);
+.logo a {
+    color: rgb(255, 255, 255);
 }
 
-.stats-box h3{
-color:#0d0c6e;
-margin-bottom:10px;
+.nav {
+    display: flex;
+    gap: 25px;
+    margin-left: auto;
+    margin-right: 35px;
 }
 
-.stats-box p{
-font-size:48px;
-font-weight:bold;
-color:#0d0c6e;
+.nav-link {
+    color: white;
+    font-weight: 500;
+    position: relative;
 }
 
-.pagination{
-display:flex;
-justify-content:center;
-margin-top:40px;
-margin-bottom:40px;
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0%;
+    height: 2px;
+    background: white;
+    transition: 0.3s;
 }
 
-.pagination a{
-padding:8px 12px;
-margin:0 5px;
-background:#eee;
-border-radius:5px;
-text-decoration:none;
-color:#333;
+.nav-link:hover::after {
+    width: 100%;
+}
+/* ========================================
+   BOUTONS
+   ======================================== */
+
+.header-actions {
+    display: flex;
+    gap: 15px;
 }
 
-.pagination a.active{
-background:#0d0c6e;
-color:white;
+.btn {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: 0.3s;
 }
 
-.postuler-btn{
-display:inline-block;
-margin-top:15px;
-background:#0d0c6e;
-color:white;
-padding:10px 20px;
-border-radius:20px;
-text-decoration:none;
-border: #0d0c6e 2px solid;
+.btn-blue {
+    background: #0d0c6e;
+    color: white;
+    border: 2px solid white;
 }
 
-.postuler-btn:hover{
-display:inline-block;
-margin-top:15px;
-background:#ffffff;
-color:#0d0c6e;
-padding:10px 20px;
-border-radius:20px;
-text-decoration:none;
-border: #0d0c6e 2px solid;
-}
-
-.register-role-switch {
-    display:flex;
-    gap:8px;
-    margin-bottom:20px;
-}
-
-.register-role-btn {
-    flex:1;
-    border: 1px solid #0d0c6e;
+.btn-blue:hover {
     background: white;
     color: #0d0c6e;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .2s ease;
 }
 
-.register-role-btn.active,
-.register-role-btn:hover {
+.btn-white {
+    background: white;
+    color: #0d0c6e;
+    border: 2px solid white;
+}
+
+.btn-white:hover {
     background: #0d0c6e;
     color: white;
 }
 
-.create-account-button {
-    background:#0d0c6e;
-    color:white;
-    padding:12px;
-    border: 2px solid #0d0c6e !important;
-    border-radius:8px;
-}
-
-.create-account-button:hover{
-    background: white !important;
-    color: #0d0c6e !important;
-    transition-duration: 200ms;
-    transform: scale(1.02);
-}
+/* ========================================
+   MENU UTILISATEUR ET LISTE DÉROULANTE
+   ======================================== */
 
 .user-menu {
     position: relative;
@@ -373,9 +136,9 @@ border: #0d0c6e 2px solid;
     right: 0;
     min-width: 170px;
     background: #ffffff;
-    border: 1px solid rgba(0,0,0,0.12);
+    border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 6px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
     visibility: hidden;
     opacity: 0;
     display: none;
@@ -388,12 +151,6 @@ border: #0d0c6e 2px solid;
     visibility: visible;
     opacity: 1;
     display: block;
-    transform: translateY(0);
-}
-
-.user-menu-dropdown.open {
-    visibility: visible;
-    opacity: 1;
     transform: translateY(0);
 }
 
@@ -410,43 +167,124 @@ border: #0d0c6e 2px solid;
     background: #f2f6fb;
 }
 
-.contact-hero {
+.menu-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+
+/* ========================================
+   MODALES ET BOÎTES DE DIALOGUE
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+    max-width: 90%;
     text-align: center;
-    padding: 30px 20px;
-    background: linear-gradient(135deg, #153753, #163853);
-    color: white;
+    position: relative;
+    animation: fadeIn 0.3s ease;
 }
 
-.contact-hero h1 {
-    font-size: 3em;
-    margin-bottom: 10px;
+@keyframes fadeIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
-.contact-hero p {
-    font-size: 1.2em;
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #0d0c6e;
 }
 
-.contact-content {
-    padding: 60px 20px;
-    background: #f4f4f4;
-}
+/* ========================================
+   FORMULAIRES ET CHAMPS DE SAISIE
+   ======================================== */
 
-.containercontact {
-    max-width: 1200px;
-    margin: 0 auto;
+.login-form,
+.form-section {
     display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.contact-form, .contact-info {
-    flex: 1;
-    min-width: 300px;
+.login-form input,
+.form-section input,
+.form-section textarea,
+.form-group input,
+.form-group textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
-.contact-form h2, .contact-info h2 {
-    color: #153753;
-    margin-bottom: 20px;
+.login-form button,
+.create-account-button {
+    background: #0d0c6e;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-form button:hover {
+    background: #1a18a8;
+}
+
+.create-account-button {
+    border: 2px solid #0d0c6e !important;
+}
+
+.create-account-button:hover {
+    background: white !important;
+    color: #0d0c6e !important;
+    transform: scale(1.02);
+}
+
+.login-modal-title {
+    color: #0d0c6e;
+}
+
+.login-error {
+    color: red;
+}
+
+.login-signup-link {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.login-signup-link a {
+    color: #0d0c6e;
+    font-weight: 600;
 }
 
 .form-group {
@@ -459,35 +297,357 @@ border: #0d0c6e 2px solid;
     font-weight: bold;
 }
 
-.form-group input, .form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.info-card {
+.form-section input,
+.form-section textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.account-login-link {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.account-login-link a {
+    color: #0d0c6e;
+    text-decoration: underline;
+}
+
+/* ========================================
+   COMMUTATEURS DE RÔLE ET BOUTONS
+   ======================================== */
+
+.role-switch,
+.register-role-switch {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.role-btn,
+.register-role-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-btn {
+    margin: 0 5px;
+    border: none;
+    background: #eee;
+}
+
+.role-btn.active,
+.register-role-btn.active,
+.register-role-btn:hover {
+    background: #0d0c6e;
+    color: white;
+}
+
+.register-role-btn {
+    border: 1px solid #0d0c6e;
+    background: white;
+    color: #0d0c6e;
+    padding: 10px 15px;
+}
+
+/* ========================================
+   ALERTES ET MESSAGES
+   ======================================== */
+
+.alert {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-error ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.success-message {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #28a745;
+    color: #155724;
+    background: #d4edda;
+    border-radius: 8px;
+}
+
+/* ========================================
+   CARTES ET SECTIONS DE CONTENU
+   ======================================== */
+
+.annonces {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.card {
     background: white;
     padding: 20px;
-    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    color: #0d0c6e;
+}
+
+.card button {
+    margin-top: 15px;
+    background: #0d0c6e;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.eleves-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.eleve-card {
+    border: 1px solid #ddd;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: #f9f9f9;
+    width: 300px;
 }
 
-.info-card h3 {
-    color: #153753;
-    margin-bottom: 15px;
+.actions {
+    margin-top: 10px;
 }
 
-.social-link {
-    display: inline-block;
-    margin-right: 15px;
-    color: #163853;
+.actions button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background: #0d0c6e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+/* ========================================
+   STATISTIQUES ET PAGINATION
+   ======================================== */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.stats-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
     text-decoration: none;
-    font-weight: bold;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s;
 }
 
-.social-link:hover {
-    text-decoration: underline;
+.stats-box:hover {
+    transform: scale(1.05);
+}
+
+.stats-box h3 {
+    color: #0d0c6e;
+    margin-bottom: 10px;
+}
+
+.stats-box p {
+    font-size: 48px;
+    font-weight: bold;
+    color: #0d0c6e;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    margin: 0 5px;
+    background: #eee;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination a.active {
+    background: #0d0c6e;
+    color: white;
+}
+
+/* ========================================
+   BOUTONS D'APPEL À L'ACTION
+   ======================================== */
+
+.postuler-btn {
+    display: inline-block;
+    margin-top: 15px;
+    background: #0d0c6e;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: #0d0c6e 2px solid;
+    transition: all 0.3s ease;
+}
+
+.postuler-btn:hover {
+    background: #ffffff;
+    color: #0d0c6e;
+}
+
+/* ========================================
+   PIED DE PAGE
+   ======================================== */
+
+footer {
+    color: white;
+    font-size: 14px;
+    background: rgb(13, 12, 110);
+    padding: 15px 0px;
+}
+
+/* ========================================
+   SECTIONS HÉROS ET RECHERCHE
+   ======================================== */
+
+.hero {
+    background: linear-gradient(135deg, #153753, #163853);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.search-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+.search-form input,
+.search-form select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    flex: 1;
+    min-width: 150px;
+}
+
+.search-form button {
+    background: #0d0c6e;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-form button:hover {
+    background: #1a18a8;
+}
+
+/* ========================================
+   PROFIL ENTREPRISE
+   ======================================== */
+
+.entreprise-header {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.entreprise-meta {
+    margin: 20px 0;
+    font-size: 18px;
+    color: #666;
+}
+
+.entreprise-description {
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+.offres-title {
+    color: #0d0c6e;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ========================================
+   BOUTON GÉNÉRIQUE
+   ======================================== */
+
+.button {
+    background: #0d0c6e;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background: #1a18a8;
 }

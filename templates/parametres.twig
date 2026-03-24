@@ -18,7 +18,24 @@
         </div>
     {% endif %}
 
-    
+    {% if user.role == 'entreprise' %}
+        <section>
+            <h2>Votre entreprise</h2>
+            {% if own %}
+                <div class="eleve-card">
+                    <h3>{{ own.nom }}</h3>
+                    <p>Secteur: {{ own.secteur }}</p>
+                    <p>Ville: {{ own.ville }}</p>
+                    <p>Email: {{ own.email }}</p>
+                    <div class="actions">
+                        <button onclick="editEntreprise({{ own.id }}, '{{ own.nom }}', '{{ own.secteur }}', '{{ own.ville }}', '{{ own.email }}')">Modifier</button>
+                    </div>
+                </div>
+            {% else %}
+                <p>Votre compte n'a pas été trouvé.</p>
+            {% endif %}
+        </section>
+    {% endif %}
     
 
     {% if user.role == 'pilote' %}
@@ -46,23 +63,33 @@
             {% endif %}
         </section>
     {% endif %}
-    <section>
-        <h2>Mon compte</h2>
-        {% if own %}
-            <div class="eleve-card">
-                <h3>{{ own.prenom }} {{ own.nom }}</h3>
-                <p>Email: {{ own.email }}</p>
-                <div class="actions">
-                    <button onclick="editEleve({{ own.id }}, '{{ own.nom }}', '{{ own.prenom }}', '{{ own.email }}')">Modifier</button>
+    {%if user.role !='entreprise' %}
+        <section>
+            <h2>Mon compte</h2>
+            {% if own %}
+                <div class="eleve-card">
+                    {% if user.role == 'entreprise' %}
+                        <h3>{{ own.nom }}</h3>
+                        <p>Secteur: {{ own.secteur }}</p>
+                        <p>Ville: {{ own.ville }}</p>
+                        <p>Email: {{ own.email }}</p>
+                        <div class="actions">
+                            <button onclick="editEntreprise({{ own.id }}, '{{ own.nom }}', '{{ own.secteur }}', '{{ own.ville }}', '{{ own.email }}')">Modifier</button>
+                        </div>
+                    {% else %}
+                        <h3>{{ own.prenom }} {{ own.nom }}</h3>
+                        <p>Email: {{ own.email }}</p>
+                        <div class="actions">
+                            <button onclick="editEleve({{ own.id }}, '{{ own.nom }}', '{{ own.prenom }}', '{{ own.email }}')">Modifier</button>
+                        </div>
+                    {% endif %}
                 </div>
-            </div>
-        {% else %}
-            <p>Votre compte n'a pas été trouvé.</p>
-        {% endif %}
-    </section>
+            {% else %}
+                <p>Votre compte n'a pas été trouvé.</p>
+            {% endif %}
+        </section>
+    {%endif%}
 
-    
-   
 
     <!-- Modal pour modification -->
     <div id="editModal" class="modal">
@@ -76,10 +103,21 @@
                     <label for="nom">Nom:</label>
                     <input type="text" id="nom" name="nom" required>
                 </div>
-                <div>
-                    <label for="prenom">Prénom:</label>
-                    <input type="text" id="prenom" name="prenom" required>
-                </div>
+                {% if user.role == 'entreprise' %}
+                    <div>
+                        <label for="secteur">Secteur:</label>
+                        <input type="text" id="secteur" name="secteur" required>
+                    </div>
+                    <div>
+                        <label for="ville">Ville:</label>
+                        <input type="text" id="ville" name="ville" required>
+                    </div>
+                {% else %}
+                    <div>
+                        <label for="prenom">Prénom:</label>
+                        <input type="text" id="prenom" name="prenom" required>
+                    </div>
+                {% endif %}
                 <div>
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
@@ -92,97 +130,7 @@
 
 {% include 'partials/footer.twig' %}
 
-<script>
-function editEleve(id, nom, prenom, email) {
-    document.getElementById('editId').value = id;
-    document.getElementById('nom').value = nom;
-    document.getElementById('prenom').value = prenom;
-    document.getElementById('email').value = email;
-    document.getElementById('editModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
-}
-
-// Fermer la modal si clic en dehors
-window.onclick = function(event) {
-    const modal = document.getElementById('editModal');
-    if (event.target == modal) {
-        modal.style.display = 'none';
-    }
-}
-</script>
-
-<style>
-.eleves-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.eleve-card {
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 8px;
-    background: #f9f9f9;
-    width: 300px;
-}
-
-.actions {
-    margin-top: 10px;
-}
-
-.actions button {
-    margin-right: 10px;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: black;
-}
-
-.alert {
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-</style>
+<script src="js/modals.js"></script>
 
 </body>
 </html>
