@@ -206,15 +206,17 @@ function e($value) {
 <body>
 <?php include 'header.php'; ?>
 
-<section class="container" style="padding: 40px 0;">
+<section class="container create-account-section">
     <h2>Créer un compte</h2>
 
     <?php if ($success): ?>
-        <div style="margin-bottom:20px;padding:15px;border:1px solid #0d0c6e;color:#0d0c6e;border-radius:8px;"> <?= e($success) ?> </div>
+        <div class="alert alert-success">
+            <?= e($success) ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($errors)): ?>
-        <div style="margin-bottom:20px;padding:15px;border:1px solid #dc3545;color:#dc3545;border-radius:8px;">
+        <div class="alert alert-error">
             <ul>
             <?php foreach ($errors as $err): ?>
                 <li><?= e($err) ?></li>
@@ -223,28 +225,27 @@ function e($value) {
         </div>
     <?php endif; ?>
 
-    <div class="register-role-switch" style="margin-bottom:20px;">
+    <div class="register-role-switch">
         <button type="button" class="register-role-btn active" data-role="eleve">Élève</button>
         <button type="button" class="register-role-btn" data-role="pilote">Pilote</button>
         <button type="button" class="register-role-btn" data-role="entreprise">Entreprise</button>
     </div>
 
     <form method="POST" action="create_account.php" class="login-form" id="create-account-form">
-        <input type="hidden" name="role" id="register-role-input" value="eleve"
-               data-validate="role">
+        <input type="hidden" name="role" id="register-role-input" value="eleve">
 
-        <div class="form-section" data-role="eleve">
+        <div class="form-section form-section-eleve" data-role="eleve">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="prenom" placeholder="Prénom" required>
             <input type="email" name="pilote_email" placeholder="Email du pilote" required>
         </div>
 
-        <div class="form-section" data-role="pilote" style="display:none;">
+        <div class="form-section form-section-pilote" data-role="pilote">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="prenom" placeholder="Prénom" required>
         </div>
 
-        <div class="form-section" data-role="entreprise" style="display:none;">
+        <div class="form-section form-section-entreprise" data-role="entreprise">
             <input type="text" name="company_name" placeholder="Nom de l'entreprise" required>
             <input type="text" name="secteur" placeholder="Secteur" required>
             <input type="text" name="ville" placeholder="Ville" required>
@@ -256,43 +257,10 @@ function e($value) {
         <button type="submit" class="create-account-button">Créer mon compte</button>
     </form>
 
-    <p><a href="#" id="open-login-inline" style="margin-top:15px;color:#0d0c6e;text-decoration:underline;">Déjà membre ? Se connecter</a></p>
+    <p class="account-login-link">Déjà membre ? <a href="#" id="open-login-inline">Se connecter</a></p>
 </section>
 
-<script>
-    const registerRoleSwitch = document.querySelector('.register-role-switch');
-    const roleButtons = registerRoleSwitch.querySelectorAll('.register-role-btn');
-    const roleInput = document.getElementById('register-role-input');
-    const sections = document.querySelectorAll('.form-section');
-
-    function updateFormFields(selectedRole) {
-        sections.forEach(sec => {
-            const isActive = sec.dataset.role === selectedRole;
-            sec.style.display = isActive ? 'block' : 'none';
-            const inputs = sec.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.disabled = !isActive;
-                input.required = isActive;
-            });
-        });
-    }
-
-    roleButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            roleButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            roleInput.value = btn.dataset.role;
-            updateFormFields(btn.dataset.role);
-        });
-    });
-
-    updateFormFields(roleInput.value);
-
-    document.getElementById('open-login-inline').addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.href = 'index.php';
-    });
-</script>
+<script src="js/account-creation.js"></script>
 
 </body>
 

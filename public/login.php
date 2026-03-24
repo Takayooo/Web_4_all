@@ -43,9 +43,15 @@ if ($foundUser) {
     $_SESSION['user'] = [
         'email' => $foundUser['email'],
         'nom' => $foundUser['nom'],
-        'prenom' => $foundUser['prenom'],
+        'prenom' => $foundUser['prenom'] ?? '',
         'role' => $foundUser['role']
     ];
+
+    // Ajouter les champs spécifiques selon le rôle
+    if ($foundUser['role'] === 'entreprise') {
+        $_SESSION['user']['secteur'] = $foundUser['secteur'] ?? '';
+        $_SESSION['user']['ville'] = $foundUser['ville'] ?? '';
+    }
 
     header("Location: index.php");
     exit;

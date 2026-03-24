@@ -27,7 +27,7 @@ $activeOffres = array_filter($offres, function($o) {
 </header>
 
 <?php if (isset($_SESSION['success'])): ?>
-    <div style="margin:20px auto; width:90%; max-width:1200px; padding:15px; border:1px solid #28a745; color:#155724; background:#d4edda; border-radius:8px;">
+    <div class="container success-message">
         <?= htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8') ?>
     </div>
     <?php unset($_SESSION['success']); ?>

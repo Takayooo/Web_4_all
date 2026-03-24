@@ -4,8 +4,8 @@
 
 <h1 class="logo">
 <a href="index.php?page=1">Web4All.</a>
-<link rel="style.css">
 <script src="js/loginmodal.js"></script>
+<script src="js/header.js"></script>
 </h1>
 
 <nav class="nav">
@@ -22,7 +22,11 @@
 
 {% if user %}
 <div class="user-menu">
+    {% if user.role=='entreprise' %}
+    <a href="#" id="user-menu-btn" class="btn btn-white">{{user.nom}} &#x25BE;</a>
+    {% else %}
     <a href="#" id="user-menu-btn" class="btn btn-white">{{user.prenom}} {{user.nom}} &#x25BE;</a>
+    {% endif %}
     <div id="user-menu-dropdown" class="user-menu-dropdown" aria-label="Menu utilisateur">
         <a href="parametres.php" class="user-menu-item">Paramètres</a>
         <a href="logout.php" class="user-menu-item">Se déconnecter</a>
@@ -38,6 +42,7 @@
 
 </header>
 
+<<<<<<< HEAD
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById('user-menu-btn');
@@ -65,15 +70,17 @@
 
 
 
+=======
+>>>>>>> 98c40c2d2e4a22093c6de67347a2201741b3d9b9
 <div id="login-modal" class="modal" data-error="{{ hasError ? 'true' : 'false' }}">
 
 <div class="modal-content">
 
 <span class="close">&times;</span>
 
-<h2 style="color:#0d0c6e;">Connexion</h2>
+<h2 class="login-modal-title">Connexion</h2>
 {% if error %}
-<p style="color:red;">{{ error }}</p>
+<p class="login-error">{{ error }}</p>
 {% endif %}
 
 <div class="role-switch">
@@ -94,7 +101,7 @@
 
 </form>
 
-<p style="margin-top: 12px; text-align: center;">Pas encore de compte ? <a href="create_account.php" style="color:#0d0c6e; font-weight:600;">Créer un compte</a></p>
+<p class="login-signup-link">Pas encore de compte ? <a href="create_account.php">Créer un compte</a></p>
 
 </div>
 
