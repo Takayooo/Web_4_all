@@ -23,12 +23,25 @@ $users = json_decode(file_get_contents($usersFile), true);
 
 // Filtrer les élèves selon le rôle
 if ($user['role'] === 'pilote') {
-    $eleves = array_filter($users, function($u) { return $u['role'] === 'eleve'; });
+    $allAccounts = array_filter($users, function($u) use ($user) { 
+        return $u['role'] === 'eleve' || ($u['role'] === 'pilote' && $u['email'] === $user['email']); 
+    });
+    $own = null;
+    $students = [];
+    foreach ($allAccounts as $acc) {
+        if ($acc['role'] === 'pilote' && $acc['email'] === $user['email']) {
+            $own = $acc;
+        } else {
+            $students[] = $acc;
+        }
+    }
     $canDelete = true;
 } else { // eleve
-    $eleves = array_filter($users, function($u) use ($user) { 
+    $own = array_filter($users, function($u) use ($user) { 
         return $u['role'] === 'eleve' && $u['email'] === $user['email']; 
     });
+    $own = $own ? $own[array_key_first($own)] : null;
+    $students = [];
     $canDelete = false;
 }
 
@@ -66,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $_SESSION['user']['prenom'] = $prenom;
                             $_SESSION['user']['email'] = $email;
                         }
-                        break;
+                        header("Location: parametres.php");
+                        exit;
                     }
                 }
             } else {
@@ -85,11 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Préparer les données pour Twig
-$elevesArray = array_values($eleves);
-
 echo $twig->render('parametres.twig', [
     'user' => $user,
-    'eleves' => $elevesArray,
+    'own' => $own,
+    'students' => $students,
     'message' => $message,
     'canDelete' => $canDelete
 ]);

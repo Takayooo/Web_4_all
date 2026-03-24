@@ -10,7 +10,7 @@
 {% include 'partials/header.twig' %}
 
 <main class="container">
-    <h1>{% if canDelete %}Paramètres - Gestion des comptes étudiants{% else %}Paramètres - Mon compte{% endif %}</h1>
+    <h1>{% if user.role == 'pilote' %}Paramètres - Gestion des comptes{% else %}Paramètres - Mon compte{% endif %}</h1>
 
     {% if message %}
         <div class="alert alert-success">
@@ -18,37 +18,57 @@
         </div>
     {% endif %}
 
-    <section>
-        <h2>{% if canDelete %}Comptes étudiants{% else %}Mon compte{% endif %}</h2>
-        {% if eleves %}
-            <div class="eleves-list">
-                {% for eleve in eleves %}
-                    <div class="eleve-card">
-                        <h3>{{ eleve.prenom }} {{ eleve.nom }}</h3>
-                        <p>Email: {{ eleve.email }}</p>
-                        <div class="actions">
-                            <button onclick="editEleve({{ eleve.id }}, '{{ eleve.nom }}', '{{ eleve.prenom }}', '{{ eleve.email }}')">Modifier</button>
-                            {% if canDelete %}
-                            <form method="post" style="display: inline;">
-                                <input type="hidden" name="action" value="supprimer">
-                                <input type="hidden" name="id" value="{{ eleve.id }}">
-                                <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce compte ?')">Supprimer</button>
-                            </form>
-                            {% endif %}
+    
+    
+
+    {% if user.role == 'pilote' %}
+        <section>
+            <h2>Comptes étudiants</h2>
+            {% if students %}
+                <div class="eleves-list">
+                    {% for eleve in students %}
+                        <div class="eleve-card">
+                            <h3>{{ eleve.prenom }} {{ eleve.nom }}</h3>
+                            <p>Email: {{ eleve.email }}</p>
+                            <div class="actions">
+                                <button onclick="editEleve({{ eleve.id }}, '{{ eleve.nom }}', '{{ eleve.prenom }}', '{{ eleve.email }}')">Modifier</button>
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="action" value="supprimer">
+                                    <input type="hidden" name="id" value="{{ eleve.id }}">
+                                    <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce compte ?')">Supprimer</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Aucun compte étudiant trouvé.</p>
+            {% endif %}
+        </section>
+    {% endif %}
+    <section>
+        <h2>Mon compte</h2>
+        {% if own %}
+            <div class="eleve-card">
+                <h3>{{ own.prenom }} {{ own.nom }}</h3>
+                <p>Email: {{ own.email }}</p>
+                <div class="actions">
+                    <button onclick="editEleve({{ own.id }}, '{{ own.nom }}', '{{ own.prenom }}', '{{ own.email }}')">Modifier</button>
+                </div>
             </div>
         {% else %}
-            <p>{% if canDelete %}Aucun compte étudiant trouvé.{% else %}Votre compte n'a pas été trouvé.{% endif %}</p>
+            <p>Votre compte n'a pas été trouvé.</p>
         {% endif %}
     </section>
+
+    
+   
 
     <!-- Modal pour modification -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>{% if canDelete %}Modifier le compte étudiant{% else %}Modifier mon compte{% endif %}</h2>
+            <h2>{% if user.role == 'pilote' %}Modifier le compte{% else %}Modifier mon compte{% endif %}</h2>
             <form method="post">
                 <input type="hidden" name="action" value="modifier">
                 <input type="hidden" name="id" id="editId">

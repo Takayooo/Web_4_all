@@ -4,7 +4,7 @@
         "email": "eleve@test.com",
         "password": "1234",
         "role": "eleve",
-        "nom": "Test",
+        "nom": "nathan",
         "prenom": "Eleve"
     },
     {
@@ -28,7 +28,7 @@
         "email": "eleve2@test.com",
         "password": "1234",
         "role": "eleve",
-        "nom": "Dupont",
+        "nom": "Dupond",
         "prenom": "Jean"
     }
 ]
