@@ -22,11 +22,7 @@
 
 {% if user %}
 <div class="user-menu">
-    {% if user.role=='entreprise' %}
-    <a href="#" id="user-menu-btn" class="btn btn-white">{{user.nom}} &#x25BE;</a>
-    {% else %}
     <a href="#" id="user-menu-btn" class="btn btn-white">{{user.prenom}} {{user.nom}} &#x25BE;</a>
-    {% endif %}
     <div id="user-menu-dropdown" class="user-menu-dropdown" aria-label="Menu utilisateur">
         <a href="parametres.php" class="user-menu-item">Paramètres</a>
         <a href="logout.php" class="user-menu-item">Se déconnecter</a>
