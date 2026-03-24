@@ -24,8 +24,8 @@
 <div class="user-menu">
     <a href="#" id="user-menu-btn" class="btn btn-white">{{user.prenom}} {{user.nom}} &#x25BE;</a>
     <div id="user-menu-dropdown" class="user-menu-dropdown" aria-label="Menu utilisateur">
-        <a href="parametres.php" class="user-menu-item">Paramètres</a>
-        <a href="logout.php" class="user-menu-item">Se déconnecter</a>
+        <a href="parametres.php" class="user-menu-item"><img src="../../assets/parametres.png" alt="Paramètres" class="menu-icon"> Paramètres</a>
+        <a href="logout.php" class="user-menu-item"><img src="../../assets/deconnexion.png" alt="Déconnexion" class="menu-icon"> Se déconnecter</a>
     </div>
 </div>
 {% else %}
@@ -62,6 +62,15 @@
         });
     });
 </script>
+
+<style>
+.menu-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+</style>
 
 
 
