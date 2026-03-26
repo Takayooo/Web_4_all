@@ -1,56 +1,84 @@
 <?php
 
+session_start();
+require 'data_helpers.php';
 require 'pagination.php';
 
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-
-if ($id === null || !isset($entreprises[$id])) {
-    die("Annonce introuvable.");
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'eleve') {
+    die("Accès refusé.");
 }
 
-$entreprise = $entreprises[$id];
+$userId = (int)$_SESSION['user']['id'];
+$offreId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+if (!$offreId) {
+    die("Offre introuvable.");
+}
+
+// retrouver l'offre
+$offreTrouvee = null;
+foreach ($offres as $offre) {
+    if ($offre['id'] === $offreId) {
+        $offreTrouvee = $offre;
+        break;
+    }
+}
+
+if (!$offreTrouvee || !isset($offreTrouvee['statut']) || $offreTrouvee['statut'] !== 'active') {
+    die("Offre introuvable.");
+}
 
 $maxSize = 2 * 1024 * 1024;
-$uploadDir = "uploads/" . $id . "/";
 
-if (!isset($_FILES['fichier'])) {
-    die("Aucun fichier n'a été envoyé.");
+if (!isset($_FILES['cv']) || !isset($_FILES['lm'])) {
+    die("CV et lettre de motivation sont requis.");
 }
 
-$fichier = $_FILES['fichier'];
-
-if ($fichier['error'] !== UPLOAD_ERR_OK) {
-    die("Erreur lors du téléversement.");
+function validateUpload($file, $maxSize) {
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return 'Erreur lors du téléversement.';
+    }
+    if ($file['size'] > $maxSize) {
+        return 'Le fichier dépasse 2 Mo.';
+    }
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    if ($finfo->file($file['tmp_name']) !== 'application/pdf') {
+        return 'Le fichier doit être un PDF.';
+    }
+    return null;
 }
 
-if ($fichier['size'] > $maxSize) {
-    die("Le fichier dépasse 2 Mo.");
+$errorCv = validateUpload($_FILES['cv'], $maxSize);
+$errorLm = validateUpload($_FILES['lm'], $maxSize);
+if ($errorCv || $errorLm) {
+    die($errorCv ?? $errorLm);
 }
 
-$finfo = new finfo(FILEINFO_MIME_TYPE);
-$mimeType = $finfo->file($fichier['tmp_name']);
-
-if ($mimeType !== 'application/pdf') {
-    die("Le fichier doit être un PDF.");
-}
-
-$nomOriginal = basename($fichier['name']);
-$nomSecurise = htmlspecialchars($nomOriginal, ENT_QUOTES, 'UTF-8');
-
-$nomFinal = uniqid() . "_" . $nomOriginal;
-
+$uploadDir = __DIR__ . '/uploads/' . $userId . '/' . $offreId . '/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
 
-$destination = $uploadDir . $nomFinal;
-
-if (move_uploaded_file($fichier['tmp_name'], $destination)) {
-
-echo "<h2>Candidature envoyée !</h2>";
-echo "Entreprise : " . htmlspecialchars($entreprise['nom']) . "<br>";
-echo "Fichier : " . $nomSecurise;
-
-} else {
-echo "Erreur lors de l'enregistrement.";
+function storeFile($file, $uploadDir, $prefix) {
+    $name = basename($file['name']);
+    $safeName = preg_replace('/[^a-zA-Z0-9_\-.]/', '_', $name);
+    $dest = $uploadDir . $prefix . '_' . uniqid() . '_' . $safeName;
+    if (move_uploaded_file($file['tmp_name'], $dest)) {
+        return $dest;
+    }
+    return null;
 }
+
+$cvPath = storeFile($_FILES['cv'], $uploadDir, 'cv');
+$lmPath = storeFile($_FILES['lm'], $uploadDir, 'lm');
+
+if (!$cvPath || !$lmPath) {
+    die('Erreur lors de l’enregistrement des fichiers.');
+}
+
+ajouter_candidature($userId, $offreId, $cvPath, $lmPath);
+ajouter_favori($userId, $offreId);
+
+$_SESSION['success'] = 'Candidature enregistrée avec succès.';
+header('Location: dashboard.php');
+exit;

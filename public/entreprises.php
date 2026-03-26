@@ -1,4 +1,7 @@
-<?php require 'pagination.php'; ?>
+<?php
+require 'data_helpers.php';
+require 'pagination.php';
+?>
 
 <?php
 $entreprisesArray = array_values($entreprises);

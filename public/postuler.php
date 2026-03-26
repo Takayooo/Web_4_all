@@ -1,4 +1,5 @@
 <?php
+require 'data_helpers.php';
 require 'pagination.php';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -51,16 +52,16 @@ $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 
 <br>
 
-<h3>Téléverser votre CV (PDF - 2 Mo max)</h3>
+<h3>Déposez votre candidature</h3>
 
 <form action="upload.php?id=<?= $offreTrouvee['id'] ?>" method="POST" enctype="multipart/form-data">
+    <label for="cv">CV (PDF - 2 Mo max)</label>
+    <input type="file" id="cv" name="cv" accept="application/pdf" required>
 
-<input type="file" name="fichier" accept="application/pdf" required>
+    <label for="lm">Lettre de motivation (PDF - 2 Mo max)</label>
+    <input type="file" id="lm" name="lm" accept="application/pdf" required>
 
-<br><br>
-
-<button type="submit">Envoyer mon CV</button>
-
+    <button type="submit">Envoyer ma candidature</button>
 </form>
 
 </section>

@@ -29,23 +29,17 @@ foreach ($usersFromFile as $u) {
    OFFRES (liées aux entreprises)
 ------------------------ */
 
-$offres = [
-    ['id' => 1, 'titre' => 'Stage - Développeur Web', 'entreprise_id' => 1, 'contrat' => 'stage', 'statut' => 'active'],
-    ['id' => 2, 'titre' => 'Stage - Designer UI/UX', 'entreprise_id' => 2, 'contrat' => 'stage', 'statut' => 'active'],
-    ['id' => 3, 'titre' => 'Alternance - Ingénieur Logiciel', 'entreprise_id' => 3, 'contrat' => 'alternance', 'statut' => 'active'],
-    ['id' => 4, 'titre' => 'Alternance - Médecin Généraliste', 'entreprise_id' => 4, 'contrat' => 'alternance', 'statut' => 'active'],
-];
+$offres = charger_offres();
 
-/* Génération jusqu’à 50 offres */
-$contracts = ['stage', 'alternance'];
-for ($i = 5; $i <= 50; $i++) {
-    $offres[] = [
-        'id' => $i,
-        'titre' => "Stage - Poste $i",
-        'entreprise_id' => (($i - 5) % 4) + 1,
-        'contrat' => $contracts[array_rand($contracts)],
-        'statut' => 'active' // par défaut inactives pour tester le filtre
+// Si aucune offre dans le fichier, initialiser avec des offres par défaut
+if (empty($offres)) {
+    $offres = [
+        ['id' => 1, 'titre' => 'Stage - Développeur Web', 'entreprise_id' => 1, 'contrat' => 'stage', 'statut' => 'active', 'description' => 'Développement d\'applications web modernes.'],
+        ['id' => 2, 'titre' => 'Stage - Designer UI/UX', 'entreprise_id' => 2, 'contrat' => 'stage', 'statut' => 'active', 'description' => 'Conception d\'interfaces utilisateur intuitives.'],
+        ['id' => 3, 'titre' => 'Alternance - Ingénieur Logiciel', 'entreprise_id' => 3, 'contrat' => 'alternance', 'statut' => 'active', 'description' => 'Développement de logiciels innovants.'],
+        ['id' => 4, 'titre' => 'Alternance - Médecin Généraliste', 'entreprise_id' => 4, 'contrat' => 'alternance', 'statut' => 'active', 'description' => 'Pratique médicale généraliste.'],
     ];
+    enregistrer_offres($offres);
 }
 
 /* ------------------------

@@ -1,11 +1,14 @@
-<?php require 'pagination.php'; ?>
+<?php
+require 'data_helpers.php';
+require 'pagination.php';
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Offres</title>
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 
 <body>

@@ -3,31 +3,48 @@
  * Gère la visibilité du menu déroulant utilisateur
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+function initialiserMenuUtilisateur() {
     const btn = document.getElementById('user-menu-btn');
     const dropdown = document.getElementById('user-menu-dropdown');
 
-    if (!btn || !dropdown) return;
+    if (!btn || !dropdown) {
+        console.debug('header.js : éléments de menu introuvables');
+        return false;
+    }
 
     btn.setAttribute('aria-expanded', 'false');
 
-    /**
-     * Bascule l'affichage du menu déroulant utilisateur
-     */
     btn.addEventListener('click', function(event) {
         event.preventDefault();
         event.stopPropagation();
-        const isOpen = dropdown.classList.toggle('open');
-        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        const ouvert = dropdown.classList.toggle('open');
+        btn.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+        console.debug('header.js : menu utilisateur togglé', ouvert);
     });
 
-    /**
-     * Ferme le menu déroulant en cliquant à l'extérieur
-     */
     document.addEventListener('click', function(event) {
         if (!dropdown.classList.contains('open')) return;
         if (btn.contains(event.target) || dropdown.contains(event.target)) return;
+
         dropdown.classList.remove('open');
         btn.setAttribute('aria-expanded', 'false');
+        console.debug('header.js : menu utilisateur fermé en dehors');
     });
-});
+
+    return true;
+}
+
+function demarrerMenuUtilisateur() {
+    if (!initialiserMenuUtilisateur()) {
+        // Re-essayer si le DOM n'est pas complètement construit
+        setTimeout(initialiserMenuUtilisateur, 50);
+    }
+}
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    demarrerMenuUtilisateur();
+} else {
+    document.addEventListener('DOMContentLoaded', demarrerMenuUtilisateur);
+}
+

@@ -1,4 +1,5 @@
 <?php
+require 'data_helpers.php';
 require 'pagination.php';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -26,6 +27,23 @@ if (!isset($offreTrouvee['statut']) || $offreTrouvee['statut'] !== 'active') {
 }
 
 $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
+
+session_start();
+
+$user = $_SESSION['user'] ?? null;
+$userId = $user['id'] ?? null;
+$hasApplied = false;
+$inWishlist = false;
+if ($user && $user['role'] === 'eleve' && $userId) {
+    $apps = get_candidatures_utilisateur($userId);
+    foreach ($apps as $app) {
+        if ($app['offre_id'] === $offreTrouvee['id']) {
+            $hasApplied = true;
+            break;
+        }
+    }
+    $inWishlist = in_array($offreTrouvee['id'], get_favoris_utilisateur($userId), true);
+}
 ?>
 
 <!DOCTYPE html>
@@ -53,9 +71,21 @@ $entreprise = $entreprises[$offreTrouvee['entreprise_id']];
 
 </div>
 
-<a class="postuler-btn" href="postuler.php?id=<?= $offreTrouvee['id'] ?>">
-Postuler à cette offre
-</a>
+<?php if ($user && $user['role'] === 'eleve'): ?>
+    <?php if ($hasApplied): ?>
+        <p>Vous avez déjà postulé à cette offre.</p>
+    <?php else: ?>
+        <a class="postuler-btn" href="postuler.php?id=<?= $offreTrouvee['id'] ?>">Postuler à cette offre</a>
+    <?php endif; ?>
+
+    <form method="POST" action="dashboard.php" style="margin-top: 15px;">
+        <input type="hidden" name="action" value="<?= $inWishlist ? 'supprimer_favori' : 'ajouter_favori' ?>">
+        <input type="hidden" name="offre_id" value="<?= $offreTrouvee['id'] ?>">
+        <button type="submit" class="postuler-btn" style="background: #0d0c6e;">
+            <?= $inWishlist ? 'Retirer de mes favoris' : 'Ajouter à mes favoris' ?>
+        </button>
+    </form>
+<?php endif; ?>
 
 </section>
 

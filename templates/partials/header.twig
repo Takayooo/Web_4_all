@@ -4,8 +4,6 @@
 
 <h1 class="logo">
 <a href="index.php?page=1">Web4All.</a>
-<script src="js/loginmodal.js"></script>
-<script src="js/header.js"></script>
 </h1>
 
 <nav class="nav">
@@ -38,36 +36,9 @@
 
 </header>
 
-<<<<<<< HEAD
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const btn = document.getElementById('user-menu-btn');
-        const dropdown = document.getElementById('user-menu-dropdown');
+<script src="/js/loginmodal.js"></script>
+<script src="/js/header.js"></script>
 
-        if (!btn || !dropdown) return;
-
-        btn.setAttribute('aria-expanded', 'false');
-
-        btn.addEventListener('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            const isOpen = dropdown.classList.toggle('open');
-            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!dropdown.classList.contains('open')) return;
-            if (btn.contains(event.target) || dropdown.contains(event.target)) return;
-            dropdown.classList.remove('open');
-            btn.setAttribute('aria-expanded', 'false');
-        });
-    });
-</script>
-
-
-
-=======
->>>>>>> 98c40c2d2e4a22093c6de67347a2201741b3d9b9
 <div id="login-modal" class="modal" data-error="{{ hasError ? 'true' : 'false' }}">
 
 <div class="modal-content">

@@ -1,6 +1,8 @@
-<?php require 'pagination.php'; ?>
-
 <?php
+session_start();
+require 'data_helpers.php';
+require 'pagination.php';
+
 $users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
 $eleves = array_filter($users, function($u) {
     return $u['role'] === 'eleve';
@@ -17,7 +19,7 @@ $activeOffres = array_filter($offres, function($o) {
 <head>
 <meta charset="UTF-8">
 <title >Web4All</title>
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=18">
 </head>
 
 <body>
