@@ -23,5 +23,6 @@ $user = $_SESSION['user'] ?? null;
 echo $twig->render('partials/header.twig', [
     'user' => $user,
     'error' => $error,
-    'hasError' => $hasError
+    'hasError' => $hasError,
+    'current_page' => $current_page ?? null
 ]);

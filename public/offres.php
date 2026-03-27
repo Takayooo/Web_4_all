@@ -1,6 +1,8 @@
 <?php
 require 'data_helpers.php';
 require 'pagination.php';
+
+$current_page = 'offres';
 ?>
 
 <!DOCTYPE html>

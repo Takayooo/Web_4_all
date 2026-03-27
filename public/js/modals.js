@@ -15,7 +15,7 @@ function editEleve(id, nom, prenom, email) {
     document.getElementById('nom').value = nom;
     document.getElementById('prenom').value = prenom;
     document.getElementById('email').value = email;
-    document.getElementById('editModal').style.display = 'block';
+    document.getElementById('editModal').style.display = 'flex';
 }
 
 /**
@@ -32,7 +32,7 @@ function editEntreprise(id, nom, secteur, ville, email) {
     document.getElementById('secteur').value = secteur;
     document.getElementById('ville').value = ville;
     document.getElementById('email').value = email;
-    document.getElementById('editModal').style.display = 'block';
+    document.getElementById('editModal').style.display = 'flex';
 }
 
 /**

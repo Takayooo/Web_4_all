@@ -7,11 +7,11 @@
 </h1>
 
 <nav class="nav">
-<a href="index.php?page=1" class="nav-link">Accueil</a>
-<a href="offres.php" class="nav-link">Offres</a>
-<a href="entreprises.php" class="nav-link">Entreprises</a>
+<a href="index.php?page=1" class="nav-link{% if current_page == 'accueil' %} active{% endif %}">Accueil</a>
+<a href="offres.php" class="nav-link{% if current_page == 'offres' %} active{% endif %}">Offres</a>
+<a href="entreprises.php" class="nav-link{% if current_page == 'entreprises' %} active{% endif %}">Entreprises</a>
 {% if user %}
-    <a href="dashboard.php" class="nav-link">Tableau de bord</a>
+    <a href="dashboard.php" class="nav-link{% if current_page == 'dashboard' %} active{% endif %}">Tableau de bord</a>
 {% endif %}
 </nav>
 

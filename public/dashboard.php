@@ -3,6 +3,8 @@ session_start();
 require 'data_helpers.php';
 require 'pagination.php';
 
+$current_page = 'dashboard';
+
 $user = $_SESSION['user'] ?? null;
 if (!$user) {
     header('Location: index.php');

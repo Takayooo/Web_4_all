@@ -132,7 +132,8 @@ echo $twig->render('parametres.twig', [
     'own' => $own,
     'students' => $students,
     'message' => $message,
-    'canDelete' => $canDelete
+    'canDelete' => $canDelete,
+    'current_page' => 'parametres'
 ]);
 
 

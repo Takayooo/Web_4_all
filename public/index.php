@@ -3,6 +3,8 @@ session_start();
 require 'data_helpers.php';
 require 'pagination.php';
 
+$current_page = 'accueil';
+
 $users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
 $eleves = array_filter($users, function($u) {
     return $u['role'] === 'eleve';
