@@ -81,7 +81,7 @@ if ($user && $user['role'] === 'eleve' && $userId) {
     <form method="POST" action="dashboard.php" style="margin-top: 15px;">
         <input type="hidden" name="action" value="<?= $inWishlist ? 'supprimer_favori' : 'ajouter_favori' ?>">
         <input type="hidden" name="offre_id" value="<?= $offreTrouvee['id'] ?>">
-        <button type="submit" class="postuler-btn" style="background: #0d0c6e;">
+        <button type="submit" class="postuler-btn">
             <?= $inWishlist ? 'Retirer de mes favoris' : 'Ajouter à mes favoris' ?>
         </button>
     </form>

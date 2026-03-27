@@ -194,8 +194,8 @@ unset($_SESSION['success']);
                                     <div style="color:#888;">Date : <?= htmlspecialchars($app['date']) ?></div>
                                 </div>
                                 <div style="flex:1;min-width:120px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
-                                    <a class="button btn-sm" href="<?= downloadLink($app['cv']) ?>">CV</a>
-                                    <a class="button btn-sm" href="<?= downloadLink($app['lm']) ?>">LM</a>
+                                    <a href="<?= downloadLink($app['cv']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> CV</a>
+                                    <a href="<?= downloadLink($app['lm']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> LM</a>
                                 </div>
                             </div>
                             <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:18px;">
