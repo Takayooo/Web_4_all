@@ -110,6 +110,8 @@ if ($role === 'pilote') {
 $companyOffers = [];
 if ($role === 'entreprise') {
     $companyId = $user['entreprise_id'] ?? $currentUserId;
+    // On récupère toutes les offres de l'entreprise, actives ou inactives
+    $offres = charger_offres();
     $companyOffers = array_filter($offres, function($o) use ($companyId) {
         return $o['entreprise_id'] === $companyId;
     });
@@ -187,17 +189,28 @@ unset($_SESSION['success']);
                         $bg = ($i % 2 === 0) ? '#f0f0f0' : '#fafbfc';
                     ?>
                         <div class="candidature-bloc" style="background:<?= $bg ?>;padding:22px 28px 18px 28px;border-radius:14px;margin-bottom:18px;box-shadow:0 2px 8px rgba(13,12,110,0.04);display:flex;flex-direction:column;min-width:0;position:relative;">
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;">
-                                <div style="flex:2;min-width:180px;">
-                                    <div style="font-weight:600;font-size:1.1em;">Offre : <?= htmlspecialchars($offre['titre'] ?? 'Offre supprimée') ?></div>
-                                    <div style="color:#555;">Entreprise : <?= htmlspecialchars($entreprise['nom'] ?? 'Inconnu') ?></div>
-                                    <div style="color:#888;">Date : <?= htmlspecialchars($app['date']) ?></div>
+                            <?php $isActive = ($offre['statut'] ?? 'active') === 'active'; ?>
+                            <?php if ($isActive || $role !== 'eleve'): ?>
+                            <a href="offre.php?id=<?= $app['offre_id'] ?>" style="color:inherit;text-decoration:none;display:block;">
+                            <?php else: ?>
+                            <span style="color:#aaa;text-decoration:line-through;display:block;cursor:not-allowed;">
+                            <?php endif; ?>
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;">
+                                    <div style="flex:2;min-width:180px;">
+                                        <div style="font-weight:600;font-size:1.1em;">Offre : <?= htmlspecialchars($offre['titre'] ?? 'Offre supprimée') ?></div>
+                                        <div style="color:#555;">Entreprise : <?= htmlspecialchars($entreprise['nom'] ?? 'Inconnu') ?></div>
+                                        <div style="color:#888;">Date : <?= htmlspecialchars($app['date']) ?></div>
+                                    </div>
+                                    <div style="flex:1;min-width:120px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
+                                        <a class="button btn-sm" href="<?= downloadLink($app['cv']) ?>" onclick="event.stopPropagation();">CV</a>
+                                        <a class="button btn-sm" href="<?= downloadLink($app['lm']) ?>" onclick="event.stopPropagation();">LM</a>
+                                    </div>
                                 </div>
-                                <div style="flex:1;min-width:120px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
-                                    <a class="button btn-sm" href="<?= downloadLink($app['cv']) ?>">CV</a>
-                                    <a class="button btn-sm" href="<?= downloadLink($app['lm']) ?>">LM</a>
-                                </div>
-                            </div>
+                            <?php if ($isActive || $role !== 'eleve'): ?>
+                            </a>
+                            <?php else: ?>
+                            </span>
+                            <?php endif; ?>
                             <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:18px;">
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="action" value="supprimer_candidature">
@@ -226,14 +239,14 @@ unset($_SESSION['success']);
                         $bg = ($i % 2 === 0) ? '#f7f8fa' : '#e9e9ee';
                     ?>
                         <div class="wishlist-bloc" style="background:<?= $bg ?>;border-radius:10px;margin-bottom:10px;padding:13px 16px 13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                            <div style="flex:1;min-width:0;">
+                            <a href="offre.php?id=<?= $offreId ?>" style="flex:1;min-width:0;text-decoration:none;color:inherit;">
                                 <div style="font-weight:600;font-size:1.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                                     <?= htmlspecialchars($offre['titre'] ?? 'Offre supprimée') ?>
                                 </div>
                                 <div style="color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                                     <?= htmlspecialchars($entreprise['nom'] ?? 'Inconnu') ?>
                                 </div>
-                            </div>
+                            </a>
                             <form method="POST" style="display:inline;margin-left:10px;">
                                 <input type="hidden" name="action" value="supprimer_favori">
                                 <input type="hidden" name="offre_id" value="<?= $offreId ?>">
@@ -257,7 +270,14 @@ unset($_SESSION['success']);
                     <div class="offers-list">
                     <?php foreach ($companyOffers as $offre): ?>
                         <div class="offer-item">
-                            <span class="offer-title"><?= htmlspecialchars($offre['titre']) ?> <span class="status-badge status-<?= $offre['statut'] ?? 'active' ?>">(<?= ($offre['statut'] ?? 'active') === 'active' ? 'Active' : 'Inactive' ?>)</span></span>
+                            <span class="offer-title">
+                                <?= htmlspecialchars($offre['titre']) ?>
+                                <?php if (($offre['statut'] ?? 'active') === 'active'): ?>
+                                    <span class="status-badge status-active">Active</span>
+                                <?php else: ?>
+                                    <span class="status-badge status-inactive">Inactive</span>
+                                <?php endif; ?>
+                            </span>
                             <div class="offer-actions">
                                 <a href="dashboard.php?offre_id=<?= $offre['id'] ?>" class="button">Voir candidats</a>
                                 <form method="POST" style="display:inline;">
@@ -285,22 +305,22 @@ unset($_SESSION['success']);
             <?php if (empty($selectedAppList)): ?>
                 <p>Aucun candidat pour cette offre.</p>
             <?php else: ?>
-                <table style="width:100%;border-collapse:collapse;">
-                    <thead>
-                        <tr><th>Élève</th><th>CV</th><th>LM</th></tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($selectedAppList as $app):
-                        $eleve = $allUsersById[$app['user_id']] ?? null;
-                    ?>
-                        <tr>
-                            <td><?= htmlspecialchars(($eleve['prenom'] ?? '') . ' ' . ($eleve['nom'] ?? '')) ?></td>
-                            <td><a class="button" href="<?= downloadLink($app['cv']) ?>">Télécharger CV</a></td>
-                            <td><a class="button" href="<?= downloadLink($app['lm']) ?>">Télécharger LM</a></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                <div class="candidats-list">
+                <?php foreach ($selectedAppList as $i => $app):
+                    $eleve = $allUsersById[$app['user_id']] ?? null;
+                    $bg = ($i % 2 === 0) ? 'ligne-candidat-bg' : '';
+                ?>
+                    <div class="ligne-candidat <?= $bg ?>">
+                        <div class="candidat-eleve"> <?= htmlspecialchars(($eleve['prenom'] ?? '') . ' ' . ($eleve['nom'] ?? '')) ?> </div>
+                        <div class="candidat-cv">
+                            <a class="button btn-sm" href="<?= downloadLink($app['cv']) ?>">CV</a>
+                        </div>
+                        <div class="candidat-lm">
+                            <a class="button btn-sm" href="<?= downloadLink($app['lm']) ?>">LM</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                </div>
             <?php endif; ?>
         <?php endif; ?>
     <?php endif; ?>
