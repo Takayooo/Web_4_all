@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Paramètres - Web4All</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -13,7 +13,7 @@
     <h1>{% if user.role == 'pilote' %}Paramètres - Gestion des comptes{% else %}Paramètres - Mon compte{% endif %}</h1>
 
     {% if message %}
-        <div class="alert alert-success">
+        <div class="alert alert-{{ messageType|default('success') }}">
             {{ message }}
         </div>
     {% endif %}
@@ -29,6 +29,11 @@
                     <p>Email: {{ own.email }}</p>
                     <div class="actions">
                         <button onclick="editEntreprise({{ own.id }}, '{{ own.nom }}', '{{ own.secteur }}', '{{ own.ville }}', '{{ own.email }}')">Modifier</button>
+                        <form method="post" style="display: inline;">
+                            <input type="hidden" name="action" value="supprimer_entreprise">
+                            <input type="hidden" name="id" value="{{ own.id }}">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ? Cette action est irréversible.')">Supprimer mon compte</button>
+                        </form>
                     </div>
                 </div>
             {% else %}
@@ -62,6 +67,54 @@
                 <p>Aucun compte étudiant trouvé.</p>
             {% endif %}
         </section>
+
+        <section>
+            <h2>Gestion des entreprises</h2>
+            {% if enterprises %}
+                <div class="eleves-list">
+                    {% for entreprise in enterprises %}
+                        <div class="eleve-card">
+                            <h3>{{ entreprise.nom }}</h3>
+                            <p>Secteur: {{ entreprise.secteur }}</p>
+                            <p>Ville: {{ entreprise.ville }}</p>
+                            <p>Email: {{ entreprise.email }}</p>
+                            <div class="actions">
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="action" value="supprimer_entreprise">
+                                    <input type="hidden" name="id" value="{{ entreprise.id }}">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?')">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Aucune entreprise trouvée.</p>
+            {% endif %}
+        </section>
+
+        <section> 
+            <h2>Gestion des pilotes</h2>
+            {% if pilots %}
+                <div class="eleves-list">
+                    {% for pilote in pilots %}
+                        <div class="eleve-card">
+                            <h3>{{ pilote.prenom }} {{ pilote.nom }}</h3>
+                            <p>Email: {{ pilote.email }}</p>
+                            <div class="actions">
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="action" value="supprimer_pilote">
+                                    <input type="hidden" name="id" value="{{ pilote.id }}">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce pilote ? Les étudiants qui lui sont rattachés seront aussi supprimés.')">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Aucun autre pilote trouvé.</p>
+            {% endif %}
+        </section>
     {% endif %}
     {%if user.role !='entreprise' %}
         <section>
@@ -81,6 +134,13 @@
                         <p>Email: {{ own.email }}</p>
                         <div class="actions">
                             <button onclick="editEleve({{ own.id }}, '{{ own.nom }}', '{{ own.prenom }}', '{{ own.email }}')">Modifier</button>
+                            {% if user.role == 'pilote' %}
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="action" value="supprimer_pilote">
+                                    <input type="hidden" name="id" value="{{ own.id }}">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte pilote ? Les étudiants qui vous sont rattachés seront aussi supprimés.')">Supprimer mon compte</button>
+                                </form>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>

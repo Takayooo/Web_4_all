@@ -429,6 +429,20 @@ header {
     color: #0d0c6e;
 }
 
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
 /* ========================================
    FORMULAIRES ET CHAMPS DE SAISIE
    ======================================== */
@@ -583,6 +597,12 @@ header {
 }
 
 .alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-danger {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
