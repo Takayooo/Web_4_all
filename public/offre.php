@@ -58,6 +58,7 @@ if ($user && $user['role'] === 'eleve' && $userId) {
 
 <?php include 'header.php'; ?>
 
+<<<<<<< HEAD
 <section class="container">
 
 <h1><?= htmlspecialchars($offreTrouvee['titre']) ?></h1>
@@ -86,7 +87,49 @@ if ($user && $user['role'] === 'eleve' && $userId) {
         </button>
     </form>
 <?php endif; ?>
+=======
+>>>>>>> 90be4d39cc22ed49fda8cf23f7c13502cd1fe0bf
 
+<section class="offre-layout container">
+    <h1 class="offre-titre"><?= htmlspecialchars($offreTrouvee['titre']) ?></h1>
+    <div class="offre-content-grid">
+        <div class="offre-description-bloc">
+            <?php if (!empty($offreTrouvee['description'])): ?>
+                <div class="offre-description">
+                    <?= nl2br(htmlspecialchars($offreTrouvee['description'])) ?>
+                </div>
+            <?php else: ?>
+                <div class="offre-description vide">Aucune description disponible pour cette offre.</div>
+            <?php endif; ?>
+        </div>
+        <aside class="offre-aside">
+            <div class="offre-card-entreprise">
+                <div class="offre-card-nom">Entreprise : <strong><?= htmlspecialchars($entreprise['nom']) ?></strong></div>
+                <div class="offre-card-note">Note : <span class="star">⭐</span> <?= $entreprise['note'] ?></div>
+                <div class="offre-card-secteur">Secteur : <?= $entreprise['secteur'] ?></div>
+                <div class="offre-card-ville">Ville : <?= $entreprise['ville'] ?></div>
+                <?php if (!empty($entreprise['description'])): ?>
+                    <div class="offre-card-description">Description : <br><?= nl2br(htmlspecialchars($entreprise['description'])) ?></div>
+                <?php endif; ?>
+                <div class="offre-card-actions">
+                    <?php if ($user && $user['role'] === 'eleve'): ?>
+                        <?php if ($hasApplied): ?>
+                            <p class="offre-applied">Vous avez déjà postulé à cette offre.</p>
+                        <?php else: ?>
+                            <a class="postuler-btn" href="postuler.php?id=<?= $offreTrouvee['id'] ?>">Postuler à cette offre</a>
+                        <?php endif; ?>
+                        <form method="POST" action="dashboard.php" class="offre-favori-form">
+                            <input type="hidden" name="action" value="<?= $inWishlist ? 'supprimer_favori' : 'ajouter_favori' ?>">
+                            <input type="hidden" name="offre_id" value="<?= $offreTrouvee['id'] ?>">
+                            <button type="submit" class="favori-btn">
+                                <?= $inWishlist ? 'Retirer de mes favoris' : 'Ajouter à mes favoris ' ?>
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </aside>
+    </div>
 </section>
 
 <?php include 'footer.php'; ?>

@@ -1,3 +1,172 @@
+/* ====== MESSAGES FORMULAIRE POSTULER ====== */
+.form-message {
+    display: block;
+    padding: 16px 18px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 1.08em;
+    font-weight: 500;
+    text-align: center;
+}
+.form-message.error {
+    background: #ffeaea;
+    color: #b12a2a;
+    border: 1.5px solid #ffb3b3;
+}
+.form-message.success {
+    background: #eaffea;
+    color: #1a7e1a;
+    border: 1.5px solid #a6e6a6;
+}
+/* ====== PAGE POSTULER - FORMULAIRE ====== */
+.postuler-form {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(13,12,110,0.07);
+    padding: 32px 28px 28px 28px;
+    max-width: 480px;
+    margin: 32px auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+.postuler-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.postuler-form label {
+    font-weight: 600;
+    color: #0d0c6e;
+    margin-bottom: 2px;
+}
+.postuler-form input[type="file"] {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f7f8fa;
+    font-size: 1em;
+    margin-bottom: 0;
+}
+.postuler-btn-large {
+    width: 100%;
+    font-size: 1.13em;
+    padding: 14px 0;
+    margin-top: 18px;
+}
+.favori-btn {
+    display: inline-block;
+    margin-top: 10px;
+    background: #ff1493;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: #ff1493 2px solid;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+}
+.favori-btn:hover {
+    background: #fff;
+    color: #ff1493;
+}
+/* ====== PAGE OFFRE - LAYOUT ====== */
+.offre-layout {
+    margin-top: 36px;
+}
+.offre-titre {
+    font-size: 2.1em;
+    font-weight: bold;
+    margin-bottom: 32px;
+    margin-top: 0;
+}
+.offre-content-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 38px;
+    align-items: flex-start;
+}
+.offre-description-bloc {
+    min-width: 0;
+}
+.offre-description {
+    margin: 0 0 24px 0;
+    font-size: 1.13em;
+    color: #222;
+    background: #f7f8fa;
+    border-radius: 8px;
+    padding: 24px 28px;
+    line-height: 1.7;
+    box-shadow: 0 2px 8px rgba(13,12,110,0.04);
+}
+.offre-description.vide {
+    color: #888;
+    font-style: italic;
+}
+.offre-aside {
+    position: sticky;
+    top: 32px;
+    align-self: flex-start;
+    z-index: 2;
+}
+.offre-card-entreprise {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(13,12,110,0.07);
+    padding: 22px 20px 18px 20px;
+    margin-bottom: 22px;
+    font-size: 1.01em;
+}
+.offre-card-nom {
+    font-weight: 600;
+    font-size: 1.08em;
+    margin-bottom: 8px;
+}
+.offre-card-note {
+    margin-bottom: 7px;
+}
+.offre-card-secteur, .offre-card-ville {
+    margin-bottom: 7px;
+}
+.offre-card-description {
+    margin-top: 10px;
+    color: #444;
+    font-size: 0.98em;
+    background: #f7f8fa;
+    border-radius: 7px;
+    padding: 10px 12px;
+}
+.offre-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.offre-card-actions .postuler-btn,
+.offre-card-actions .favori-btn {
+    width: 100%;
+    min-width: 160px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.offre-applied {
+    color: #0d0c6e;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.offre-favori-form {
+    margin: 0;
+}
+/* Description de l'offre sur la page offre.php */
+.offre-description {
+    margin: 18px 0 24px 0;
+    font-size: 1.1em;
+    color: #222;
+    background: #f7f8fa;
+    border-radius: 8px;
+    padding: 16px;
+}
 .btn-sm {
     padding: 7px 18px !important;
     font-size: 0.98em !important;
@@ -736,4 +905,35 @@ footer {
 
 .button:hover {
     background: #1a18a8;
+}
+
+/* ====== CANDIDATS ENTREPRISE ====== */
+.candidats-list {
+    width: 100%;
+    margin-top: 18px;
+}
+.ligne-candidat {
+    display: flex;
+    align-items: center;
+    padding: 16px 22px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #fafbfc;
+    border: 1px solid #e3e6f0;
+    gap: 18px;
+}
+.ligne-candidat-bg {
+    background: #f0f0f0;
+}
+.candidat-eleve {
+    flex: 2;
+    font-weight: 600;
+    font-size: 1.08em;
+    color: #0d0c6e;
+    min-width: 120px;
+}
+.candidat-cv, .candidat-lm {
+    flex: 1;
+    display: flex;
+    justify-content: center;
 }
