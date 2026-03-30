@@ -35,6 +35,27 @@ if (!$user || !in_array($user['role'], ['pilote', 'eleve', 'entreprise'])) {
 $usersFile = __DIR__ . '/users.json';
 $users = json_decode(file_get_contents($usersFile), true);
 
+$searchStudents = trim($_GET['search_students'] ?? '');
+$searchEnterprises = trim($_GET['search_enterprises'] ?? '');
+$searchPilots = trim($_GET['search_pilots'] ?? '');
+
+function containsSearch(array $account, string $query, array $fields): bool
+{
+    if ($query === '') {
+        return true;
+    }
+
+    $needle = mb_strtolower($query, 'UTF-8');
+    foreach ($fields as $field) {
+        $value = (string)($account[$field] ?? '');
+        if ($value !== '' && mb_strpos(mb_strtolower($value, 'UTF-8'), $needle) !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // Filtrer les élèves selon le rôle
 if ($user['role'] === 'pilote') {
     $allAccounts = array_filter($users, function($u) use ($user) { 
@@ -79,6 +100,18 @@ if ($user['role'] === 'pilote') {
         return $u['role'] === 'pilote' && $u['id'] !== $user['id'];
     });
     $pilots = array_values($pilots);
+
+    $students = array_values(array_filter($students, function($u) use ($searchStudents) {
+        return containsSearch($u, $searchStudents, ['nom', 'prenom', 'email']);
+    }));
+
+    $enterprises = array_values(array_filter($enterprises, function($u) use ($searchEnterprises) {
+        return containsSearch($u, $searchEnterprises, ['nom', 'secteur', 'ville', 'email']);
+    }));
+
+    $pilots = array_values(array_filter($pilots, function($u) use ($searchPilots) {
+        return containsSearch($u, $searchPilots, ['nom', 'prenom', 'email']);
+    }));
 }
 
 // Gestion des actions
@@ -264,6 +297,9 @@ echo $twig->render('parametres.twig', [
     'students' => $students,
     'enterprises' => $enterprises,
     'pilots' => $pilots,
+    'searchStudents' => $searchStudents,
+    'searchEnterprises' => $searchEnterprises,
+    'searchPilots' => $searchPilots,
     'message' => $message,
     'messageType' => $messageType,
     'canDelete' => $canDelete,

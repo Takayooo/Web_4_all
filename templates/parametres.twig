@@ -46,6 +46,13 @@
     {% if user.role == 'pilote' %}
         <section>
             <h2>Comptes étudiants</h2>
+            <form method="get" class="search-form">
+                <input type="text" name="search_students" placeholder="Nom, prénom ou email" value="{{ searchStudents|default('') }}">
+                <input type="hidden" name="search_enterprises" value="{{ searchEnterprises|default('') }}">
+                <input type="hidden" name="search_pilots" value="{{ searchPilots|default('') }}">
+                <button type="submit">Rechercher</button>
+            </form>
+
             {% if students %}
                 <div class="eleves-list">
                     {% for eleve in students %}
@@ -70,6 +77,12 @@
 
         <section>
             <h2>Gestion des entreprises</h2>
+            <form method="get" class="search-form">
+                <input type="text" name="search_enterprises" placeholder="Nom, secteur, ville ou email" value="{{ searchEnterprises|default('') }}">
+                <input type="hidden" name="search_students" value="{{ searchStudents|default('') }}">
+                <input type="hidden" name="search_pilots" value="{{ searchPilots|default('') }}">
+                <button type="submit">Rechercher</button>
+            </form>
             {% if enterprises %}
                 <div class="eleves-list">
                     {% for entreprise in enterprises %}
@@ -95,6 +108,12 @@
 
         <section> 
             <h2>Gestion des pilotes</h2>
+            <form method="get" class="search-form">
+                <input type="text" name="search_pilots" placeholder="Nom, prénom ou email" value="{{ searchPilots|default('') }}">
+                <input type="hidden" name="search_students" value="{{ searchStudents|default('') }}">
+                <input type="hidden" name="search_enterprises" value="{{ searchEnterprises|default('') }}">
+                <button type="submit">Rechercher</button>
+            </form>
             {% if pilots %}
                 <div class="eleves-list">
                     {% for pilote in pilots %}
