@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://www.web4all.fr/sitemap.xml

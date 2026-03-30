@@ -33,11 +33,15 @@ $entreprisesPage = array_slice($entreprisesArray, $debut, $entreprisesParPage);
 <meta charset="UTF-8">
 <title>Entreprises</title>
 <link rel="stylesheet" href="style.css?v=13">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Découvrez les entreprises partenaires de Web4All et consultez leurs offres de stage et d'alternance.">
 </head>
 
 <body>
 
 <?php include 'header.php'; ?>
+
+<main>
 
 <section class="container">
 
@@ -83,6 +87,8 @@ Voir le profil
 </div>
 
 </section>
+
+</main>
 
 <?php include 'footer.php'; ?>
 

@@ -51,6 +51,8 @@ if ($user && $user['role'] === 'eleve' && $userId) {
 <head>
 <meta charset="UTF-8">
 <title><?= htmlspecialchars($offreTrouvee['titre']) ?></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Offre <?= htmlspecialchars($offreTrouvee['titre'], ENT_QUOTES, 'UTF-8') ?> chez <?= htmlspecialchars($entreprise['nom'], ENT_QUOTES, 'UTF-8') ?> sur Web4All.">
 <link rel="stylesheet" href="/style.css?v=6">
 </head>
 
@@ -58,37 +60,8 @@ if ($user && $user['role'] === 'eleve' && $userId) {
 
 <?php include 'header.php'; ?>
 
-<<<<<<< HEAD
-<section class="container">
+<main>
 
-<h1><?= htmlspecialchars($offreTrouvee['titre']) ?></h1>
-
-<div class="entreprise-header">
-
-<p><strong>Entreprise :</strong> <?= htmlspecialchars($entreprise['nom']) ?></p>
-<p><strong>Note :</strong> ⭐ <?= $entreprise['note'] ?></p>
-<p><strong>Secteur :</strong> <?= $entreprise['secteur'] ?></p>
-<p><strong>Ville :</strong> <?= $entreprise['ville'] ?></p>
-
-</div>
-
-<?php if ($user && $user['role'] === 'eleve'): ?>
-    <?php if ($hasApplied): ?>
-        <p>Vous avez déjà postulé à cette offre.</p>
-    <?php else: ?>
-        <a class="postuler-btn" href="postuler.php?id=<?= $offreTrouvee['id'] ?>">Postuler à cette offre</a>
-    <?php endif; ?>
-
-    <form method="POST" action="dashboard.php" style="margin-top: 15px;">
-        <input type="hidden" name="action" value="<?= $inWishlist ? 'supprimer_favori' : 'ajouter_favori' ?>">
-        <input type="hidden" name="offre_id" value="<?= $offreTrouvee['id'] ?>">
-        <button type="submit" class="postuler-btn">
-            <?= $inWishlist ? 'Retirer de mes favoris' : 'Ajouter à mes favoris' ?>
-        </button>
-    </form>
-<?php endif; ?>
-=======
->>>>>>> 90be4d39cc22ed49fda8cf23f7c13502cd1fe0bf
 
 <section class="offre-layout container">
     <h1 class="offre-titre"><?= htmlspecialchars($offreTrouvee['titre']) ?></h1>
@@ -131,6 +104,8 @@ if ($user && $user['role'] === 'eleve' && $userId) {
         </aside>
     </div>
 </section>
+
+</main>
 
 <?php include 'footer.php'; ?>
 <script src="js/loginmodal.js"></script>

@@ -1,7 +1,3 @@
-/**
- * Gestion du formulaire de création de compte
- * Gère le changement de rôle et la visibilité des formulaires pour la création de compte
- */
 
 document.addEventListener('DOMContentLoaded', function() {
     const registerRoleSwitch = document.querySelector('.register-role-switch');

@@ -20,7 +20,7 @@
         "titre": "Alternance - Ingénieur Logiciel",
         "entreprise_id": 3,
         "contrat": "alternance",
-        "statut": "inactive",
+        "statut": "active",
         "description": "Développement de logiciels innovants."
     },
     {
@@ -37,7 +37,7 @@
         "titre": "Testtttt",
         "description": "Bonsoirrrrr",
         "contrat": "stage",
-        "statut": "inactive",
+        "statut": "active",
         "date_creation": "2026-03-26 09:19:08"
     },
     {

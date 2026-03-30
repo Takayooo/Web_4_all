@@ -11,16 +11,19 @@ $current_page = 'offres';
 <meta charset="UTF-8">
 <title>Offres</title>
 <link rel="stylesheet" href="style.css?v=16">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Parcourez toutes les offres de stage et d'alternance disponibles sur Web4All. Recherchez par mot-clé, contrat et localisation.">
 </head>
 
 <body>
 
 <?php include 'header.php'; ?>
+<main>
 
 <section class="hero">
 <div class="container hero-content">
 <h2>Trouvez l'offre de VOS rêves avec VOS critères !</h2>
-<form class="search-form" action="offres.php" method="get">
+<form class="search-form" action="offres.php" method="get" aria-label="Rechercher une offre">
 <input type="text" name="search" placeholder="Mot-clé (titre, entreprise, secteur, ville)" value="<?= htmlspecialchars($search ?? '') ?>">
 <select name="contrat">
     <option value="">Tous contrats</option>
@@ -86,6 +89,8 @@ $current_page = 'offres';
 </div>
 
 </section>
+
+</main>
 
 <?php include 'footer.php'; ?>
 

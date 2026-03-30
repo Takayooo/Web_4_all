@@ -967,3 +967,238 @@ footer {
     display: flex;
     justify-content: center;
 }
+
+.is-hidden {
+    display: none;
+}
+
+.dashboard-main-card {
+    min-height: 420px;
+}
+
+.dashboard-grid-asym {
+    grid-template-columns: 2.2fr 0.8fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.candidature-bloc {
+    border-radius: 14px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(13, 12, 110, 0.04);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 22px 28px 18px;
+}
+
+.candidature-bloc:nth-child(odd) {
+    background: #f0f0f0;
+}
+
+.candidature-bloc:nth-child(even) {
+    background: #fafbfc;
+}
+
+.candidature-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.candidature-infos {
+    flex: 2;
+    min-width: 180px;
+}
+
+.candidature-infos .titre {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.candidature-infos .entreprise {
+    color: #555;
+}
+
+.candidature-infos .date {
+    color: #888;
+}
+
+.candidature-actions-dl {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.candidature-inactive {
+    color: #aaa;
+    text-decoration: line-through;
+    display: block;
+    cursor: not-allowed;
+}
+
+.candidature-delete {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 18px;
+}
+
+.wishlist-card {
+    padding: 12px 10px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.wishlist-bloc {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.wishlist-bloc:nth-child(odd) {
+    background: #f7f8fa;
+}
+
+.wishlist-bloc:nth-child(even) {
+    background: #e9e9ee;
+}
+
+.wishlist-bloc a {
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+}
+
+.wishlist-bloc .titre {
+    font-weight: 600;
+    font-size: 1.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wishlist-bloc .entreprise {
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.form-inline {
+    display: inline;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid-asym {
+        grid-template-columns: 1fr;
+    }
+}
+
+.legal-container {
+    max-width: 860px;
+    margin-top: 36px;
+    margin-bottom: 48px;
+}
+
+.legal-title {
+    color: #0d0c6e;
+    margin-bottom: 32px;
+}
+
+.legal-back-link {
+    margin-top: 28px;
+}
+
+.carousel-section {
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+.annonces-carousel-section {
+    margin-top: 20px;
+}
+
+.carousel-wrapper {
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.annonces-carousel-wrapper {
+    padding: 10px 8px 14px;
+    border-radius: 16px;
+    background: #eef2ff;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    transform: translateX(0);
+}
+
+.carousel-card {
+    flex: 0 0 calc((100% - 48px) / 4);
+    min-height: 180px;
+    margin: 0;
+}
+
+.annonce-carousel-card {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.annonce-carousel-card .postuler-btn {
+    margin-top: auto;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.carousel-btn {
+    border: none;
+    background: #0d0c6e;
+    color: #fff;
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.carousel-pause {
+    border: 1px solid #0d0c6e;
+    background: #fff;
+    color: #0d0c6e;
+    border-radius: 8px;
+    height: 36px;
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .carousel-card {
+        flex: 0 0 calc((100% - 16px) / 2);
+    }
+}
+
+@media (max-width: 580px) {
+    .carousel-card {
+        flex: 0 0 100%;
+    }
+}

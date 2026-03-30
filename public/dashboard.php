@@ -144,10 +144,14 @@ unset($_SESSION['success']);
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tableau de bord Web4All : candidatures, wishlist et gestion des offres selon votre rôle.">
 <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 <?php include 'header.php'; ?>
+
+<main>
 
 <section class="container">
     <h1>Tableau de bord</h1>
@@ -178,8 +182,8 @@ unset($_SESSION['success']);
     <?php endif; ?>
 
     <?php if ($role === 'eleve' || ($role === 'pilote' && $selectedEleveId)): ?>
-        <div class="dashboard-grid" style="display:grid;grid-template-columns:2.2fr 0.8fr;gap:28px;align-items:start;">
-            <div class="card" style="min-height:420px;">
+        <div class="dashboard-grid dashboard-grid-asym">
+            <div class="card dashboard-main-card">
                 <h3>Candidatures</h3>
                 <?php if (empty($applications)): ?>
                     <p>Aucune candidature déposée.</p>
@@ -188,22 +192,21 @@ unset($_SESSION['success']);
                     <?php foreach ($applications as $i => $app):
                         $offre = findOffer($offres, $app['offre_id']);
                         $entreprise = $offre ? $entreprises[$offre['entreprise_id']] ?? null : null;
-                        $bg = ($i % 2 === 0) ? '#f0f0f0' : '#fafbfc';
                     ?>
-                        <div class="candidature-bloc" style="background:<?= $bg ?>;padding:22px 28px 18px 28px;border-radius:14px;margin-bottom:18px;box-shadow:0 2px 8px rgba(13,12,110,0.04);display:flex;flex-direction:column;min-width:0;position:relative;">
+                        <div class="candidature-bloc">
                             <?php $isActive = ($offre['statut'] ?? 'active') === 'active'; ?>
                             <?php if ($isActive || $role !== 'eleve'): ?>
-                            <a href="offre.php?id=<?= $app['offre_id'] ?>" style="color:inherit;text-decoration:none;display:block;">
+                            <a href="offre.php?id=<?= $app['offre_id'] ?>">
                             <?php else: ?>
-                            <span style="color:#aaa;text-decoration:line-through;display:block;cursor:not-allowed;">
+                            <span class="candidature-inactive">
                             <?php endif; ?>
-                                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;">
-                                    <div style="flex:2;min-width:180px;">
-                                        <div style="font-weight:600;font-size:1.1em;">Offre : <?= htmlspecialchars($offre['titre'] ?? 'Offre supprimée') ?></div>
-                                        <div style="color:#555;">Entreprise : <?= htmlspecialchars($entreprise['nom'] ?? 'Inconnu') ?></div>
-                                        <div style="color:#888;">Date : <?= htmlspecialchars($app['date']) ?></div>
+                                <div class="candidature-info-row">
+                                    <div class="candidature-infos">
+                                        <div class="titre">Offre : <?= htmlspecialchars($offre['titre'] ?? 'Offre supprimée') ?></div>
+                                        <div class="entreprise">Entreprise : <?= htmlspecialchars($entreprise['nom'] ?? 'Inconnu') ?></div>
+                                        <div class="date">Date : <?= htmlspecialchars($app['date']) ?></div>
                                     </div>
-                                    <div style="flex:1;min-width:120px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
+                                    <div class="candidature-actions-dl">
                                         <a href="<?= downloadLink($app['cv']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> CV</a>
                                         <a href="<?= downloadLink($app['lm']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> LM</a>
                                     </div>
@@ -213,14 +216,14 @@ unset($_SESSION['success']);
                             <?php else: ?>
                             </span>
                             <?php endif; ?>
-                            <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:18px;">
-                                <form method="POST" style="display:inline;">
+                            <div class="candidature-delete">
+                                <form method="POST" class="form-inline">
                                     <input type="hidden" name="action" value="supprimer_candidature">
                                     <input type="hidden" name="offre_id" value="<?= $app['offre_id'] ?>">
                                     <?php if ($role === 'pilote' && $selectedEleveId): ?>
                                         <input type="hidden" name="eleve_id" value="<?= $selectedEleveId ?>">
                                     <?php endif; ?>
-                                    <button type="submit" class="button btn-sm" style="background:#b12a2a;">Supprimer</button>
+                                    <button type="submit" class="button btn-sm btn-danger">Supprimer</button>
                                 </form>
                             </div>
                         </div>
@@ -229,8 +232,8 @@ unset($_SESSION['success']);
                 <?php endif; ?>
             </div>
 
-            <div class="card" style="padding:12px 10px;max-height:420px;overflow-y:auto;">
-                <h3 style="margin-bottom:14px;">Wishlist</h3>
+            <div class="card wishlist-card">
+                <h3>Wishlist</h3>
                 <?php if (empty($wishlist)): ?>
                     <p>Liste vide.</p>
                 <?php else: ?>
@@ -238,21 +241,20 @@ unset($_SESSION['success']);
                     <?php foreach ($wishlist as $i => $offreId):
                         $offre = findOffer($offres, $offreId);
                         $entreprise = $offre ? $entreprises[$offre['entreprise_id']] ?? null : null;
-                        $bg = ($i % 2 === 0) ? '#f7f8fa' : '#e9e9ee';
                     ?>
-                        <div class="wishlist-bloc" style="background:<?= $bg ?>;border-radius:10px;margin-bottom:10px;padding:13px 16px 13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                            <a href="offre.php?id=<?= $offreId ?>" style="flex:1;min-width:0;text-decoration:none;color:inherit;">
-                                <div style="font-weight:600;font-size:1.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        <div class="wishlist-bloc">
+                            <a href="offre.php?id=<?= $offreId ?>">
+                                <div class="titre">
                                     <?= htmlspecialchars($offre['titre'] ?? 'Offre supprimée') ?>
                                 </div>
-                                <div style="color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                <div class="entreprise">
                                     <?= htmlspecialchars($entreprise['nom'] ?? 'Inconnu') ?>
                                 </div>
                             </a>
-                            <form method="POST" style="display:inline;margin-left:10px;">
+                            <form method="POST" class="form-inline">
                                 <input type="hidden" name="action" value="supprimer_favori">
                                 <input type="hidden" name="offre_id" value="<?= $offreId ?>">
-                                <button type="submit" class="button btn-sm" style="background:#b12a2a;">Supprimer</button>
+                                <button type="submit" class="button btn-sm btn-danger">Supprimer</button>
                             </form>
                         </div>
                     <?php endforeach; ?>
@@ -263,7 +265,7 @@ unset($_SESSION['success']);
     <?php endif; ?>
 
     <?php if ($role === 'entreprise'): ?>
-        <div class="dashboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="dashboard-grid">
             <div class="card">
                 <h3>Mes offres</h3>
                 <?php if (empty($companyOffers)): ?>
@@ -282,7 +284,7 @@ unset($_SESSION['success']);
                             </span>
                             <div class="offer-actions">
                                 <a href="dashboard.php?offre_id=<?= $offre['id'] ?>" class="button">Voir candidats</a>
-                                <form method="POST" style="display:inline;">
+                                <form method="POST" class="form-inline">
                                     <input type="hidden" name="action" value="changer_statut_offre">
                                     <input type="hidden" name="offre_id" value="<?= $offre['id'] ?>">
                                     <button type="submit" class="button status-btn">
@@ -328,6 +330,8 @@ unset($_SESSION['success']);
     <?php endif; ?>
 
 </section>
+
+</main>
 
 <?php include 'footer.php'; ?>
 </body>

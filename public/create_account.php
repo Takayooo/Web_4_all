@@ -200,11 +200,15 @@ function e($value) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Créez votre compte Web4All en tant qu'élève, pilote ou entreprise pour accéder aux offres et au tableau de bord.">
     <title>Créer un compte | Web4All</title>
     <link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 <?php include 'header.php'; ?>
+
+<main>
 
 <section class="container create-account-section">
     <h2>Créer un compte</h2>
@@ -231,28 +235,28 @@ function e($value) {
         <button type="button" class="register-role-btn" data-role="entreprise">Entreprise</button>
     </div>
 
-    <form method="POST" action="create_account.php" class="login-form" id="create-account-form">
+    <form method="POST" action="create_account.php" class="login-form" id="create-account-form" novalidate>
         <input type="hidden" name="role" id="register-role-input" value="eleve">
 
         <div class="form-section form-section-eleve" data-role="eleve">
-            <input type="text" name="nom" placeholder="Nom" required>
-            <input type="text" name="prenom" placeholder="Prénom" required>
-            <input type="email" name="pilote_email" placeholder="Email du pilote" required>
+            <input type="text" name="nom" placeholder="Nom" autocomplete="family-name" minlength="2" required>
+            <input type="text" name="prenom" placeholder="Prénom" autocomplete="given-name" minlength="2" required>
+            <input type="email" name="pilote_email" placeholder="Email du pilote" autocomplete="email" required>
         </div>
 
         <div class="form-section form-section-pilote" data-role="pilote">
-            <input type="text" name="nom" placeholder="Nom" required>
-            <input type="text" name="prenom" placeholder="Prénom" required>
+            <input type="text" name="nom" placeholder="Nom" autocomplete="family-name" minlength="2" required>
+            <input type="text" name="prenom" placeholder="Prénom" autocomplete="given-name" minlength="2" required>
         </div>
 
         <div class="form-section form-section-entreprise" data-role="entreprise">
-            <input type="text" name="company_name" placeholder="Nom de l'entreprise" required>
-            <input type="text" name="secteur" placeholder="Secteur" required>
-            <input type="text" name="ville" placeholder="Ville" required>
+            <input type="text" name="company_name" placeholder="Nom de l'entreprise" autocomplete="organization" minlength="2" required>
+            <input type="text" name="secteur" placeholder="Secteur" minlength="2" required>
+            <input type="text" name="ville" placeholder="Ville" autocomplete="address-level2" minlength="2" required>
         </div>
 
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Mot de passe" required>
+        <input type="email" name="email" placeholder="Email" autocomplete="email" required>
+        <input type="password" name="password" placeholder="Mot de passe" autocomplete="new-password" minlength="4" required>
 
         <button type="submit" class="create-account-button">Créer mon compte</button>
     </form>
@@ -262,8 +266,10 @@ function e($value) {
 
 <script src="js/account-creation.js"></script>
 
-</body>
+</main>
 
 <?php include 'footer.php'; ?>
+
+</body>
 
 </html>

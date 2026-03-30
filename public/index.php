@@ -21,83 +21,90 @@ $activeOffres = array_filter($offres, function($o) {
 <head>
 <meta charset="UTF-8">
 <title >Web4All</title>
-<link rel="stylesheet" href="style.css?v=18">
+<link rel="stylesheet" href="style.css?v=19">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Web4All – Trouvez vos offres de stage et d'alternance. Découvrez nos offres, nos entreprises partenaires et inscrivez-vous gratuitement.">
 </head>
 
 <body>
 
-<header>
+<main>
+<div role="banner">
     <?php include 'header.php'; ?>
-</header>
 
+</div>
 <?php if (isset($_SESSION['success'])): ?>
-    <div class="container success-message">
+    <div class="container alert alert-success" role="status">
         <?= htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8') ?>
     </div>
     <?php unset($_SESSION['success']); ?>
 <?php endif; ?>
 
-<section class="stats container">
-<a href="offres.php" class="stats-box">
-<p><?= count($activeOffres) ?></p>
-<h3>Offres</h3>
-</a>
-<a href="entreprises.php" class="stats-box">
-<p><?= count($entreprises) ?></p>
-<h3>Entreprises</h3>
-</a>
-<a href="login.php" class="stats-box">
-<p><?= $nbEleves ?></p>
-<h3>Etudiants Inscrits</h3>
-</a>
+<section class="stats container" aria-label="Statistiques">
+    <a href="offres.php" class="stats-box">
+        <p><?= count($activeOffres) ?></p>
+        <h3>Offres</h3>
+    </a>
+    <a href="entreprises.php" class="stats-box">
+        <p><?= count($entreprises) ?></p>
+        <h3>Entreprises</h3>
+    </a>
+    <a href="login.php" class="stats-box">
+        <p><?= $nbEleves ?></p>
+        <h3>Étudiants inscrits</h3>
+    </a>
 </section>
 
 <section class="annonces container">
 
 <h2>Annonces récentes :</h2>
 
-<div class="cards">
-
 <?php
 usort($activeOffres, function($a, $b) {
     return $b['id'] <=> $a['id'];
 });
 
-$last4 = array_slice($activeOffres, 0, 4);
+$last8 = array_slice($activeOffres, 0, 8);
 ?>
 
-<?php foreach ($last4 as $offre):
+<?php if (empty($last8)): ?>
+<p>Aucune annonce disponible pour le moment.</p>
+<?php else: ?>
 
-$entreprise = $entreprises[$offre['entreprise_id']];
-
-?>
-
-<div class="card">
-
-<h3><?= htmlspecialchars($offre['titre']) ?></h3>
-
-<p class="company">
-<?= htmlspecialchars($entreprise['nom']) ?> ⭐ <?= htmlspecialchars($entreprise['note']) ?>
-</p>
-
-<p>
-Secteur : <?= htmlspecialchars($entreprise['secteur']) ?><br>
-Ville : <?= htmlspecialchars($entreprise['ville']) ?>
-</p>
-
-<a class="postuler-btn" href="offre.php?id=<?= $offre['id'] ?>">
-Voir l'offre
-</a>
-
+<div class="carousel-section annonces-carousel-section" aria-label="Carrousel des dernières annonces">
+    <div class="carousel-wrapper annonces-carousel-wrapper">
+        <div id="carousel-track" class="carousel-track annonces-carousel-track" aria-live="off">
+            <?php foreach ($last8 as $offre):
+            $entreprise = $entreprises[$offre['entreprise_id']];
+            ?>
+            <article class="card carousel-card annonce-carousel-card">
+                <h3><?= htmlspecialchars($offre['titre']) ?></h3>
+                <p class="company">
+                    <?= htmlspecialchars($entreprise['nom']) ?> ⭐ <?= htmlspecialchars($entreprise['note']) ?>
+                </p>
+                <p>
+                    Secteur : <?= htmlspecialchars($entreprise['secteur']) ?><br>
+                    Ville : <?= htmlspecialchars($entreprise['ville']) ?>
+                </p>
+                <a class="postuler-btn" href="offre.php?id=<?= $offre['id'] ?>">Voir l'offre</a>
+            </article>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <div class="carousel-controls" role="group" aria-label="Contrôles du carrousel annonces">
+        <button id="carousel-prev" class="carousel-btn" aria-label="Déplacer vers la gauche">&#8249;</button>
+        <button id="carousel-next" class="carousel-btn" aria-label="Déplacer vers la droite">&#8250;</button>
+        <button id="carousel-pause" class="carousel-pause" aria-label="Pause/Reprendre">&#9208; Pause</button>
+    </div>
 </div>
 
-<?php endforeach; ?>
-
-</div>
+<?php endif; ?>
 
 </section>
 
+</main>
 <?php include 'footer.php'; ?>
-<script src="/js/loginmodal.js?v=3"></script>
+<script src="js/loginmodal.js?v=3"></script>
+<script src="js/carousel.js?v=3"></script>
 </body>
 </html>

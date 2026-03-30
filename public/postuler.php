@@ -85,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <title>Postuler - <?= htmlspecialchars($offreTrouvee['titre']) ?></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Déposez votre candidature pour l'offre <?= htmlspecialchars($offreTrouvee['titre'], ENT_QUOTES, 'UTF-8') ?> sur Web4All.">
 
 <!-- FEUILLES DE STYLE -->
 <link rel="stylesheet" href="/style.css?v=4">
@@ -93,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <?php include 'header.php'; ?>
+
+<main>
 
 <section class="container">
 
@@ -109,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h3>Déposez votre candidature</h3>
 
-<div id="form-message" class="form-message<?php if ($message) echo $success ? ' success' : ' error'; ?>" style="<?php if (!$message) echo 'display:none;'; ?>">
+<div id="form-message" class="form-message<?php if ($message) echo $success ? ' success' : ' error'; ?><?php if (!$message) echo ' is-hidden'; ?>">
     <?php if ($message) echo htmlspecialchars($message); ?>
 </div>
 
@@ -126,6 +130,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </form>
 
 </section>
+
+</main>
 
 <?php include 'footer.php'; ?>
 <script src="js/loginmodal.js"></script>

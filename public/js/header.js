@@ -1,5 +1,5 @@
 /**
- * Gestion du menu utilisateur dans l'en-tête
+ * Gestion du menu utilisateur dans le header
  * Gère la visibilité du menu déroulant utilisateur
  */
 

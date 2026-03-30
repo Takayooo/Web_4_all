@@ -1,0 +1,20 @@
+RewriteEngine On
+
+# Keep direct access to existing files and directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Clean URLs
+RewriteRule ^$ index.php [L,QSA]
+RewriteRule ^offres/?$ offres.php [L,QSA]
+RewriteRule ^offre/([0-9]+)/?$ offre.php?id=$1 [L,QSA]
+RewriteRule ^entreprises/?$ entreprises.php [L,QSA]
+RewriteRule ^entreprise/([0-9]+)/?$ profilentreprise.php?id=$1 [L,QSA]
+RewriteRule ^contact/?$ contact.php [L,QSA]
+RewriteRule ^mentions-legales/?$ mentions-legales.php [L,QSA]
+RewriteRule ^creer-compte/?$ create_account.php [L,QSA]
+RewriteRule ^connexion/?$ login.php [L,QSA]
+RewriteRule ^dashboard/?$ dashboard.php [L,QSA]
+RewriteRule ^creer-offre/?$ creer_offre.php [L,QSA]
+RewriteRule ^postuler/([0-9]+)/?$ postuler.php?id=$1 [L,QSA]

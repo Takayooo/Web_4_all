@@ -38,10 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <title>Créer une offre</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Publiez une nouvelle offre de stage ou d'alternance sur Web4All.">
 <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 <?php include 'header.php'; ?>
+<main>
 <section class="container">
     <h1>Créer une nouvelle offre</h1>
     <?php if ($message): ?>
@@ -50,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p><a href="dashboard.php" class="button">Retour au tableau de bord</a></p>
         <?php endif; ?>
     <?php endif; ?>
-    <form action="creer_offre.php" method="post" class="form-section">
+    <form action="creer_offre.php" method="post" class="form-section" novalidate>
         <div class="form-group">
             <label for="titre">Titre de l'offre *</label>
-            <input type="text" id="titre" name="titre" placeholder="Ex: Stage Développeur Web" required>
+            <input type="text" id="titre" name="titre" placeholder="Ex: Stage Développeur Web" minlength="5" required>
         </div>
         <div class="form-group">
             <label for="contrat">Type de contrat</label>
@@ -69,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="button">Créer l'offre</button>
     </form>
 </section>
+</main>
 <?php include 'footer.php'; ?>
 </body>
 </html>

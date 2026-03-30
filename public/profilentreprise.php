@@ -39,6 +39,8 @@ $offresPage = array_slice(array_values($offresEntreprise), $debut, $offresParPag
 <head>
 <meta charset="UTF-8">
 <title><?= htmlspecialchars($entreprise['nom']) ?></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Profil de l'entreprise <?= htmlspecialchars($entreprise['nom'], ENT_QUOTES, 'UTF-8') ?> sur Web4All : informations et offres disponibles.">
 
 <link rel="stylesheet" href="/style.css?v=13">
 
@@ -47,6 +49,8 @@ $offresPage = array_slice(array_values($offresEntreprise), $debut, $offresParPag
 <body>
 
 <?php include 'header.php'; ?>
+
+<main>
 
 <section class="container">
 
@@ -102,6 +106,8 @@ Voir l'offre
 </div>
 
 </section>
+
+</main>
 
 <?php include 'footer.php'; ?>
 <script src="js/loginmodal.js"></script>
