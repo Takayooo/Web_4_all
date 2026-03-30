@@ -155,6 +155,26 @@ function creer_offre(int $entrepriseId, string $titre, string $description = '',
     return $nouvelId;
 }
 
+function modifier_offre(int $offreId, int $entrepriseId, string $titre, string $description = '', string $contrat = 'stage'): bool {
+    $offres = charger_offres();
+    if (!is_array($offres)) {
+        return false;
+    }
+
+    foreach ($offres as $index => $offre) {
+        if (isset($offre['id']) && isset($offre['entreprise_id']) &&
+            $offre['id'] === $offreId && $offre['entreprise_id'] === $entrepriseId) {
+            $offres[$index]['titre'] = $titre;
+            $offres[$index]['description'] = $description;
+            $offres[$index]['contrat'] = $contrat;
+            $offres[$index]['date_modification'] = date('Y-m-d H:i:s');
+            return enregistrer_offres($offres);
+        }
+    }
+
+    return false;
+}
+
 function changer_statut_offre(int $offreId, int $entrepriseId): ?string {
     $offres = charger_offres();
     if (!is_array($offres)) {

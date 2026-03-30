@@ -146,7 +146,7 @@ unset($_SESSION['success']);
 <title>Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Tableau de bord Web4All : candidatures, wishlist et gestion des offres selon votre rôle.">
-<link rel="stylesheet" href="style.css?v=22">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 <?php include 'header.php'; ?>
@@ -265,7 +265,12 @@ unset($_SESSION['success']);
     <?php endif; ?>
 
     <?php if ($role === 'entreprise'): ?>
-        <div class="dashboard-grid">
+        <div class="dashboard-grid dashboard-grid-entreprise">
+            <div class="card">
+                <h3>Actions</h3>
+                <a href="creer_offre.php" class="button">Créer une nouvelle offre d'emploi</a>
+            </div>
+
             <div class="card">
                 <h3>Mes offres</h3>
                 <?php if (empty($companyOffers)): ?>
@@ -284,6 +289,7 @@ unset($_SESSION['success']);
                             </span>
                             <div class="offer-actions">
                                 <a href="dashboard.php?offre_id=<?= $offre['id'] ?>" class="button">Voir candidats</a>
+                                <a href="creer_offre.php?id=<?= $offre['id'] ?>" class="button">Modifier l'offre</a>
                                 <form method="POST" class="form-inline">
                                     <input type="hidden" name="action" value="changer_statut_offre">
                                     <input type="hidden" name="offre_id" value="<?= $offre['id'] ?>">
@@ -296,11 +302,6 @@ unset($_SESSION['success']);
                     <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            </div>
-
-            <div class="card">
-                <h3>Actions</h3>
-                <a href="creer_offre.php" class="button">Créer une nouvelle offre d'emploi</a>
             </div>
         </div>
 
@@ -317,10 +318,11 @@ unset($_SESSION['success']);
                     <div class="ligne-candidat <?= $bg ?>">
                         <div class="candidat-eleve"> <?= htmlspecialchars(($eleve['prenom'] ?? '') . ' ' . ($eleve['nom'] ?? '')) ?> </div>
                         <div class="candidat-cv">
-                            <a class="button btn-sm" href="<?= downloadLink($app['cv']) ?>">CV</a>
+                            <a href="<?= downloadLink($app['cv']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> CV</a>
+
                         </div>
                         <div class="candidat-lm">
-                            <a class="button btn-sm" href="<?= downloadLink($app['lm']) ?>">LM</a>
+                            <a href="<?= downloadLink($app['lm']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> LM</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

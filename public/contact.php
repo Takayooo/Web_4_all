@@ -10,7 +10,7 @@ require 'pagination.php';
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Contactez l'équipe Web4All pour toute question sur les offres, les candidatures ou votre compte.">
 <title>Contact</title>
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 </head>
 
 <body>
