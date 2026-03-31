@@ -75,15 +75,43 @@ $current_page = 'offres';
 <div class="pagination">
 
 <?php if ($page > 1): ?>
-<a href="?page=<?= $page - 1 ?><?= ($search ? '&search=' . urlencode($search) : '') ?><?= ($contrat ? '&contrat=' . urlencode($contrat) : '') ?><?= ($secteur ? '&secteur=' . urlencode($secteur) : '') ?><?= ($ville ? '&ville=' . urlencode($ville) : '') ?>">Précédent</a>
+<a href="?page=<?= $page - 1 ?><?= $qs ?>">Précédent</a>
 <?php endif; ?>
 
-<?php for ($i = 1; $i <= $totalPages; $i++): ?>
-    <a href="?page=<?= $i ?><?= ($search ? '&search=' . urlencode($search) : '') ?><?= ($contrat ? '&contrat=' . urlencode($contrat) : '') ?><?= ($secteur ? '&secteur=' . urlencode($secteur) : '') ?><?= ($ville ? '&ville=' . urlencode($ville) : '') ?>" class="<?= ($i === $page) ? 'active' : '' ?>"><?= $i ?></a>
-<?php endfor; ?>
+<?php
+$qs = ($search  ? '&search='  . urlencode($search)  : '')
+    . ($contrat ? '&contrat=' . urlencode($contrat) : '')
+    . ($secteur ? '&secteur=' . urlencode($secteur) : '')
+    . ($ville   ? '&ville='   . urlencode($ville)   : '');
+
+$delta = 2; // pages affichées de chaque côté de la page courante
+$range = [];
+for ($i = max(1, $page - $delta); $i <= min($totalPages, $page + $delta); $i++) {
+    $range[] = $i;
+}
+
+$dots_left  = ($range[0] > 2);
+$dots_right = ($range[count($range) - 1] < $totalPages - 1);
+
+// Première page
+if (!in_array(1, $range)): ?>
+    <a href="?page=1<?= $qs ?>" class="">1</a>
+<?php endif; ?>
+<?php if ($dots_left): ?>
+    <span class="pagination-dots">…</span>
+<?php endif; ?>
+<?php foreach ($range as $i): ?>
+    <a href="?page=<?= $i ?><?= $qs ?>" class="<?= ($i === $page) ? 'active' : '' ?>"><?= $i ?></a>
+<?php endforeach; ?>
+<?php if ($dots_right): ?>
+    <span class="pagination-dots">…</span>
+<?php endif; ?>
+<?php if (!in_array($totalPages, $range) && $totalPages > 1): ?>
+    <a href="?page=<?= $totalPages ?><?= $qs ?>" class=""><?= $totalPages ?></a>
+<?php endif; ?>
 
 <?php if ($page < $totalPages): ?>
-<a href="?page=<?= $page + 1 ?><?= ($search ? '&search=' . urlencode($search) : '') ?><?= ($contrat ? '&contrat=' . urlencode($contrat) : '') ?><?= ($secteur ? '&secteur=' . urlencode($secteur) : '') ?><?= ($ville ? '&ville=' . urlencode($ville) : '') ?>">Suivant</a>
+<a href="?page=<?= $page + 1 ?><?= $qs ?>">Suivant</a>
 <?php endif; ?>
 
 </div>

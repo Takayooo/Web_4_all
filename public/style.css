@@ -1,3 +1,27 @@
+/* ========================================
+   DESIGN SYSTEM — VARIABLES
+   ======================================== */
+:root {
+    --primary:        #1E2A78;
+    --primary-hover:  #2A3ABF;
+    --secondary:      #6C63FF;
+    --accent:         #8B5CF6;
+    --gradient:       radial-gradient(circle at bottom left, #1E2A78 0%, #6C63FF 50%, #8B5CF6 100%);
+
+    --bg-main:        #F7F9FC;
+    --bg-secondary:   #EEF2FF;
+    --card-bg:        #FFFFFF;
+    --card-hover-bg:  #F1F5FF;
+    --border-soft:    #E0E7FF;
+
+    --text-primary:   #0F172A;
+    --text-secondary: #475569;
+    --text-muted:     #94A3B8;
+
+    --shadow:         0 10px 30px rgba(99, 102, 241, 0.15);
+    --shadow-hover:   0 15px 40px rgba(99, 102, 241, 0.25);
+}
+
 /* ====== MESSAGES FORMULAIRE POSTULER ====== */
 .form-message {
     display: block;
@@ -20,9 +44,10 @@
 }
 /* ====== PAGE POSTULER - FORMULAIRE ====== */
 .postuler-form {
-    background: #fff;
+    background: var(--card-bg);
     border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(13,12,110,0.07);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-soft);
     padding: 32px 28px 28px 28px;
     max-width: 480px;
     margin: 32px auto 0 auto;
@@ -37,14 +62,14 @@
 }
 .postuler-form label {
     font-weight: 600;
-    color: #0d0c6e;
+    color: var(--primary);
     margin-bottom: 2px;
 }
 .postuler-form input[type="file"] {
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    background: #f7f8fa;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-main);
     font-size: 1em;
     margin-bottom: 0;
 }
@@ -81,6 +106,7 @@
     font-weight: bold;
     margin-bottom: 32px;
     margin-top: 0;
+    color: var(--text-primary);
 }
 .offre-content-grid {
     display: grid;
@@ -94,15 +120,16 @@
 .offre-description {
     margin: 0 0 24px 0;
     font-size: 1.13em;
-    color: #222;
-    background: #f7f8fa;
+    color: var(--text-secondary);
+    background: var(--bg-main);
     border-radius: 8px;
     padding: 24px 28px;
     line-height: 1.7;
-    box-shadow: 0 2px 8px rgba(13,12,110,0.04);
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
 }
 .offre-description.vide {
-    color: #888;
+    color: var(--text-muted);
     font-style: italic;
 }
 .offre-aside {
@@ -112,29 +139,36 @@
     z-index: 2;
 }
 .offre-card-entreprise {
-    background: #fff;
+    background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(13,12,110,0.07);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-soft);
     padding: 22px 20px 18px 20px;
     margin-bottom: 22px;
     font-size: 1.01em;
+    transition: all 0.3s ease;
+}
+.offre-card-entreprise:hover {
+    box-shadow: var(--shadow-hover);
 }
 .offre-card-nom {
     font-weight: 600;
     font-size: 1.08em;
     margin-bottom: 8px;
+    color: var(--text-primary);
 }
 .offre-card-note {
     margin-bottom: 7px;
 }
 .offre-card-secteur, .offre-card-ville {
     margin-bottom: 7px;
+    color: var(--text-secondary);
 }
 .offre-card-description {
     margin-top: 10px;
-    color: #444;
+    color: var(--text-secondary);
     font-size: 0.98em;
-    background: #f7f8fa;
+    background: var(--bg-main);
     border-radius: 7px;
     padding: 10px 12px;
 }
@@ -151,7 +185,7 @@
     text-align: center;
 }
 .offre-applied {
-    color: #0d0c6e;
+    color: var(--primary);
     font-weight: 600;
     margin-bottom: 8px;
 }
@@ -240,7 +274,7 @@ a {
    ======================================== */
 
 header {
-    background: #0d0c6e;
+    background: var(--gradient);
     padding: 15px 0;
     color: white;
 }
@@ -307,29 +341,33 @@ header {
     padding: 10px 18px;
     border-radius: 6px;
     font-weight: 500;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
+/* Bouton principal */
 .btn-blue {
-    background: #0d0c6e;
+    background: var(--gradient);
     color: white;
-    border: 2px solid white;
+    border: 2px solid transparent;
 }
 
 .btn-blue:hover {
-    background: white;
-    color: #0d0c6e;
+    filter: brightness(1.05);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
 }
 
+/* Bouton secondaire */
 .btn-white {
-    background: white;
-    color: #0d0c6e;
-    border: 2px solid white;
+    background: linear-gradient(135deg, #ffffff 0%, #fbfaff 72%, #f1edff 100%);
+    color: #3730A3;
+    border: 2px solid #E0E7FF;
 }
 
 .btn-white:hover {
-    background: #0d0c6e;
-    color: white;
+    background: linear-gradient(135deg, #ffffff 0%, #f7f5ff 72%, #ece7ff 100%);
+    transform: scale(1.03);
+    box-shadow: var(--shadow);
 }
 
 /* ========================================
@@ -347,9 +385,9 @@ header {
     right: 0;
     min-width: 170px;
     background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-soft);
     border-radius: 6px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow);
     visibility: hidden;
     opacity: 0;
     display: none;
@@ -472,12 +510,23 @@ header {
 .form-group textarea {
     padding: 12px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-soft);
+    transition: border-color 0.2s ease;
+}
+
+.login-form input:focus,
+.form-section input:focus,
+.form-section textarea:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
 }
 
 .login-form button,
 .create-account-button {
-    background: #0d0c6e;
+    background: var(--primary);
     color: white;
     border: none;
     padding: 12px;
@@ -487,25 +536,28 @@ header {
 }
 
 .login-form button:hover {
-    background: #1a18a8;
+    background: var(--primary-hover);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
 }
 
 .create-account-button {
-    border: 2px solid #0d0c6e !important;
+    border: none !important;
 }
 
 .create-account-button:hover {
-    background: white !important;
-    color: #0d0c6e !important;
-    transform: scale(1.02);
+    background: var(--primary-hover) !important;
+    transform: scale(1.03) !important;
+    box-shadow: var(--shadow-hover) !important;
+    color: white !important;
 }
 
 .login-modal-title {
-    color: #0d0c6e;
+    color: var(--primary);
 }
 
 .login-error {
-    color: red;
+    color: #dc3545;
 }
 
 .login-signup-link {
@@ -514,7 +566,7 @@ header {
 }
 
 .login-signup-link a {
-    color: #0d0c6e;
+    color: var(--secondary);
     font-weight: 600;
 }
 
@@ -526,6 +578,7 @@ header {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: var(--text-primary);
 }
 
 .form-section {
@@ -656,6 +709,8 @@ header {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
 }
 
 .card h3 {
@@ -679,11 +734,17 @@ header {
 }
 
 .eleve-card {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-soft);
     padding: 20px;
     border-radius: 8px;
-    background: #f9f9f9;
+    background: var(--card-bg);
     width: 300px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.eleve-card:hover {
+    box-shadow: var(--shadow-hover);
 }
 
 .offers-list {
@@ -697,9 +758,15 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.07);
+    transition: all 0.3s ease;
+}
+
+.offer-item:hover {
+    box-shadow: var(--shadow);
 }
 
 .offer-title {
@@ -709,6 +776,7 @@ header {
     text-overflow: ellipsis;
     margin-right: 15px;
     font-weight: bold;
+    color: var(--text-primary);
 }
 
 .status-badge {
@@ -753,10 +821,17 @@ header {
     margin-right: 10px;
     padding: 5px 10px;
     cursor: pointer;
-    background: #0d0c6e;
+    background: var(--primary);
     color: white;
     border: none;
     border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.actions button:hover {
+    background: var(--primary-hover);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
 }
 
 /* ========================================
@@ -772,10 +847,11 @@ header {
 }
 
 .stats-box {
-    background: white;
+    background: var(--card-bg);
     padding: 28px;
     border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(13, 12, 110, 0.12);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow);
     text-decoration: none;
     color: inherit;
     display: flex;
@@ -787,20 +863,20 @@ header {
 
 .stats-box:hover {
     transform: translateY(-6px);
-    box-shadow: 0 16px 38px rgba(13, 12, 110, 0.18);
+    box-shadow: var(--shadow-hover);
 }
 
 .stats-box h3 {
-    color: #0d0c6e;
+    color: var(--primary);
     margin: 8px 0 0;
     font-size: 1.1rem;
 }
 
 .stats-box p {
+    color: var(--secondary);
     margin: 0;
     font-size: clamp(42px, 5vw, 64px);
     font-weight: bold;
-    color: #0d0c6e;
     line-height: 1;
 }
 
@@ -856,15 +932,29 @@ header {
 .pagination a {
     padding: 8px 12px;
     margin: 0 5px;
-    background: #eee;
+    background: var(--bg-secondary);
     border-radius: 5px;
     text-decoration: none;
-    color: #333;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-soft);
+}
+
+.pagination a:hover {
+    background: var(--card-hover-bg);
+    color: var(--primary);
 }
 
 .pagination a.active {
-    background: #0d0c6e;
+    background: var(--primary);
     color: white;
+    border-color: transparent;
+}
+
+.pagination-dots {
+    padding: 8px 6px;
+    color: var(--text-muted);
+    user-select: none;
 }
 
 /* ========================================
@@ -873,19 +963,21 @@ header {
 
 .postuler-btn {
     display: inline-block;
-    margin-top: 15px;
-    background: #0d0c6e;
+    margin-top: auto;
+    background: var(--gradient);
     color: white;
     padding: 10px 20px;
     border-radius: 20px;
     text-decoration: none;
-    border: #0d0c6e 2px solid;
+    border: none;
     transition: all 0.3s ease;
 }
 
 .postuler-btn:hover {
-    background: #ffffff;
-    color: #0d0c6e;
+    filter: brightness(1.05);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
+    color: white;
 }
 
 /* ========================================
@@ -895,7 +987,7 @@ header {
 footer {
     color: white;
     font-size: 14px;
-    background: rgb(13, 12, 110);
+    background: var(--gradient);
     padding: 15px 0px;
     margin-top: auto;
 }
@@ -905,7 +997,9 @@ footer {
    ======================================== */
 
 .hero {
-    background: linear-gradient(180deg,#0d0c6e,#1d1ba100);
+    background:
+        linear-gradient(to bottom, transparent 40%, #f4f4f4 100%),
+        radial-gradient(circle at top left, #1E2A78 0%, #6C63FF 50%, #8B5CF6 100%);
     color: white;
     padding: 50px 0;
     text-align: center;
@@ -916,6 +1010,9 @@ footer {
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    background:  #1e2a78a9;
+    border-radius: 75px;
+    padding: 20px;
 }
 
 .search-form {
@@ -925,8 +1022,6 @@ footer {
     justify-content: center;
     max-width: 800px;
     width: 100%;
-    margin-bottom: 20px;
-    margin-top: 20px;
 }
 
 .search-form input,
@@ -939,17 +1034,20 @@ footer {
 }
 
 .search-form button {
-    background: #0d0c6e;
-    color: white;
-    border: none;
+    background: #ffffff;
+    color: var(--primary);
+    border: 1px solid var(--border-soft);
     padding: 12px 24px;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-weight: 600;
 }
 
 .search-form button:hover {
-    background: #1a18a8;
+    background: #f7f5ff;
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
 }
 
 /* ========================================
@@ -957,10 +1055,11 @@ footer {
    ======================================== */
 
 .entreprise-header {
-    background: white;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow);
     margin-bottom: 30px;
     text-align: center;
 }
@@ -968,16 +1067,17 @@ footer {
 .entreprise-meta {
     margin: 20px 0;
     font-size: 18px;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .entreprise-description {
     margin: 20px 0;
     line-height: 1.6;
+    color: var(--text-secondary);
 }
 
 .offres-title {
-    color: #0d0c6e;
+    color: var(--primary);
     margin-bottom: 30px;
     text-align: center;
 }
@@ -987,7 +1087,7 @@ footer {
    ======================================== */
 
 .button {
-    background: #0d0c6e;
+    background: var(--primary);
     color: white;
     border: none;
     padding: 12px 24px;
@@ -997,7 +1097,9 @@ footer {
 }
 
 .button:hover {
-    background: #1a18a8;
+    background: var(--primary-hover);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
 }
 
 .button.btn-danger {
@@ -1008,6 +1110,8 @@ footer {
 
 .button.btn-danger:hover {
     background: #7b0000;
+    transform: none;
+    box-shadow: none;
 }
 
 /* ====== CANDIDATS ENTREPRISE ====== */
@@ -1021,18 +1125,22 @@ footer {
     padding: 16px 22px;
     border-radius: 10px;
     margin-bottom: 10px;
-    background: #fafbfc;
-    border: 1px solid #e3e6f0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
     gap: 18px;
+    transition: all 0.2s ease;
+}
+.ligne-candidat:hover {
+    box-shadow: var(--shadow);
 }
 .ligne-candidat-bg {
-    background: #f0f0f0;
+    background: var(--bg-secondary);
 }
 .candidat-eleve {
     flex: 2;
     font-weight: 600;
     font-size: 1.08em;
-    color: #0d0c6e;
+    color: var(--primary);
     min-width: 120px;
 }
 .candidat-cv, .candidat-lm {
@@ -1058,19 +1166,25 @@ footer {
 .candidature-bloc {
     border-radius: 14px;
     margin-bottom: 18px;
-    box-shadow: 0 2px 8px rgba(13, 12, 110, 0.04);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.07);
+    border: 1px solid var(--border-soft);
     display: flex;
     flex-direction: column;
     position: relative;
     padding: 22px 28px 18px;
+    transition: all 0.2s ease;
+}
+
+.candidature-bloc:hover {
+    box-shadow: var(--shadow);
 }
 
 .candidature-bloc:nth-child(odd) {
-    background: #f0f0f0;
+    background: var(--bg-secondary);
 }
 
 .candidature-bloc:nth-child(even) {
-    background: #fafbfc;
+    background: var(--card-bg);
 }
 
 .candidature-info-row {

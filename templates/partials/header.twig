@@ -17,7 +17,7 @@
 <div class="header-actions">
 {% if user %}
 <div class="user-menu">
-    <a href="#" id="user-menu-btn" class="btn btn-white">{{ user.prenom }} {{ user.nom }} &#x25BE;</a>
+    <a href="#" id="user-menu-btn" class="btn btn-white">{{ user.prenom ? user.prenom ~ ' ' ~ user.nom : user.nom }} &#x25BE;</a>
     <div id="user-menu-dropdown" class="user-menu-dropdown" role="menu" aria-label="Menu utilisateur">
         <a href="parametres.php" class="user-menu-item"><img src="/assets/parametres.png" alt="Paramètres" class="menu-icon"> Paramètres</a>
         <a href="logout.php" class="user-menu-item"><img src="/assets/deconnexion.png" alt="Déconnexion" class="menu-icon"> Se déconnecter</a>
@@ -45,9 +45,10 @@
 {% endif %}
 
 <div class="role-switch">
-<button class="role-btn active">Élève</button>
-<button class="role-btn">Pilote</button>
-<button class="role-btn">Entreprise</button>
+<button class="role-btn active" data-role="eleve">Élève</button>
+<button class="role-btn" data-role="pilote">Pilote</button>
+<button class="role-btn" data-role="entreprise">Entreprise</button>
+<button class="role-btn" data-role="administrateur">Administrateur</button>
 </div>
 
 <form id="login-form" action="login.php" method="POST" class="login-form" novalidate>

@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        console.log("modal trouvé", modal);
 
         // ouverture bouton
         if (openBtn) {
@@ -44,19 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         roleBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                // Retirer la classe active de tous les boutons
                 roleBtns.forEach(b => b.classList.remove('active'));
-                // Ajouter la classe active au bouton cliqué
                 this.classList.add('active');
-                // Mettre à jour la valeur du champ caché
-                const role = this.textContent.toLowerCase();
-                if (role === 'élève') {
-                    roleInput.value = 'eleve';
-                } else if (role === 'pilote') {
-                    roleInput.value = 'pilote';
-                } else if (role === 'entreprise') {
-                    roleInput.value = 'entreprise';
-                }
+                roleInput.value = this.dataset.role || 'eleve';
             });
         });
     };

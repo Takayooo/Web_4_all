@@ -26,26 +26,28 @@
         </div>
     {% endif %}
 
-    {% if user.role == 'entreprise' %}
-        <section>
-            <h2>Mon compte</h2>
-            {% if own %}
-                <div class="eleve-card">
-                    <h3>{{ own.nom }}</h3>
-                    <p>Secteur : {{ own.secteur }}</p>
-                    <p>Ville : {{ own.ville }}</p>
-                    <p>Note moyenne : {{ own.note }}</p>
-                    <p>Email : {{ own.email }}</p>
-                    <div class="actions">
-                        <button type="button" onclick="editAccount({{ own.id }}, 'entreprise', '{{ own.nom|e('js') }}', '', '{{ own.email|e('js') }}', '{{ own.secteur|e('js') }}', '{{ own.ville|e('js') }}')">Modifier</button>
-                    </div>
+    <section>
+        <h2>Mon compte</h2>
+        <div class="eleve-card">
+            {% if own.role == 'entreprise' %}
+                <h3>{{ own.nom }}</h3>
+                <p>Secteur : {{ own.secteur }}</p>
+                <p>Ville : {{ own.ville }}</p>
+                <p>Note moyenne : {{ own.note }}</p>
+                <p>Email : {{ own.email }}</p>
+                <div class="actions">
+                    <button type="button" onclick="editAccount({{ own.id }}, 'entreprise', '{{ own.nom|e('js') }}', '', '{{ own.email|e('js') }}', '{{ own.secteur|e('js') }}', '{{ own.ville|e('js') }}')">Modifier</button>
                 </div>
             {% else %}
-                <p>Votre compte n'a pas été trouvé.</p>
+                <h3>{{ own.prenom }} {{ own.nom }}</h3>
+                <p>Rôle : {{ own.role }}</p>
+                <p>Email : {{ own.email }}</p>
+                <div class="actions">
+                    <button type="button" onclick="editAccount({{ own.id }}, 'standard', '{{ own.nom|e('js') }}', '{{ own.prenom|e('js') }}', '{{ own.email|e('js') }}', '', '')">Modifier</button>
+                </div>
             {% endif %}
-        </section>
-    {% endif %}
-    
+        </div>
+    </section>
 
     {% if user.role == 'pilote' or user.role == 'administrateur' %}
         <section>
@@ -63,7 +65,7 @@
                     {% for eleve in students %}
                         <div class="eleve-card">
                             <h3>{{ eleve.prenom }} {{ eleve.nom }}</h3>
-                            <p>Email: {{ eleve.email }}</p>
+                            <p>Email : {{ eleve.email }}</p>
                             <div class="actions">
                                 <button type="button" onclick="editAccount({{ eleve.id }}, 'standard', '{{ eleve.nom|e('js') }}', '{{ eleve.prenom|e('js') }}', '{{ eleve.email|e('js') }}', '', '')">Modifier</button>
                             </div>
@@ -74,9 +76,11 @@
                 <p>Aucun compte étudiant trouvé.</p>
             {% endif %}
         </section>
+    {% endif %}
 
+    {% if user.role == 'pilote' or user.role == 'administrateur' %}
         <section>
-            <h2>Gestion des entreprises</h2>
+            <h2>Entreprises</h2>
             <form method="get" class="search-form">
                 <input type="text" name="search_enterprises" placeholder="Nom, secteur, ville ou email" value="{{ searchEnterprises|default('') }}">
                 <input type="hidden" name="search_students" value="{{ searchStudents|default('') }}">
@@ -84,6 +88,7 @@
                 <input type="hidden" name="search_admins" value="{{ searchAdmins|default('') }}">
                 <button type="submit">Rechercher</button>
             </form>
+
             {% if enterprises %}
                 <div class="eleves-list">
                     {% for entreprise in enterprises %}
@@ -115,8 +120,9 @@
                 <p>Aucune entreprise trouvée.</p>
             {% endif %}
         </section>
+    {% endif %}
 
-        {% if user.role == 'administrateur' %}
+    {% if user.role == 'administrateur' %}
         <section>
             <h2>Pilotes</h2>
             <form method="get" class="search-form">
@@ -126,6 +132,7 @@
                 <input type="hidden" name="search_admins" value="{{ searchAdmins|default('') }}">
                 <button type="submit">Rechercher</button>
             </form>
+
             {% if pilots %}
                 <div class="eleves-list">
                     {% for pilote in pilots %}
@@ -152,6 +159,7 @@
                 <input type="hidden" name="search_pilots" value="{{ searchPilots|default('') }}">
                 <button type="submit">Rechercher</button>
             </form>
+
             {% if admins %}
                 <div class="eleves-list">
                     {% for admin in admins %}
@@ -168,26 +176,7 @@
                 <p>Aucun administrateur trouvé.</p>
             {% endif %}
         </section>
-        {% endif %}
     {% endif %}
-    {% if user.role != 'entreprise' %}
-        <section>
-            <h2>Mon compte</h2>
-            {% if own %}
-                <div class="eleve-card">
-                    <h3>{{ own.prenom }} {{ own.nom }}</h3>
-                    <p>Rôle : {{ own.role }}</p>
-                    <p>Email : {{ own.email }}</p>
-                    <div class="actions">
-                        <button type="button" onclick="editAccount({{ own.id }}, 'standard', '{{ own.nom|e('js') }}', '{{ own.prenom|e('js') }}', '{{ own.email|e('js') }}', '', '')">Modifier</button>
-                    </div>
-                </div>
-            {% else %}
-                <p>Votre compte n'a pas été trouvé.</p>
-            {% endif %}
-        </section>
-    {% endif %}
-
 
     <div id="editModal" class="modal">
         <div class="modal-content">

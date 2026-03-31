@@ -15,7 +15,7 @@ $message = $_SESSION['settings_message'] ?? '';
 $messageType = $_SESSION['settings_message_type'] ?? 'success';
 unset($_SESSION['settings_message'], $_SESSION['settings_message_type']);
 
-if (!$user || !in_array($user['role'], ['pilote', 'eleve', 'entreprise'], true)) {
+if (!$user || !in_array($user['role'], ['administrateur', 'pilote', 'eleve', 'entreprise'], true)) {
     header('Location: index.php');
     exit;
 }
@@ -32,6 +32,7 @@ $_SESSION['user'] = $user;
 $searchStudents = trim($_GET['search_students'] ?? '');
 $searchEnterprises = trim($_GET['search_enterprises'] ?? '');
 $searchPilots = trim($_GET['search_pilots'] ?? '');
+$searchAdmins = trim($_GET['search_admins'] ?? '');
 
 function containsSearch(array $account, string $query, array $fields): bool
 {
@@ -50,27 +51,46 @@ function containsSearch(array $account, string $query, array $fields): bool
     return false;
 }
 
-$own = get_user_by_id((int) $user['id']);
+$own = $user;
 $students = [];
 $enterprises = [];
 $pilots = [];
-$canDelete = $user['role'] === 'pilote';
+$admins = [];
+$pilotCompanyRatings = [];
+$allUsers = get_all_users();
 
-if ($user['role'] === 'pilote') {
+if ($user['role'] === 'administrateur') {
+    $students = array_values(array_filter(
+        $allUsers,
+        fn(array $account): bool => $account['role'] === 'eleve' && containsSearch($account, $searchStudents, ['nom', 'prenom', 'email'])
+    ));
+
+    $enterprises = array_values(array_filter(
+        $allUsers,
+        fn(array $account): bool => $account['role'] === 'entreprise' && containsSearch($account, $searchEnterprises, ['nom', 'secteur', 'ville', 'email'])
+    ));
+
+    $pilots = array_values(array_filter(
+        $allUsers,
+        fn(array $account): bool => $account['role'] === 'pilote' && containsSearch($account, $searchPilots, ['nom', 'prenom', 'email'])
+    ));
+
+    $admins = array_values(array_filter(
+        $allUsers,
+        fn(array $account): bool => $account['role'] === 'administrateur' && containsSearch($account, $searchAdmins, ['nom', 'prenom', 'email'])
+    ));
+} elseif ($user['role'] === 'pilote') {
     $students = array_values(array_filter(
         get_students_by_pilot_user_id((int) $user['id']),
         fn(array $account): bool => containsSearch($account, $searchStudents, ['nom', 'prenom', 'email'])
     ));
 
     $enterprises = array_values(array_filter(
-        get_all_enterprises(),
-        fn(array $account): bool => containsSearch($account, $searchEnterprises, ['nom', 'secteur', 'ville', 'email'])
+        $allUsers,
+        fn(array $account): bool => $account['role'] === 'entreprise' && containsSearch($account, $searchEnterprises, ['nom', 'secteur', 'ville', 'email'])
     ));
 
-    $pilots = array_values(array_filter(
-        get_all_pilots(),
-        fn(array $account): bool => $account['id'] !== $user['id'] && containsSearch($account, $searchPilots, ['nom', 'prenom', 'email'])
-    ));
+    $pilotCompanyRatings = get_pilot_company_evaluations((int) $user['id']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -83,10 +103,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $email = trim($_POST['email'] ?? '');
 
         $allowed = false;
-        if ($user['role'] === 'pilote') {
+        if ($user['role'] === 'administrateur') {
             $allowed = true;
-        } elseif ($own && $own['id'] === $id) {
+        } elseif ($own['id'] === $id) {
             $allowed = true;
+        } elseif ($user['role'] === 'pilote' && $targetUser && $targetUser['role'] === 'eleve') {
+            $studentIds = array_map(
+                static fn(array $student): int => (int) $student['id'],
+                get_students_by_pilot_user_id((int) $user['id'])
+            );
+            $allowed = in_array($id, $studentIds, true);
         }
 
         if (!$allowed || !$targetUser) {
@@ -118,9 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
 
             if ($updated) {
-                if ($own && $own['id'] === $id) {
+                if ($own['id'] === $id) {
                     $_SESSION['user'] = get_user_by_id($id) ?? $_SESSION['user'];
                 }
+
                 $_SESSION['settings_message'] = 'Compte modifié avec succès.';
                 $_SESSION['settings_message_type'] = 'success';
                 header('Location: parametres.php');
@@ -130,61 +157,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $message = 'Impossible d\'enregistrer la modification dans la base de données.';
             $messageType = 'danger';
         }
-    } elseif ($action === 'supprimer' && isset($_POST['id']) && $canDelete) {
+    } elseif ($action === 'modifier_note' && isset($_POST['id'])) {
         $id = (int) $_POST['id'];
-        if (delete_student_account($id)) {
-            $_SESSION['settings_message'] = 'Compte étudiant supprimé avec succès.';
-            $_SESSION['settings_message_type'] = 'success';
-            header('Location: parametres.php');
-            exit;
-        }
-        $message = 'Compte étudiant introuvable ou suppression impossible.';
-        $messageType = 'danger';
-    } elseif ($action === 'supprimer_entreprise' && isset($_POST['id'])) {
-        $id = (int) $_POST['id'];
-        $allowed = $user['role'] === 'pilote' || ($user['role'] === 'entreprise' && $own && $own['id'] === $id);
+        $targetUser = get_user_by_id($id);
+        $note = filter_input(
+            INPUT_POST,
+            'note',
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 0, 'max_range' => 5]]
+        );
 
-        if (!$allowed) {
-            $message = 'Vous n\'êtes pas autorisé à supprimer cette entreprise.';
+        if ($user['role'] !== 'pilote' || !$targetUser || $targetUser['role'] !== 'entreprise') {
+            $message = 'Vous n\'êtes pas autorisé à modifier cette note.';
             $messageType = 'danger';
-        } elseif (delete_company_account($id)) {
-            if ($user['role'] === 'entreprise' && $own && $own['id'] === $id) {
-                session_destroy();
-                header('Location: index.php');
-                exit;
-            }
-
-            $_SESSION['settings_message'] = 'Entreprise supprimée avec succès.';
+        } elseif ($note === false) {
+            $message = 'La note doit être comprise entre 0 et 5.';
+            $messageType = 'danger';
+        } elseif (upsert_company_evaluation((int) $user['id'], $id, $note, trim($_POST['commentaire'] ?? ''))) {
+            $_SESSION['settings_message'] = 'Note de l\'entreprise mise à jour avec succès.';
             $_SESSION['settings_message_type'] = 'success';
             header('Location: parametres.php');
             exit;
         } else {
-            $message = 'Entreprise introuvable ou suppression impossible.';
+            $message = 'Impossible d\'enregistrer la note de cette entreprise.';
             $messageType = 'danger';
-        }
-    } elseif ($action === 'supprimer_pilote' && isset($_POST['id'])) {
-        $id = (int) $_POST['id'];
-
-        if ($user['role'] !== 'pilote') {
-            $message = 'Vous n\'êtes pas autorisé à supprimer ce pilote.';
-            $messageType = 'danger';
-        } else {
-            $deletedStudentsCount = delete_pilot_account($id);
-            if ($deletedStudentsCount === false) {
-                $message = 'Pilote introuvable ou suppression impossible.';
-                $messageType = 'danger';
-            } elseif ($own && $own['id'] === $id) {
-                session_destroy();
-                header('Location: index.php');
-                exit;
-            } else {
-                $_SESSION['settings_message'] = $deletedStudentsCount > 0
-                    ? 'Pilote supprimé avec succès. ' . $deletedStudentsCount . ' étudiant(s) lié(s) ont aussi été supprimé(s).'
-                    : 'Pilote supprimé avec succès.';
-                $_SESSION['settings_message_type'] = 'success';
-                header('Location: parametres.php');
-                exit;
-            }
         }
     }
 }
@@ -195,11 +191,13 @@ echo $twig->render('parametres.twig', [
     'students' => $students,
     'enterprises' => $enterprises,
     'pilots' => $pilots,
+    'admins' => $admins,
+    'pilotCompanyRatings' => $pilotCompanyRatings,
     'searchStudents' => $searchStudents,
     'searchEnterprises' => $searchEnterprises,
     'searchPilots' => $searchPilots,
+    'searchAdmins' => $searchAdmins,
     'message' => $message,
     'messageType' => $messageType,
-    'canDelete' => $canDelete,
     'current_page' => 'parametres'
 ]);

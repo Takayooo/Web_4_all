@@ -73,13 +73,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['success'] = 'Candidature supprimée.';
         }
     } elseif ($action === 'supprimer_favori') {
-        $offreId = (int) ($_POST['offre_id'] ?? 0);
-        supprimer_favori($currentUserId, $offreId);
-        $_SESSION['success'] = 'Offre retirée des favoris.';
+        if ($role === 'eleve') {
+            $offreId = (int) ($_POST['offre_id'] ?? 0);
+            supprimer_favori($currentUserId, $offreId);
+            $_SESSION['success'] = 'Offre retirée des favoris.';
+        }
     } elseif ($action === 'ajouter_favori') {
-        $offreId = (int) ($_POST['offre_id'] ?? 0);
-        ajouter_favori($currentUserId, $offreId);
-        $_SESSION['success'] = 'Offre ajoutée dans les favoris.';
+        if ($role === 'eleve') {
+            $offreId = (int) ($_POST['offre_id'] ?? 0);
+            ajouter_favori($currentUserId, $offreId);
+            $_SESSION['success'] = 'Offre ajoutée dans les favoris.';
+        }
     } elseif ($action === 'changer_statut_offre' && $role === 'entreprise') {
         $offreId = (int) ($_POST['offre_id'] ?? 0);
         $nouvelStatut = changer_statut_offre($offreId, $companyId);

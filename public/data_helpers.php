@@ -114,9 +114,10 @@ function resolve_company_display_name(array $row): string
 
 function normalize_user_row(array $row): array
 {
-    $isEntreprise = !empty($row['id_entreprise']);
-    $isPilote = !$isEntreprise && !empty($row['pilot_account_id']);
-    $role = $isEntreprise ? 'entreprise' : ($isPilote ? 'pilote' : 'eleve');
+    $isAdmin = !empty($row['admin_account_id']);
+    $isEntreprise = !$isAdmin && !empty($row['id_entreprise']);
+    $isPilote = !$isAdmin && !$isEntreprise && !empty($row['pilot_account_id']);
+    $role = $isAdmin ? 'administrateur' : ($isEntreprise ? 'entreprise' : ($isPilote ? 'pilote' : 'eleve'));
 
     $user = [
         'id' => (int) $row['id_utilisateur'],
@@ -156,6 +157,7 @@ function user_select_sql(): string
                    u.motdepasse,
                    e.id_etudiant,
                    e.id_pilote,
+                   admin_role.id_admin AS admin_account_id,
                    pilot_role.id_pilotes AS pilot_account_id,
                    pilot_ref.id_utilisateur AS pilote_utilisateur_id,
                    ce.id_entreprise,
@@ -167,6 +169,7 @@ function user_select_sql(): string
                    COALESCE(notes.note, 0) AS entreprise_note
             FROM utilisateur u
             LEFT JOIN etudiant e ON e.id_utilisateur = u.id_utilisateur
+            LEFT JOIN admin admin_role ON admin_role.id_utilisateur = u.id_utilisateur
             LEFT JOIN pilotes pilot_role ON pilot_role.id_utilisateur = u.id_utilisateur
             LEFT JOIN pilotes pilot_ref ON pilot_ref.id_pilotes = e.id_pilote
             LEFT JOIN compte_entreprise ce ON ce.id_utilisateur = u.id_utilisateur
@@ -399,7 +402,14 @@ function get_students_by_pilot_user_id(int $pilotUserId): array
 
 function get_all_pilots(): array
 {
-    $rows = db_fetch_all(user_select_sql() . ' WHERE pilot_role.id_pilotes IS NOT NULL AND ce.id_entreprise IS NULL ORDER BY u.nom, u.prenom');
+    $rows = db_fetch_all(user_select_sql() . ' WHERE pilot_role.id_pilotes IS NOT NULL AND ce.id_entreprise IS NULL AND admin_role.id_admin IS NULL ORDER BY u.nom, u.prenom');
+
+    return array_map('normalize_user_row', $rows);
+}
+
+function get_all_admins(): array
+{
+    $rows = db_fetch_all(user_select_sql() . ' WHERE admin_role.id_admin IS NOT NULL ORDER BY u.nom, u.prenom');
 
     return array_map('normalize_user_row', $rows);
 }
@@ -453,6 +463,76 @@ function get_entreprises_map(): array
 function get_all_enterprises(): array
 {
     return array_values(get_entreprises_map());
+}
+
+function get_pilot_company_evaluations(int $pilotUserId): array
+{
+    $pilotRecordId = find_pilot_record_id_by_user_id($pilotUserId);
+
+    if ($pilotRecordId === null) {
+        return [];
+    }
+
+    $rows = db_fetch_all(
+        'SELECT ce.id_utilisateur AS company_user_id,
+                e.note,
+                e.commentaire,
+                e.date_publication
+         FROM evaluation e
+         INNER JOIN compte_entreprise ce ON ce.id_entreprise = e.id_entreprise
+         WHERE e.id_pilotes = ?
+         ORDER BY ce.id_utilisateur ASC',
+        [$pilotRecordId]
+    );
+
+    $evaluations = [];
+
+    foreach ($rows as $row) {
+        $evaluations[(int) $row['company_user_id']] = [
+            'note' => isset($row['note']) ? (int) $row['note'] : null,
+            'commentaire' => (string) ($row['commentaire'] ?? ''),
+            'date_publication' => (string) ($row['date_publication'] ?? ''),
+        ];
+    }
+
+    return $evaluations;
+}
+
+function upsert_company_evaluation(int $pilotUserId, int $companyUserId, int $note, string $commentaire = ''): bool
+{
+    $pilotRecordId = find_pilot_record_id_by_user_id($pilotUserId);
+    $company = get_user_by_id($companyUserId);
+
+    if ($pilotRecordId === null || !$company || $company['role'] !== 'entreprise') {
+        return false;
+    }
+
+    $entrepriseId = (int) ($company['entreprise_id'] ?? 0);
+    if ($entrepriseId <= 0) {
+        return false;
+    }
+
+    $existing = db_fetch_one(
+        'SELECT id_evaluation
+         FROM evaluation
+         WHERE id_pilotes = ? AND id_entreprise = ?',
+        [$pilotRecordId, $entrepriseId]
+    );
+
+    if ($existing) {
+        return db_execute(
+            'UPDATE evaluation
+             SET note = ?, commentaire = ?, date_publication = CURDATE()
+             WHERE id_evaluation = ?',
+            [$note, $commentaire, $existing['id_evaluation']]
+        );
+    }
+
+    return db_execute(
+        'INSERT INTO evaluation (note, commentaire, date_publication, id_pilotes, id_entreprise)
+         VALUES (?, ?, CURDATE(), ?, ?)',
+        [$note, $commentaire, $pilotRecordId, $entrepriseId]
+    );
 }
 
 function get_student_count(): int

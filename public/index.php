@@ -16,10 +16,10 @@ $activeOffres = array_filter($offres, function($o) {
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title >Web4All</title>
+<title>Web4All</title>
 <link rel="stylesheet" href="style.css?v=19">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Web4All – Trouvez vos offres de stage et d'alternance. Découvrez nos offres, nos entreprises partenaires et inscrivez-vous gratuitement.">
+<meta name="description" content="Web4All - Trouvez vos offres de stage et d'alternance. Découvrez nos offres, nos entreprises partenaires et inscrivez-vous gratuitement.">
 </head>
 
 <body>

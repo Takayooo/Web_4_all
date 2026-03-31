@@ -3,6 +3,11 @@ session_start();
 require 'data_helpers.php';
 require 'pagination.php';
 
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'eleve') {
+    header('Location: index.php');
+    exit;
+}
+
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
     die("Offre introuvable");

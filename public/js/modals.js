@@ -1,50 +1,56 @@
-/**
- * Fonctions de gestion des modals
- * Gère l'ouverture et la fermeture des modals pour l'édition de formulaires
- */
+function editAccount(id, accountType, nom, prenom, email, secteur, ville) {
+    const modal = document.getElementById('editModal');
+    const prenomField = document.getElementById('prenomField');
+    const secteurField = document.getElementById('secteurField');
+    const villeField = document.getElementById('villeField');
+    const prenomInput = document.getElementById('prenom');
+    const secteurInput = document.getElementById('secteur');
+    const villeInput = document.getElementById('ville');
+    const modalTitle = document.getElementById('editModalTitle');
 
-/**
- * Ouvre la modal d'édition et la remplit avec les données de l'étudiant
- * @param {number} id - Identifiant de l'étudiant
- * @param {string} nom - Nom de famille
- * @param {string} prenom - Prénom
- * @param {string} email - Adresse email
- */
+    document.getElementById('editId').value = id;
+    document.getElementById('nom').value = nom || '';
+    document.getElementById('email').value = email || '';
+
+    if (accountType === 'entreprise') {
+        modalTitle.textContent = 'Modifier l\'entreprise';
+        prenomField.style.display = 'none';
+        secteurField.style.display = 'block';
+        villeField.style.display = 'block';
+        prenomInput.required = false;
+        prenomInput.value = '';
+        secteurInput.required = true;
+        villeInput.required = true;
+        secteurInput.value = secteur || '';
+        villeInput.value = ville || '';
+    } else {
+        modalTitle.textContent = 'Modifier le compte';
+        prenomField.style.display = 'block';
+        secteurField.style.display = 'none';
+        villeField.style.display = 'none';
+        prenomInput.required = true;
+        prenomInput.value = prenom || '';
+        secteurInput.required = false;
+        villeInput.required = false;
+        secteurInput.value = '';
+        villeInput.value = '';
+    }
+
+    modal.style.display = 'flex';
+}
+
 function editEleve(id, nom, prenom, email) {
-    document.getElementById('editId').value = id;
-    document.getElementById('nom').value = nom;
-    document.getElementById('prenom').value = prenom;
-    document.getElementById('email').value = email;
-    document.getElementById('editModal').style.display = 'flex';
+    editAccount(id, 'standard', nom, prenom, email, '', '');
 }
 
-/**
- * Ouvre la modal d'édition et la remplit avec les données de l'entreprise
- * @param {number} id - Identifiant de l'entreprise
- * @param {string} nom - Nom de l'entreprise
- * @param {string} secteur - Secteur d'activité
- * @param {string} ville - Ville
- * @param {string} email - Adresse email
- */
 function editEntreprise(id, nom, secteur, ville, email) {
-    document.getElementById('editId').value = id;
-    document.getElementById('nom').value = nom;
-    document.getElementById('secteur').value = secteur;
-    document.getElementById('ville').value = ville;
-    document.getElementById('email').value = email;
-    document.getElementById('editModal').style.display = 'flex';
+    editAccount(id, 'entreprise', nom, '', email, secteur, ville);
 }
 
-/**
- * Ferme la modal d'édition
- */
 function closeModal() {
     document.getElementById('editModal').style.display = 'none';
 }
 
-/**
- * Ferme la modal en cliquant en dehors du contenu de la modal
- */
 window.onclick = function(event) {
     const modal = document.getElementById('editModal');
     if (modal && event.target === modal) {
