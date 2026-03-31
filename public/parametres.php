@@ -157,6 +157,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $message = 'Impossible d\'enregistrer la modification dans la base de données.';
             $messageType = 'danger';
         }
+    } elseif ($action === 'supprimer' && isset($_POST['id'])) {
+        $id = (int) $_POST['id'];
+        $targetUser = get_user_by_id($id);
+
+        if (!$targetUser) {
+            $message = 'Action non autorisee.';
+            $messageType = 'danger';
+        } elseif ((int) $user['id'] === $id) {
+            $message = 'Vous ne pouvez pas supprimer votre propre compte.';
+            $messageType = 'danger';
+        } elseif ($user['role'] === 'administrateur') {
+            if (!in_array($targetUser['role'], ['eleve', 'entreprise', 'pilote'], true)) {
+                $message = 'Action non autorisee.';
+                $messageType = 'danger';
+            } elseif (delete_account_by_admin($id)) {
+                $_SESSION['settings_message'] = 'Compte supprime avec succes.';
+                $_SESSION['settings_message_type'] = 'success';
+                header('Location: parametres.php');
+                exit;
+            } else {
+                $message = 'Impossible de supprimer ce compte.';
+                $messageType = 'danger';
+            }
+        } elseif ($user['role'] === 'pilote') {
+            if ($targetUser['role'] !== 'eleve') {
+                $message = 'Action non autorisee.';
+                $messageType = 'danger';
+            } elseif (delete_student_by_pilot((int) $user['id'], $id)) {
+                $_SESSION['settings_message'] = 'Eleve supprime avec succes.';
+                $_SESSION['settings_message_type'] = 'success';
+                header('Location: parametres.php');
+                exit;
+            } else {
+                $message = 'Vous ne pouvez supprimer que vos propres eleves.';
+                $messageType = 'danger';
+            }
+        } else {
+            $message = 'Action non autorisee.';
+            $messageType = 'danger';
+        }
     } elseif ($action === 'modifier_note' && isset($_POST['id'])) {
         $id = (int) $_POST['id'];
         $targetUser = get_user_by_id($id);

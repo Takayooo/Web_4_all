@@ -9,9 +9,8 @@ require 'data_helpers.php';
 
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
-$role = $_POST['role'] ?? '';
 
-$foundUser = authenticate_user($email, $password, $role);
+$foundUser = authenticate_user_auto($email, $password);
 
 /* ------------------------
    RÉSULTAT
@@ -44,7 +43,7 @@ if ($foundUser) {
 
 } else {
 
-    $_SESSION['error'] = "Email, mot de passe ou rôle incorrect.";
+    $_SESSION['error'] = "Email ou mot de passe incorrect.";
     header("Location: index.php");
     exit;
 }

@@ -57,10 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = $errorCv ?? $errorLm;
             } else {
                 $uploadDir = __DIR__ . '/uploads/' . $userId . '/' . $id . '/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
+                if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true)) {
+                    $message = "Impossible de créer le dossier d'upload. Vérifiez les permissions du serveur.";
+                } elseif (!is_writable($uploadDir)) {
+                    $message = "Le dossier d'upload n'est pas accessible en écriture.";
                 }
+
                 function storeFile($file, $uploadDir, $prefix) {
+                    if (!is_uploaded_file($file['tmp_name'])) {
+                        return null;
+                    }
+
                     $name = basename($file['name']);
                     $safeName = preg_replace('/[^a-zA-Z0-9_\-.]/', '_', $name);
                     $dest = $uploadDir . $prefix . '_' . uniqid() . '_' . $safeName;
@@ -69,15 +76,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     return null;
                 }
-                $cvPath = storeFile($_FILES['cv'], $uploadDir, 'cv');
-                $lmPath = storeFile($_FILES['lm'], $uploadDir, 'lm');
-                if (!$cvPath || !$lmPath) {
-                    $message = 'Erreur lors de l’enregistrement des fichiers.';
-                } else {
-                    ajouter_candidature($userId, $id, $cvPath, $lmPath);
-                    ajouter_favori($userId, $id);
-                    $success = true;
-                    $message = 'Candidature enregistrée avec succès.';
+
+                if ($message === null) {
+                    $cvPath = storeFile($_FILES['cv'], $uploadDir, 'cv');
+                    $lmPath = storeFile($_FILES['lm'], $uploadDir, 'lm');
+
+                    if (!$cvPath || !$lmPath) {
+                        if ($cvPath && file_exists($cvPath)) {
+                            unlink($cvPath);
+                        }
+                        if ($lmPath && file_exists($lmPath)) {
+                            unlink($lmPath);
+                        }
+                        $message = 'Erreur lors de l\'enregistrement des fichiers. Vérifiez les permissions du dossier uploads.';
+                    } elseif (ajouter_candidature($userId, $id, $cvPath, $lmPath)) {
+                        ajouter_favori($userId, $id);
+                        $success = true;
+                        $message = 'Candidature enregistrée avec succès.';
+                    } else {
+                        $message = 'Impossible d\'enregistrer la candidature en base de données.';
+                    }
                 }
             }
         }

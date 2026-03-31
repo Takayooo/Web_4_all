@@ -67,6 +67,14 @@ if ($user && $user['role'] === 'eleve' && $userId) {
     <h1 class="offre-titre"><?= htmlspecialchars($offreTrouvee['titre']) ?></h1>
     <div class="offre-content-grid">
         <div class="offre-description-bloc">
+            <div class="offre-meta">
+                <?php if (!empty($offreTrouvee['remuneration'])): ?>
+                    <span class="offre-meta-item"><span class="offre-meta-label">Rémunération</span> <?= htmlspecialchars($offreTrouvee['remuneration']) ?></span>
+                <?php endif; ?>
+                <?php if (!empty($offreTrouvee['niveau_etude'])): ?>
+                    <span class="offre-meta-item"><span class="offre-meta-label">Niveau d'études</span> <?= htmlspecialchars($offreTrouvee['niveau_etude']) ?></span>
+                <?php endif; ?>
+            </div>
             <?php if (!empty($offreTrouvee['description'])): ?>
                 <div class="offre-description">
                     <?= nl2br(htmlspecialchars($offreTrouvee['description'])) ?>

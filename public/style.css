@@ -6,12 +6,14 @@
     --primary-hover:  #2A3ABF;
     --secondary:      #6C63FF;
     --accent:         #8B5CF6;
-    --gradient:       radial-gradient(circle at bottom left, #1E2A78 0%, #6C63FF 50%, #8B5CF6 100%);
-
+    --gradient:       linear-gradient(to right, #1E2A78 0%, #6C63FF 90%, #8B5CF6 100%);
+    --gradient-header: radial-gradient(circle at bottom left, #1E2A78 0%, #6C63FF 90%, #8B5CF6 100%);
+    --gradient-hero: radial-gradient(circle at top left, #1E2A78 0%, #6C63FF 90%, #8B5CF6 100%);
+    
     --bg-main:        #F7F9FC;
     --bg-secondary:   #EEF2FF;
     --card-bg:        #FFFFFF;
-    --card-hover-bg:  #F1F5FF;
+    --card-hover-bg:  #ecebfd;
     --border-soft:    #E0E7FF;
 
     --text-primary:   #0F172A;
@@ -116,6 +118,30 @@
 }
 .offre-description-bloc {
     min-width: 0;
+}
+.offre-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.offre-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.97em;
+    color: var(--text-primary);
+}
+.offre-meta-label {
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
 }
 .offre-description {
     margin: 0 0 24px 0;
@@ -274,7 +300,7 @@ a {
    ======================================== */
 
 header {
-    background: var(--gradient);
+    background: var(--gradient-header);
     padding: 15px 0;
     color: white;
 }
@@ -383,7 +409,7 @@ header {
     position: absolute;
     top: calc(100% + 5px);
     right: 0;
-    min-width: 170px;
+    min-width: 200px;
     background: #ffffff;
     border: 1px solid var(--border-soft);
     border-radius: 6px;
@@ -712,13 +738,17 @@ header {
     display: flex;
     flex-direction: column;
 }
+.card:hover {
+    background-color: var(--card-hover-bg);
+    box-shadow: var(--shadow-hover);
+    transition: all 0.3s ease;
+}
 
 .card h3 {
     color: #0d0c6e;
 }
 
 .card button {
-    margin-top: 15px;
     background: #0d0c6e;
     color: white;
     border: none;
@@ -744,6 +774,7 @@ header {
 }
 
 .eleve-card:hover {
+    background-color: var(--card-hover-bg);
     box-shadow: var(--shadow-hover);
 }
 
@@ -804,7 +835,7 @@ header {
 }
 
 .status-btn {
-    background: #ffc107 !important;
+    background: #ffe207 !important;
     color: #212529 !important;
     border: 1px solid #ffc107 !important;
 }
@@ -999,7 +1030,7 @@ footer {
 .hero {
     background:
         linear-gradient(to bottom, transparent 40%, #f4f4f4 100%),
-        radial-gradient(circle at top left, #1E2A78 0%, #6C63FF 50%, #8B5CF6 100%);
+        var(--gradient-hero);
     color: white;
     padding: 50px 0;
     text-align: center;
@@ -1022,6 +1053,7 @@ footer {
     justify-content: center;
     max-width: 800px;
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .search-form input,
@@ -1042,6 +1074,7 @@ footer {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+    justify-content: right;
 }
 
 .search-form button:hover {
@@ -1454,5 +1487,127 @@ footer {
 @media (max-width: 900px) {
     .containercontact {
         flex-direction: column;
+    }
+}
+
+/* ========================================
+   PAGE CRÉER / MODIFIER UNE OFFRE
+   ======================================== */
+
+.creer-offre-hero {
+    background:
+        linear-gradient(to bottom, transparent 40%, #f4f4f4 100%),
+        var(--gradient-hero);
+    color: white;
+    padding: 50px 0 60px;
+    text-align: center;
+}
+
+.creer-offre-hero h1 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.creer-offre-hero p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+.creer-offre-wrapper {
+    margin-top: -30px;
+    display: flex;
+    justify-content: center;
+}
+
+.creer-offre-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 40px 44px;
+    width: 100%;
+    max-width: 680px;
+}
+
+.creer-offre-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.creer-offre-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.creer-offre-field label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95em;
+}
+
+.creer-offre-field .required {
+    color: #c90000;
+}
+
+.creer-offre-field input,
+.creer-offre-field textarea,
+.creer-offre-field select {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+    font-size: 1em;
+    font-family: inherit;
+    background: var(--bg-main);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.creer-offre-field input:focus,
+.creer-offre-field textarea:focus,
+.creer-offre-field select:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+.creer-offre-field textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.creer-offre-field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.creer-offre-submit {
+    background: var(--gradient);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 6px;
+}
+
+.creer-offre-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+@media (max-width: 600px) {
+    .creer-offre-card {
+        padding: 28px 20px;
+    }
+
+    .creer-offre-hero h1 {
+        font-size: 1.6em;
     }
 }

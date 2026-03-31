@@ -38,6 +38,8 @@ $success = false;
 $titre = $offreEnCours['titre'] ?? '';
 $description = $offreEnCours['description'] ?? '';
 $contrat = $offreEnCours['contrat'] ?? 'stage';
+$remuneration = $offreEnCours['remuneration'] ?? '';
+$niveauEtude = $offreEnCours['niveau_etude'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postedOffreId = filter_input(INPUT_POST, 'offre_id', FILTER_VALIDATE_INT);
@@ -48,6 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titre = trim($_POST['titre'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $contrat = $_POST['contrat'] ?? 'stage';
+    $remuneration = trim($_POST['remuneration'] ?? '');
+    $niveauEtude = trim($_POST['niveau_etude'] ?? '');
     $isEditMode = $offreId !== null;
 
     if ($isEditMode) {
@@ -66,12 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($titre) {
         if ($isEditMode) {
-            $success = modifier_offre($offreId, $entrepriseId, $titre, $description, $contrat);
+            $success = modifier_offre($offreId, $entrepriseId, $titre, $description, $contrat, $remuneration, $niveauEtude);
             $message = $success
                 ? 'Offre modifiée avec succès : ' . htmlspecialchars($titre, ENT_QUOTES, 'UTF-8')
                 : 'La modification de l\'offre a échoué.';
         } else {
-            creer_offre($entrepriseId, $titre, $description, $contrat);
+            creer_offre($entrepriseId, $titre, $description, $contrat, $remuneration, $niveauEtude);
             $message = 'Offre créée avec succès : ' . htmlspecialchars($titre, ENT_QUOTES, 'UTF-8');
             $success = true;
         }
@@ -87,40 +91,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title><?= $isEditMode ? 'Modifier une offre' : 'Créer une offre' ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="<?= $isEditMode ? 'Modifiez votre offre de stage ou d\'alternance sur Web4All.' : 'Publiez une nouvelle offre de stage ou d\'alternance sur Web4All.' ?>">
-<link rel="stylesheet" href="style.css?v=22">
+<link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
-<section class="container">
-    <h1><?= $isEditMode ? 'Modifier l\'offre' : 'Créer une nouvelle offre' ?></h1>
-    <?php if ($message): ?>
-        <div class="alert <?= $success ? 'alert-success' : 'alert-error' ?>"><?= $message ?></div>
-        <?php if ($success): ?>
-            <p><a href="dashboard.php" class="button">Retour au tableau de bord</a></p>
+<section class="creer-offre-hero">
+    <div class="container">
+        <h1><?= $isEditMode ? 'Modifier l\'offre' : 'Créer une nouvelle offre' ?></h1>
+        <p><?= $isEditMode ? 'Modifiez les informations de votre offre ci-dessous.' : 'Publiez une offre de stage ou d\'alternance pour trouver le candidat idéal.' ?></p>
+    </div>
+</section>
+<section class="container creer-offre-wrapper">
+    <div class="creer-offre-card">
+        <?php if ($message): ?>
+            <div class="alert <?= $success ? 'alert-success' : 'alert-error' ?>"><?= $message ?></div>
+            <?php if ($success): ?>
+                <p style="text-align:center;"><a href="dashboard.php" class="button">Retour au tableau de bord</a></p>
+            <?php endif; ?>
         <?php endif; ?>
-    <?php endif; ?>
-    <form action="creer_offre.php<?= $isEditMode ? '?id=' . $offreId : '' ?>" method="post" class="form-section" novalidate>
-        <?php if ($isEditMode): ?>
-            <input type="hidden" name="offre_id" value="<?= $offreId ?>">
-        <?php endif; ?>
-        <div class="form-group">
-            <label for="titre">Titre de l'offre *</label>
-            <input type="text" id="titre" name="titre" placeholder="Ex: Stage Développeur Web" minlength="5" value="<?= htmlspecialchars($titre, ENT_QUOTES, 'UTF-8') ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="contrat">Type de contrat</label>
-            <select id="contrat" name="contrat">
-                <option value="stage" <?= $contrat === 'stage' ? 'selected' : '' ?>>Stage</option>
-                <option value="alternance" <?= $contrat === 'alternance' ? 'selected' : '' ?>>Alternance</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" placeholder="Décrivez l'offre, les missions, les compétences requises..." rows="6"><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea>
-        </div>
-        <button type="submit" class="button"><?= $isEditMode ? 'Enregistrer les modifications' : 'Créer l\'offre' ?></button>
-    </form>
+        <form action="creer_offre.php<?= $isEditMode ? '?id=' . $offreId : '' ?>" method="post" class="creer-offre-form" novalidate>
+            <?php if ($isEditMode): ?>
+                <input type="hidden" name="offre_id" value="<?= $offreId ?>">
+            <?php endif; ?>
+            <div class="creer-offre-field">
+                <label for="titre">Titre de l'offre <span class="required">*</span></label>
+                <input type="text" id="titre" name="titre" placeholder="Ex: Stage Développeur Web" minlength="5" value="<?= htmlspecialchars($titre, ENT_QUOTES, 'UTF-8') ?>" required>
+            </div>
+            <div class="creer-offre-field">
+                <label for="contrat">Type de contrat</label>
+                <select id="contrat" name="contrat">
+                    <option value="stage" <?= $contrat === 'stage' ? 'selected' : '' ?>>Stage</option>
+                    <option value="alternance" <?= $contrat === 'alternance' ? 'selected' : '' ?>>Alternance</option>
+                </select>
+            </div>
+            <div class="creer-offre-field">
+                <label for="remuneration">Rémunération</label>
+                <input type="text" id="remuneration" name="remuneration" placeholder="Ex: 600€/mois, 800€/mois..." value="<?= htmlspecialchars($remuneration, ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="creer-offre-field">
+                <label for="niveau_etude">Niveau d'études requis</label>
+                <input type="text" id="niveau_etude" name="niveau_etude" placeholder="Ex: Bac+3, Bac+5, Master..." value="<?= htmlspecialchars($niveauEtude, ENT_QUOTES, 'UTF-8') ?>">
+            </div>
+            <div class="creer-offre-field">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" placeholder="Décrivez l'offre, les missions, les compétences requises..." rows="6"><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea>
+            </div>
+            <button type="submit" class="creer-offre-submit"><?= $isEditMode ? 'Enregistrer les modifications' : 'Créer l\'offre' ?></button>
+        </form>
+    </div>
 </section>
 </main>
 <?php include 'footer.php'; ?>

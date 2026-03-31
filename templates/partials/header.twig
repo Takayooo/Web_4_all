@@ -19,6 +19,9 @@
 <div class="user-menu">
     <a href="#" id="user-menu-btn" class="btn btn-white">{{ user.prenom ? user.prenom ~ ' ' ~ user.nom : user.nom }} &#x25BE;</a>
     <div id="user-menu-dropdown" class="user-menu-dropdown" role="menu" aria-label="Menu utilisateur">
+        {% if user.role == 'pilote' or user.role == 'administrateur' %}
+            <a href="create_account.php" class="user-menu-item"><img src="/assets/ajout.png" alt="Créer un compte" class="menu-icon"> Créer un compte</a>
+        {% endif %}
         <a href="parametres.php" class="user-menu-item"><img src="/assets/parametres.png" alt="Paramètres" class="menu-icon"> Paramètres</a>
         <a href="logout.php" class="user-menu-item"><img src="/assets/deconnexion.png" alt="Déconnexion" class="menu-icon"> Se déconnecter</a>
     </div>
@@ -44,21 +47,11 @@
 <p class="login-error">{{ error }}</p>
 {% endif %}
 
-<div class="role-switch">
-<button class="role-btn active" data-role="eleve">Élève</button>
-<button class="role-btn" data-role="pilote">Pilote</button>
-<button class="role-btn" data-role="entreprise">Entreprise</button>
-<button class="role-btn" data-role="administrateur">Administrateur</button>
-</div>
-
 <form id="login-form" action="login.php" method="POST" class="login-form" novalidate>
-<input type="hidden" name="role" id="role-input" value="eleve">
 <input type="email" name="email" placeholder="Email" autocomplete="email" required>
 <input type="password" name="password" placeholder="Mot de passe" autocomplete="current-password" required minlength="4">
 <button type="submit">Se connecter</button>
 </form>
-
-<p class="login-signup-link">Pas encore de compte ? <a href="create_account.php">Créer un compte</a></p>
 
 </div>
 </div>

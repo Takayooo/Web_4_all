@@ -5,7 +5,8 @@ echo "<h2>Test connexion BDD – Offres</h2>";
 
 try {
     // Requête sur la table des offres
-    $stmt = $pdo->query("SELECT * FROM offre");
+    $stmt = $pdo->prepare("SELECT * FROM offre");
+    $stmt->execute();
     $offers = $stmt->fetchAll();
 
     echo "<h3>Liste des offres :</h3>";

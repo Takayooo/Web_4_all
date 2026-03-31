@@ -45,9 +45,9 @@ function column_exists(string $table, string $column): bool
         'SELECT 1
          FROM information_schema.columns
          WHERE table_schema = DATABASE()
-           AND table_name = ?
-           AND column_name = ?',
-        [$table, $column]
+           AND table_name = :nom_table
+           AND column_name = :nom_colonne',
+        [':nom_table' => $table, ':nom_colonne' => $column]
     );
 
     return $row !== null;
@@ -200,14 +200,14 @@ function get_all_users_indexed(): array
 
 function get_user_by_id(int $userId): ?array
 {
-    $row = db_fetch_one(user_select_sql() . ' WHERE u.id_utilisateur = ?', [$userId]);
+    $row = db_fetch_one(user_select_sql() . ' WHERE u.id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
 
     return $row ? normalize_user_row($row) : null;
 }
 
 function get_user_by_email(string $email): ?array
 {
-    $row = db_fetch_one(user_select_sql() . ' WHERE LOWER(u.email) = LOWER(?)', [$email]);
+    $row = db_fetch_one(user_select_sql() . ' WHERE LOWER(u.email) = LOWER(:email)', [':email' => $email]);
 
     return $row ? normalize_user_row($row) : null;
 }
@@ -227,14 +227,29 @@ function authenticate_user(string $email, string $password, string $role): ?arra
     return $user;
 }
 
+function authenticate_user_auto(string $email, string $password): ?array
+{
+    $user = get_user_by_email($email);
+
+    if (!$user) {
+        return null;
+    }
+
+    if ($user['password'] !== $password) {
+        return null;
+    }
+
+    return $user;
+}
+
 function email_exists(string $email, ?int $excludeUserId = null): bool
 {
-    $sql = 'SELECT 1 FROM utilisateur WHERE LOWER(email) = LOWER(?)';
-    $params = [$email];
+    $sql = 'SELECT 1 FROM utilisateur WHERE LOWER(email) = LOWER(:email)';
+    $params = [':email' => $email];
 
     if ($excludeUserId !== null) {
-        $sql .= ' AND id_utilisateur <> ?';
-        $params[] = $excludeUserId;
+        $sql .= ' AND id_utilisateur <> :id_exclus';
+        $params[':id_exclus'] = $excludeUserId;
     }
 
     return db_fetch_one($sql, $params) !== null;
@@ -242,14 +257,14 @@ function email_exists(string $email, ?int $excludeUserId = null): bool
 
 function find_pilot_record_id_by_user_id(int $pilotUserId): ?int
 {
-    $row = db_fetch_one('SELECT id_pilotes FROM pilotes WHERE id_utilisateur = ?', [$pilotUserId]);
+    $row = db_fetch_one('SELECT id_pilotes FROM pilotes WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $pilotUserId]);
 
     return $row ? (int) $row['id_pilotes'] : null;
 }
 
 function find_student_record_id_by_user_id(int $userId): ?int
 {
-    $row = db_fetch_one('SELECT id_etudiant FROM etudiant WHERE id_utilisateur = ?', [$userId]);
+    $row = db_fetch_one('SELECT id_etudiant FROM etudiant WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
 
     return $row ? (int) $row['id_etudiant'] : null;
 }
@@ -274,15 +289,15 @@ function create_student_account(string $email, string $password, string $nom, st
 
     try {
         db_execute(
-            'INSERT INTO utilisateur (nom, prenom, email, motdepasse) VALUES (?, ?, ?, ?)',
-            [$nom, $prenom, $email, $password]
+            'INSERT INTO utilisateur (nom, prenom, email, motdepasse) VALUES (:nom, :prenom, :email, :motdepasse)',
+            [':nom' => $nom, ':prenom' => $prenom, ':email' => $email, ':motdepasse' => $password]
         );
 
         $userId = (int) $database->lastInsertId();
 
         db_execute(
-            'INSERT INTO etudiant (id_utilisateur, id_pilote) VALUES (?, ?)',
-            [$userId, $pilotRecordId]
+            'INSERT INTO etudiant (id_utilisateur, id_pilote) VALUES (:id_utilisateur, :id_pilote)',
+            [':id_utilisateur' => $userId, ':id_pilote' => $pilotRecordId]
         );
 
         $database->commit();
@@ -304,13 +319,13 @@ function create_pilot_account(string $email, string $password, string $nom, stri
 
     try {
         db_execute(
-            'INSERT INTO utilisateur (nom, prenom, email, motdepasse) VALUES (?, ?, ?, ?)',
-            [$nom, $prenom, $email, $password]
+            'INSERT INTO utilisateur (nom, prenom, email, motdepasse) VALUES (:nom, :prenom, :email, :motdepasse)',
+            [':nom' => $nom, ':prenom' => $prenom, ':email' => $email, ':motdepasse' => $password]
         );
 
         $userId = (int) $database->lastInsertId();
 
-        db_execute('INSERT INTO pilotes (id_utilisateur) VALUES (?)', [$userId]);
+        db_execute('INSERT INTO pilotes (id_utilisateur) VALUES (:id_utilisateur)', [':id_utilisateur' => $userId]);
 
         $database->commit();
 
@@ -331,15 +346,15 @@ function create_company_account(string $email, string $password, string $company
 
     try {
         db_execute(
-            'INSERT INTO utilisateur (nom, prenom, email, motdepasse) VALUES (?, ?, ?, ?)',
-            [$companyName, '', $email, $password]
+            'INSERT INTO utilisateur (nom, prenom, email, motdepasse) VALUES (:nom, :prenom, :email, :motdepasse)',
+            [':nom' => $companyName, ':prenom' => '', ':email' => $email, ':motdepasse' => $password]
         );
 
         $userId = (int) $database->lastInsertId();
 
         db_execute(
-            'INSERT INTO compte_entreprise (ville, description_, secteur, email, telephone, id_utilisateur) VALUES (?, ?, ?, ?, ?, ?)',
-            [$ville, '', $secteur, $email, '', $userId]
+            'INSERT INTO compte_entreprise (ville, description_, secteur, email, telephone, id_utilisateur) VALUES (:ville, :description, :secteur, :email, :telephone, :id_utilisateur)',
+            [':ville' => $ville, ':description' => '', ':secteur' => $secteur, ':email' => $email, ':telephone' => '', ':id_utilisateur' => $userId]
         );
 
         $database->commit();
@@ -357,8 +372,8 @@ function create_company_account(string $email, string $password, string $company
 function update_basic_account(int $userId, string $nom, string $prenom, string $email): bool
 {
     return db_execute(
-        'UPDATE utilisateur SET nom = ?, prenom = ?, email = ? WHERE id_utilisateur = ?',
-        [$nom, $prenom, $email, $userId]
+        'UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email WHERE id_utilisateur = :id_utilisateur',
+        [':nom' => $nom, ':prenom' => $prenom, ':email' => $email, ':id_utilisateur' => $userId]
     );
 }
 
@@ -369,14 +384,77 @@ function update_company_account(int $userId, string $companyName, string $secteu
 
     try {
         db_execute(
-            'UPDATE utilisateur SET nom = ?, prenom = ?, email = ? WHERE id_utilisateur = ?',
-            [$companyName, '', $email, $userId]
+            'UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email WHERE id_utilisateur = :id_utilisateur',
+            [':nom' => $companyName, ':prenom' => '', ':email' => $email, ':id_utilisateur' => $userId]
         );
 
         db_execute(
-            'UPDATE compte_entreprise SET secteur = ?, ville = ?, email = ? WHERE id_utilisateur = ?',
-            [$secteur, $ville, $email, $userId]
+            'UPDATE compte_entreprise SET secteur = :secteur, ville = :ville, email = :email WHERE id_utilisateur = :id_utilisateur',
+            [':secteur' => $secteur, ':ville' => $ville, ':email' => $email, ':id_utilisateur' => $userId]
         );
+
+        $database->commit();
+
+        return true;
+    } catch (Throwable $exception) {
+        if ($database->inTransaction()) {
+            $database->rollBack();
+        }
+
+        return false;
+    }
+}
+
+function delete_account_by_admin(int $userId): bool
+{
+    $target = get_user_by_id($userId);
+
+    if (!$target || $target['role'] === 'administrateur') {
+        return false;
+    }
+
+    $database = db();
+    $database->beginTransaction();
+
+    try {
+        if ($target['role'] === 'pilote') {
+            $pilotRecordId = find_pilot_record_id_by_user_id($userId);
+
+            if ($pilotRecordId !== null) {
+                db_execute('UPDATE etudiant SET id_pilote = NULL WHERE id_pilote = :id_pilote', [':id_pilote' => $pilotRecordId]);
+                db_execute('DELETE FROM evaluation WHERE id_pilotes = :id_pilotes', [':id_pilotes' => $pilotRecordId]);
+            }
+
+            db_execute('DELETE FROM pilotes WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
+        } elseif ($target['role'] === 'entreprise') {
+            $entrepriseId = (int) ($target['entreprise_id'] ?? 0);
+
+            if ($entrepriseId > 0) {
+                $offerRows = db_fetch_all('SELECT id_offre FROM proposer WHERE id_entreprise = :id_entreprise', [':id_entreprise' => $entrepriseId]);
+                $offerIds = array_map(
+                    static fn(array $row): int => (int) $row['id_offre'],
+                    $offerRows
+                );
+
+                db_execute('DELETE FROM evaluation WHERE id_entreprise = :id_entreprise', [':id_entreprise' => $entrepriseId]);
+                db_execute('DELETE FROM proposer WHERE id_entreprise = :id_entreprise', [':id_entreprise' => $entrepriseId]);
+
+                foreach ($offerIds as $offerId) {
+                    db_execute(
+                        'UPDATE etudiant SET id_tableau_candidatures = NULL WHERE id_tableau_candidatures IN (SELECT id_tableau_candidatures FROM tableau_candidatures WHERE id_offre = :id_offre)',
+                        [':id_offre' => $offerId]
+                    );
+                    db_execute('DELETE FROM wishlist WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+                    db_execute('DELETE FROM requerir WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+                    db_execute('DELETE FROM tableau_candidatures WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+                    db_execute('DELETE FROM offre WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+                }
+            }
+
+            db_execute('DELETE FROM compte_entreprise WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
+        }
+
+        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
 
         $database->commit();
 
@@ -393,8 +471,8 @@ function update_company_account(int $userId, string $companyName, string $secteu
 function get_students_by_pilot_user_id(int $pilotUserId): array
 {
     $rows = db_fetch_all(
-        user_select_sql() . ' WHERE e.id_etudiant IS NOT NULL AND e.id_pilote = (SELECT id_pilotes FROM pilotes WHERE id_utilisateur = ?) ORDER BY u.nom, u.prenom',
-        [$pilotUserId]
+        user_select_sql() . ' WHERE e.id_etudiant IS NOT NULL AND e.id_pilote = (SELECT id_pilotes FROM pilotes WHERE id_utilisateur = :id_utilisateur) ORDER BY u.nom, u.prenom',
+        [':id_utilisateur' => $pilotUserId]
     );
 
     return array_map('normalize_user_row', $rows);
@@ -480,9 +558,9 @@ function get_pilot_company_evaluations(int $pilotUserId): array
                 e.date_publication
          FROM evaluation e
          INNER JOIN compte_entreprise ce ON ce.id_entreprise = e.id_entreprise
-         WHERE e.id_pilotes = ?
+         WHERE e.id_pilotes = :id_pilotes
          ORDER BY ce.id_utilisateur ASC',
-        [$pilotRecordId]
+        [':id_pilotes' => $pilotRecordId]
     );
 
     $evaluations = [];
@@ -515,23 +593,23 @@ function upsert_company_evaluation(int $pilotUserId, int $companyUserId, int $no
     $existing = db_fetch_one(
         'SELECT id_evaluation
          FROM evaluation
-         WHERE id_pilotes = ? AND id_entreprise = ?',
-        [$pilotRecordId, $entrepriseId]
+         WHERE id_pilotes = :id_pilotes AND id_entreprise = :id_entreprise',
+        [':id_pilotes' => $pilotRecordId, ':id_entreprise' => $entrepriseId]
     );
 
     if ($existing) {
         return db_execute(
             'UPDATE evaluation
-             SET note = ?, commentaire = ?, date_publication = CURDATE()
-             WHERE id_evaluation = ?',
-            [$note, $commentaire, $existing['id_evaluation']]
+             SET note = :note, commentaire = :commentaire, date_publication = CURDATE()
+             WHERE id_evaluation = :id_evaluation',
+            [':note' => $note, ':commentaire' => $commentaire, ':id_evaluation' => $existing['id_evaluation']]
         );
     }
 
     return db_execute(
         'INSERT INTO evaluation (note, commentaire, date_publication, id_pilotes, id_entreprise)
-         VALUES (?, ?, CURDATE(), ?, ?)',
-        [$note, $commentaire, $pilotRecordId, $entrepriseId]
+         VALUES (:note, :commentaire, CURDATE(), :id_pilotes, :id_entreprise)',
+        [':note' => $note, ':commentaire' => $commentaire, ':id_pilotes' => $pilotRecordId, ':id_entreprise' => $entrepriseId]
     );
 }
 
@@ -604,8 +682,8 @@ function get_offre_by_id(int $offreId): ?array
                 proposer.id_entreprise
          FROM offre o
          INNER JOIN proposer ON proposer.id_offre = o.id_offre
-         WHERE o.id_offre = ?',
-        [$offreId]
+         WHERE o.id_offre = :id_offre',
+        [':id_offre' => $offreId]
     );
 
     return $row ? normalize_offer_row($row) : null;
@@ -626,7 +704,7 @@ function get_company_offres(int $entrepriseId, bool $includeInactive = true): ar
                    proposer.id_entreprise
             FROM offre o
             INNER JOIN proposer ON proposer.id_offre = o.id_offre
-            WHERE proposer.id_entreprise = ?';
+            WHERE proposer.id_entreprise = :id_entreprise';
 
     if (!$includeInactive) {
         $sql .= ' AND o.statut = 1';
@@ -634,12 +712,12 @@ function get_company_offres(int $entrepriseId, bool $includeInactive = true): ar
 
     $sql .= ' ORDER BY o.id_offre ASC';
 
-    $rows = db_fetch_all($sql, [$entrepriseId]);
+    $rows = db_fetch_all($sql, [':id_entreprise' => $entrepriseId]);
 
     return array_map('normalize_offer_row', $rows);
 }
 
-function creer_offre(int $entrepriseId, string $titre, string $description = '', string $contrat = 'stage'): int
+function creer_offre(int $entrepriseId, string $titre, string $description = '', string $contrat = 'stage', string $remuneration = '', string $niveauEtude = ''): int
 {
     $entreprises = get_entreprises_map();
     $localisation = $entreprises[$entrepriseId]['ville'] ?? '';
@@ -650,13 +728,13 @@ function creer_offre(int $entrepriseId, string $titre, string $description = '',
     try {
         db_execute(
             'INSERT INTO offre (description, remuneration, niveau_etude, date_publication, date_creation, statut, titre, localisation, contrat)
-             VALUES (?, ?, ?, CURDATE(), NOW(), 1, ?, ?, ?)',
-            [$description, '', '', $titre, $localisation, $contrat]
+             VALUES (:description, :remuneration, :niveau_etude, CURDATE(), NOW(), 1, :titre, :localisation, :contrat)',
+            [':description' => $description, ':remuneration' => $remuneration, ':niveau_etude' => $niveauEtude, ':titre' => $titre, ':localisation' => $localisation, ':contrat' => $contrat]
         );
 
         $offreId = (int) $database->lastInsertId();
 
-        db_execute('INSERT INTO proposer (id_offre, id_entreprise) VALUES (?, ?)', [$offreId, $entrepriseId]);
+        db_execute('INSERT INTO proposer (id_offre, id_entreprise) VALUES (:id_offre, :id_entreprise)', [':id_offre' => $offreId, ':id_entreprise' => $entrepriseId]);
 
         $database->commit();
 
@@ -670,13 +748,13 @@ function creer_offre(int $entrepriseId, string $titre, string $description = '',
     }
 }
 
-function modifier_offre(int $offreId, int $entrepriseId, string $titre, string $description = '', string $contrat = 'stage'): bool
+function modifier_offre(int $offreId, int $entrepriseId, string $titre, string $description = '', string $contrat = 'stage', string $remuneration = '', string $niveauEtude = ''): bool
 {
     $exists = db_fetch_one(
         'SELECT 1
          FROM proposer
-         WHERE id_offre = ? AND id_entreprise = ?',
-        [$offreId, $entrepriseId]
+         WHERE id_offre = :id_offre AND id_entreprise = :id_entreprise',
+        [':id_offre' => $offreId, ':id_entreprise' => $entrepriseId]
     );
 
     if (!$exists) {
@@ -684,8 +762,8 @@ function modifier_offre(int $offreId, int $entrepriseId, string $titre, string $
     }
 
     return db_execute(
-        'UPDATE offre SET titre = ?, description = ?, contrat = ? WHERE id_offre = ?',
-        [$titre, $description, $contrat, $offreId]
+        'UPDATE offre SET titre = :titre, description = :description, contrat = :contrat, remuneration = :remuneration, niveau_etude = :niveau_etude WHERE id_offre = :id_offre',
+        [':titre' => $titre, ':description' => $description, ':contrat' => $contrat, ':remuneration' => $remuneration, ':niveau_etude' => $niveauEtude, ':id_offre' => $offreId]
     );
 }
 
@@ -695,8 +773,8 @@ function changer_statut_offre(int $offreId, int $entrepriseId): ?string
         'SELECT o.statut
          FROM offre o
          INNER JOIN proposer ON proposer.id_offre = o.id_offre
-         WHERE o.id_offre = ? AND proposer.id_entreprise = ?',
-        [$offreId, $entrepriseId]
+         WHERE o.id_offre = :id_offre AND proposer.id_entreprise = :id_entreprise',
+        [':id_offre' => $offreId, ':id_entreprise' => $entrepriseId]
     );
 
     if (!$row) {
@@ -704,7 +782,7 @@ function changer_statut_offre(int $offreId, int $entrepriseId): ?string
     }
 
     $newStatus = ((int) $row['statut']) === 1 ? 0 : 1;
-    db_execute('UPDATE offre SET statut = ? WHERE id_offre = ?', [$newStatus, $offreId]);
+    db_execute('UPDATE offre SET statut = :statut WHERE id_offre = :id_offre', [':statut' => $newStatus, ':id_offre' => $offreId]);
 
     return $newStatus === 1 ? 'active' : 'inactive';
 }
@@ -749,9 +827,9 @@ function get_candidatures_utilisateur(int $utilisateurId): array
     $rows = db_fetch_all(
         'SELECT id_offre, date_candidature, cv, lettre_motivation
          FROM tableau_candidatures
-         WHERE id_etudiant = ?
+         WHERE id_etudiant = :id_etudiant
          ORDER BY date_candidature DESC, id_tableau_candidatures DESC',
-        [$studentId]
+        [':id_etudiant' => $studentId]
     );
 
     return array_map(function (array $row): array {
@@ -779,9 +857,9 @@ function get_candidatures_pour_offre(int $offreId, int $entrepriseId): array
                 tc.date_candidature
          FROM tableau_candidatures tc
          INNER JOIN etudiant e ON e.id_etudiant = tc.id_etudiant
-         WHERE tc.id_offre = ?
+         WHERE tc.id_offre = :id_offre
          ORDER BY tc.date_candidature DESC, tc.id_tableau_candidatures DESC',
-        [$offreId]
+        [':id_offre' => $offreId]
     );
 
     return array_map(function (array $row): array {
@@ -805,23 +883,23 @@ function ajouter_candidature(int $utilisateurId, int $offreId, string $cvChemin,
     $existing = db_fetch_one(
         'SELECT id_tableau_candidatures
          FROM tableau_candidatures
-         WHERE id_etudiant = ? AND id_offre = ?',
-        [$studentId, $offreId]
+         WHERE id_etudiant = :id_etudiant AND id_offre = :id_offre',
+        [':id_etudiant' => $studentId, ':id_offre' => $offreId]
     );
 
     if ($existing) {
         return db_execute(
             'UPDATE tableau_candidatures
-             SET cv = ?, lettre_motivation = ?, date_candidature = CURDATE()
-             WHERE id_tableau_candidatures = ?',
-            [$cvChemin, $lmChemin, $existing['id_tableau_candidatures']]
+             SET cv = :cv, lettre_motivation = :lettre_motivation, date_candidature = CURDATE()
+             WHERE id_tableau_candidatures = :id_tableau_candidatures',
+            [':cv' => $cvChemin, ':lettre_motivation' => $lmChemin, ':id_tableau_candidatures' => $existing['id_tableau_candidatures']]
         );
     }
 
     return db_execute(
         'INSERT INTO tableau_candidatures (cv, lettre_motivation, date_candidature, id_etudiant, id_offre)
-         VALUES (?, ?, CURDATE(), ?, ?)',
-        [$cvChemin, $lmChemin, $studentId, $offreId]
+         VALUES (:cv, :lettre_motivation, CURDATE(), :id_etudiant, :id_offre)',
+        [':cv' => $cvChemin, ':lettre_motivation' => $lmChemin, ':id_etudiant' => $studentId, ':id_offre' => $offreId]
     );
 }
 
@@ -834,8 +912,8 @@ function supprimer_candidature(int $utilisateurId, int $offreId): bool
     }
 
     return db_execute(
-        'DELETE FROM tableau_candidatures WHERE id_etudiant = ? AND id_offre = ?',
-        [$studentId, $offreId]
+        'DELETE FROM tableau_candidatures WHERE id_etudiant = :id_etudiant AND id_offre = :id_offre',
+        [':id_etudiant' => $studentId, ':id_offre' => $offreId]
     );
 }
 
@@ -867,7 +945,7 @@ function get_favoris_utilisateur(int $utilisateurId): array
         return [];
     }
 
-    $rows = db_fetch_all('SELECT id_offre FROM wishlist WHERE id_etudiant = ? ORDER BY id_wishlist ASC', [$studentId]);
+    $rows = db_fetch_all('SELECT id_offre FROM wishlist WHERE id_etudiant = :id_etudiant ORDER BY id_wishlist ASC', [':id_etudiant' => $studentId]);
 
     return array_map(static fn(array $row): int => (int) $row['id_offre'], $rows);
 }
@@ -880,13 +958,13 @@ function ajouter_favori(int $utilisateurId, int $offreId): bool
         return false;
     }
 
-    $existing = db_fetch_one('SELECT id_wishlist FROM wishlist WHERE id_etudiant = ? AND id_offre = ?', [$studentId, $offreId]);
+    $existing = db_fetch_one('SELECT id_wishlist FROM wishlist WHERE id_etudiant = :id_etudiant AND id_offre = :id_offre', [':id_etudiant' => $studentId, ':id_offre' => $offreId]);
 
     if ($existing) {
         return true;
     }
 
-    return db_execute('INSERT INTO wishlist (id_etudiant, id_offre) VALUES (?, ?)', [$studentId, $offreId]);
+    return db_execute('INSERT INTO wishlist (id_etudiant, id_offre) VALUES (:id_etudiant, :id_offre)', [':id_etudiant' => $studentId, ':id_offre' => $offreId]);
 }
 
 function supprimer_favori(int $utilisateurId, int $offreId): bool
@@ -897,7 +975,7 @@ function supprimer_favori(int $utilisateurId, int $offreId): bool
         return false;
     }
 
-    return db_execute('DELETE FROM wishlist WHERE id_etudiant = ? AND id_offre = ?', [$studentId, $offreId]);
+    return db_execute('DELETE FROM wishlist WHERE id_etudiant = :id_etudiant AND id_offre = :id_offre', [':id_etudiant' => $studentId, ':id_offre' => $offreId]);
 }
 
 function delete_student_account(int $userId): bool
@@ -912,10 +990,10 @@ function delete_student_account(int $userId): bool
     $database->beginTransaction();
 
     try {
-        db_execute('DELETE FROM wishlist WHERE id_etudiant = ?', [$studentId]);
-        db_execute('DELETE FROM tableau_candidatures WHERE id_etudiant = ?', [$studentId]);
-        db_execute('DELETE FROM etudiant WHERE id_etudiant = ?', [$studentId]);
-        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = ?', [$userId]);
+        db_execute('DELETE FROM wishlist WHERE id_etudiant = :id_etudiant', [':id_etudiant' => $studentId]);
+        db_execute('DELETE FROM tableau_candidatures WHERE id_etudiant = :id_etudiant', [':id_etudiant' => $studentId]);
+        db_execute('DELETE FROM etudiant WHERE id_etudiant = :id_etudiant', [':id_etudiant' => $studentId]);
+        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
 
         $database->commit();
 
@@ -927,6 +1005,29 @@ function delete_student_account(int $userId): bool
 
         return false;
     }
+}
+
+function delete_student_by_pilot(int $pilotUserId, int $studentUserId): bool
+{
+    $pilotRecordId = find_pilot_record_id_by_user_id($pilotUserId);
+    $studentRecordId = find_student_record_id_by_user_id($studentUserId);
+
+    if ($pilotRecordId === null || $studentRecordId === null) {
+        return false;
+    }
+
+    $row = db_fetch_one(
+        'SELECT 1
+         FROM etudiant
+         WHERE id_etudiant = :id_etudiant AND id_pilote = :id_pilote',
+        [':id_etudiant' => $studentRecordId, ':id_pilote' => $pilotRecordId]
+    );
+
+    if (!$row) {
+        return false;
+    }
+
+    return delete_student_account($studentUserId);
 }
 
 function delete_company_account(int $userId): bool
@@ -944,17 +1045,17 @@ function delete_company_account(int $userId): bool
     $database->beginTransaction();
 
     try {
-        db_execute('DELETE FROM evaluation WHERE id_entreprise = ?', [$entrepriseId]);
+        db_execute('DELETE FROM evaluation WHERE id_entreprise = :id_entreprise', [':id_entreprise' => $entrepriseId]);
 
         foreach ($offerIds as $offerId) {
-            db_execute('DELETE FROM wishlist WHERE id_offre = ?', [$offerId]);
-            db_execute('DELETE FROM tableau_candidatures WHERE id_offre = ?', [$offerId]);
-            db_execute('DELETE FROM proposer WHERE id_offre = ?', [$offerId]);
-            db_execute('DELETE FROM offre WHERE id_offre = ?', [$offerId]);
+            db_execute('DELETE FROM wishlist WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+            db_execute('DELETE FROM tableau_candidatures WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+            db_execute('DELETE FROM proposer WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
+            db_execute('DELETE FROM offre WHERE id_offre = :id_offre', [':id_offre' => $offerId]);
         }
 
-        db_execute('DELETE FROM compte_entreprise WHERE id_entreprise = ?', [$entrepriseId]);
-        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = ?', [$userId]);
+        db_execute('DELETE FROM compte_entreprise WHERE id_entreprise = :id_entreprise', [':id_entreprise' => $entrepriseId]);
+        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
 
         $database->commit();
 
@@ -986,15 +1087,15 @@ function delete_pilot_account(int $userId): int|false
         foreach ($studentIds as $studentUserId) {
             $studentRecordId = find_student_record_id_by_user_id($studentUserId);
             if ($studentRecordId !== null) {
-                db_execute('DELETE FROM wishlist WHERE id_etudiant = ?', [$studentRecordId]);
-                db_execute('DELETE FROM tableau_candidatures WHERE id_etudiant = ?', [$studentRecordId]);
-                db_execute('DELETE FROM etudiant WHERE id_etudiant = ?', [$studentRecordId]);
+                db_execute('DELETE FROM wishlist WHERE id_etudiant = :id_etudiant', [':id_etudiant' => $studentRecordId]);
+                db_execute('DELETE FROM tableau_candidatures WHERE id_etudiant = :id_etudiant', [':id_etudiant' => $studentRecordId]);
+                db_execute('DELETE FROM etudiant WHERE id_etudiant = :id_etudiant', [':id_etudiant' => $studentRecordId]);
             }
-            db_execute('DELETE FROM utilisateur WHERE id_utilisateur = ?', [$studentUserId]);
+            db_execute('DELETE FROM utilisateur WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $studentUserId]);
         }
 
-        db_execute('DELETE FROM pilotes WHERE id_pilotes = ?', [$pilotRecordId]);
-        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = ?', [$userId]);
+        db_execute('DELETE FROM pilotes WHERE id_pilotes = :id_pilotes', [':id_pilotes' => $pilotRecordId]);
+        db_execute('DELETE FROM utilisateur WHERE id_utilisateur = :id_utilisateur', [':id_utilisateur' => $userId]);
 
         $database->commit();
 

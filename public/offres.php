@@ -3,6 +3,11 @@ require 'data_helpers.php';
 require 'pagination.php';
 
 $current_page = 'offres';
+
+$secteurs_list = array_unique(array_filter(array_column($entreprises, 'secteur')));
+$villes_list = array_unique(array_filter(array_column($entreprises, 'ville')));
+sort($secteurs_list, SORT_LOCALE_STRING);
+sort($villes_list, SORT_LOCALE_STRING);
 ?>
 
 <!DOCTYPE html>
@@ -32,17 +37,15 @@ $current_page = 'offres';
 </select>
 <select name="secteur">
     <option value="">Tous secteurs</option>
-    <option value="Technologie" <?= (isset($secteur) && $secteur === 'Technologie') ? 'selected' : '' ?>>Technologie</option>
-    <option value="Finance" <?= (isset($secteur) && $secteur === 'Finance') ? 'selected' : '' ?>>Finance</option>
-    <option value="Énergie" <?= (isset($secteur) && $secteur === 'Énergie') ? 'selected' : '' ?>>Énergie</option>
-    <option value="Santé" <?= (isset($secteur) && $secteur === 'Santé') ? 'selected' : '' ?>>Santé</option>
+    <?php foreach ($secteurs_list as $s): ?>
+    <option value="<?= htmlspecialchars($s) ?>" <?= (isset($secteur) && $secteur === $s) ? 'selected' : '' ?>><?= htmlspecialchars($s) ?></option>
+    <?php endforeach; ?>
 </select>
 <select name="ville">
     <option value="">Toutes villes</option>
-    <option value="Paris" <?= (isset($ville) && $ville === 'Paris') ? 'selected' : '' ?>>Paris</option>
-    <option value="Londres" <?= (isset($ville) && $ville === 'Londres') ? 'selected' : '' ?>>Londres</option>
-    <option value="Berlin" <?= (isset($ville) && $ville === 'Berlin') ? 'selected' : '' ?>>Berlin</option>
-    <option value="Madrid" <?= (isset($ville) && $ville === 'Madrid') ? 'selected' : '' ?>>Madrid</option>
+    <?php foreach ($villes_list as $v): ?>
+    <option value="<?= htmlspecialchars($v) ?>" <?= (isset($ville) && $ville === $v) ? 'selected' : '' ?>><?= htmlspecialchars($v) ?></option>
+    <?php endforeach; ?>
 </select>
 <button type="submit">Rechercher</button>
 </form>
