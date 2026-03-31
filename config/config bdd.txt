@@ -1,0 +1,26 @@
+Mise en place de la base de données 
+Installer MySQL si c’est pas déjà fait 
+sudo apt update
+sudo apt install mysql-server
+
+sudo service mysql start
+sudo mysql
+CREATE DATABASE web4all;
+EXIT;
+
+Si probleme avec le mot de passe de mysql *
+sudo service mysql stop
+sudo mkdir -p /var/run/mysqld sudo chown mysql:mysql /var/run/mysqld
+sudo mysqld_safe --skip-grant-tables &
+mysql -u root
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Root123!';
+FLUSH PRIVILEGES;
+
+Cd (puis la direction dans le quelle est le fichier web4all.sql) 
+mysql -u root -p web4all < web4all.sql
+
+verifications avec simple un simple request 
+mysql -u root -p
+USE web4all;
+SHOW TABLES;
+SELECT * FROM utilisateur;
