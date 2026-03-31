@@ -2,7 +2,7 @@
 $host = '127.0.0.1';
 $dbname = 'web4all';
 $user = 'root';
-$password = 'Root123!';
+$password = 'Z1z1_z1z1';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);

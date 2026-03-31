@@ -1,12 +1,7 @@
 <?php
 
 session_start();
-
-/* ------------------------
-   "FAUSSE BASE DE DONNÉES"
------------------------- */
-
-$users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
+require 'data_helpers.php';
 
 /* ------------------------
    RÉCUPÉRATION DES DONNÉES
@@ -16,23 +11,7 @@ $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 $role = $_POST['role'] ?? '';
 
-/* ------------------------
-   VÉRIFICATION
------------------------- */
-
-$foundUser = null;
-
-foreach ($users as $user) {
-
-    if (
-        $user['email'] === $email &&
-        $user['password'] === $password &&
-        $user['role'] === $role
-    ) {
-        $foundUser = $user;
-        break;
-    }
-}
+$foundUser = authenticate_user($email, $password, $role);
 
 /* ------------------------
    RÉSULTAT
@@ -53,6 +32,7 @@ if ($foundUser) {
         $_SESSION['user']['secteur'] = $foundUser['secteur'] ?? '';
         $_SESSION['user']['ville'] = $foundUser['ville'] ?? '';
         $_SESSION['user']['entreprise_id'] = $foundUser['entreprise_id'] ?? $foundUser['id'];
+        $_SESSION['user']['note'] = $foundUser['note'] ?? 0;
     }
 
     if ($foundUser['role'] === 'eleve') {

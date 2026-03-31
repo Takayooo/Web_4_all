@@ -11,109 +11,127 @@ if (!$user) {
     exit;
 }
 
-$currentUser = get_user_by_id((int) $user['id']);
-if (!$currentUser) {
-    session_destroy();
-    header('Location: index.php');
-    exit;
+$users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
+$allUsersById = [];
+foreach ($users as $u) {
+    $allUsersById[$u['id']] = $u;
 }
 
-$_SESSION['user'] = $currentUser;
-$user = $currentUser;
-$allUsersById = get_all_users_indexed();
-$currentUserId = (int) $user['id'];
+$currentUserId = (int)$user['id'];
 $role = $user['role'];
-$companyId = (int) ($user['entreprise_id'] ?? 0);
 
-$pilotEleves = $role === 'pilote' ? array_values(get_students_by_pilot_user_id($currentUserId)) : [];
-$pilotEleveIds = array_map(static fn(array $eleve): int => (int) $eleve['id'], $pilotEleves);
-
+// Pilote: vue d'un élève sélectionné
 $selectedEleveId = null;
 if ($role === 'pilote' && isset($_GET['eleve_id'])) {
-    $candidate = (int) $_GET['eleve_id'];
-    if (in_array($candidate, $pilotEleveIds, true)) {
-        $selectedEleveId = $candidate;
+    $candidate = (int)$_GET['eleve_id'];
+    if (isset($allUsersById[$candidate]) && $allUsersById[$candidate]['role'] === 'eleve') {
+        $isLinkedEleve = in_array($candidate, $allUsersById[$currentUserId]['eleves'] ?? [], true);
+        if ($isLinkedEleve) {
+            $selectedEleveId = $candidate;
+        }
     }
 }
 
+// Entreprise: offre sélectionnée
 $selectedOffreId = null;
 if ($role === 'entreprise' && isset($_GET['offre_id'])) {
-    $selectedOffreId = (int) $_GET['offre_id'];
+    $selectedOffreId = (int)$_GET['offre_id'];
 }
 
-function findOffer(array $offres, int $id)
-{
+function findOffer(array $offres, int $id) {
     foreach ($offres as $offre) {
         if ($offre['id'] === $id) {
             return $offre;
         }
     }
-
     return null;
 }
 
-function downloadLink(?string $path): string
-{
-    if (!$path) {
-        return '#';
-    }
-
+function downloadLink(?string $path): string {
+    if (!$path) return '#';
     return 'download.php?f=' . urlencode(base64_encode($path));
 }
 
+// Actions POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-
     if ($action === 'supprimer_candidature') {
         $isPilote = $role === 'pilote';
-        $ownerId = $isPilote && isset($_POST['eleve_id']) ? (int) $_POST['eleve_id'] : $currentUserId;
-        if ($ownerId === $currentUserId || ($isPilote && in_array($ownerId, $pilotEleveIds, true))) {
-            $offreId = (int) ($_POST['offre_id'] ?? 0);
+        $ownerId = $isPilote && isset($_POST['eleve_id']) ? (int)$_POST['eleve_id'] : $currentUserId;
+        if ($ownerId === $currentUserId || ($isPilote && in_array($ownerId, $allUsersById[$currentUserId]['eleves'] ?? [], true))) {
+            $offreId = (int)($_POST['offre_id'] ?? 0);
             supprimer_candidature($ownerId, $offreId);
             $_SESSION['success'] = 'Candidature supprimée.';
         }
     } elseif ($action === 'supprimer_favori') {
-        $offreId = (int) ($_POST['offre_id'] ?? 0);
-        supprimer_favori($currentUserId, $offreId);
+        $ownerId = $currentUserId;
+        $offreId = (int)($_POST['offre_id'] ?? 0);
+        supprimer_favori($ownerId, $offreId);
         $_SESSION['success'] = 'Offre retirée des favoris.';
     } elseif ($action === 'ajouter_favori') {
-        $offreId = (int) ($_POST['offre_id'] ?? 0);
-        ajouter_favori($currentUserId, $offreId);
+        $ownerId = $currentUserId;
+        $offreId = (int)($_POST['offre_id'] ?? 0);
+        ajouter_favori($ownerId, $offreId);
         $_SESSION['success'] = 'Offre ajoutée dans les favoris.';
-    } elseif ($action === 'changer_statut_offre' && $role === 'entreprise') {
-        $offreId = (int) ($_POST['offre_id'] ?? 0);
-        $nouvelStatut = changer_statut_offre($offreId, $companyId);
-        if ($nouvelStatut !== null) {
-            $_SESSION['success'] = 'Statut de l\'offre changé : ' . ($nouvelStatut === 'active' ? 'Active' : 'Inactive');
-        } else {
-            $_SESSION['error'] = 'Erreur : offre introuvable ou accès non autorisé.';
+    } elseif ($action === 'changer_statut_offre') {
+        if ($role === 'entreprise') {
+            $offreId = (int)($_POST['offre_id'] ?? 0);
+            $nouvelStatut = changer_statut_offre($offreId, $user['entreprise_id'] ?? $currentUserId);
+            if ($nouvelStatut !== null) {
+                $_SESSION['success'] = 'Statut de l\'offre changé : ' . ($nouvelStatut === 'active' ? 'Active' : 'Inactive');
+            } else {
+                $_SESSION['error'] = 'Erreur : offre introuvable ou accès non autorisé.';
+            }
         }
     }
-
     $redirect = 'dashboard.php';
     if ($role === 'pilote' && $selectedEleveId) {
         $redirect .= '?eleve_id=' . $selectedEleveId;
     } elseif ($role === 'entreprise' && $selectedOffreId) {
         $redirect .= '?offre_id=' . $selectedOffreId;
     }
-
     header('Location: ' . $redirect);
     exit;
 }
 
-$targetEleveId = ($role === 'pilote' && $selectedEleveId) ? $selectedEleveId : $currentUserId;
+$targetEleveId = $currentUserId;
+if ($role === 'pilote' && $selectedEleveId) {
+    $targetEleveId = $selectedEleveId;
+}
+
 $applications = get_candidatures_utilisateur($targetEleveId);
 $wishlist = get_favoris_utilisateur($targetEleveId);
-$companyOffers = $role === 'entreprise' ? get_company_offres($companyId, true) : [];
+
+$pilotEleves = [];
+if ($role === 'pilote') {
+    $pilotEleves = array_filter($users, function($u) use ($user) {
+        return $u['role'] === 'eleve' && isset($u['pilote_id']) && $u['pilote_id'] === $user['id'];
+    });
+}
+
+$companyOffers = [];
+if ($role === 'entreprise') {
+    $companyId = $user['entreprise_id'] ?? $currentUserId;
+    // On récupère toutes les offres de l'entreprise, actives ou inactives
+    $offres = charger_offres();
+    $companyOffers = array_filter($offres, function($o) use ($companyId) {
+        return $o['entreprise_id'] === $companyId;
+    });
+}
 
 $selectedOffre = null;
 $selectedAppList = [];
 if ($role === 'entreprise' && $selectedOffreId) {
-    $selectedOffre = get_offre_by_id($selectedOffreId);
-    if ($selectedOffre && $selectedOffre['entreprise_id'] === $companyId) {
-        $selectedAppList = get_candidatures_pour_offre($selectedOffreId, $companyId);
-    } else {
-        $selectedOffre = null;
+    $selectedOffre = findOffer($offres, $selectedOffreId);
+    if ($selectedOffre && $selectedOffre['entreprise_id'] === ($user['entreprise_id'] ?? $currentUserId)) {
+        $allApps = charger_candidatures();
+        foreach ($allApps as $teacherId => $studentApps) {
+            foreach ($studentApps as $a) {
+                if ($a['offre_id'] === $selectedOffreId) {
+                    $selectedAppList[] = array_merge($a, ['user_id' => (int)$teacherId]);
+                }
+            }
+        }
     }
 }
 
@@ -159,7 +177,7 @@ unset($_SESSION['success']);
 
         <?php if ($selectedEleveId): ?>
             <hr>
-            <h2>Vue élève : <?= htmlspecialchars(trim(($allUsersById[$targetEleveId]['prenom'] ?? '') . ' ' . ($allUsersById[$targetEleveId]['nom'] ?? ''))) ?></h2>
+            <h2>Vue élève : <?= htmlspecialchars($allUsersById[$targetEleveId]['prenom'] . ' ' . $allUsersById[$targetEleveId]['nom']) ?></h2>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -171,8 +189,8 @@ unset($_SESSION['success']);
                     <p>Aucune candidature déposée.</p>
                 <?php else: ?>
                     <div class="candidatures-list">
-                    <?php foreach ($applications as $app):
-                        $offre = get_offre_by_id($app['offre_id']);
+                    <?php foreach ($applications as $i => $app):
+                        $offre = findOffer($offres, $app['offre_id']);
                         $entreprise = $offre ? $entreprises[$offre['entreprise_id']] ?? null : null;
                     ?>
                         <div class="candidature-bloc">
@@ -220,8 +238,8 @@ unset($_SESSION['success']);
                     <p>Liste vide.</p>
                 <?php else: ?>
                     <div class="wishlist-list">
-                    <?php foreach ($wishlist as $offreId):
-                        $offre = get_offre_by_id($offreId);
+                    <?php foreach ($wishlist as $i => $offreId):
+                        $offre = findOffer($offres, $offreId);
                         $entreprise = $offre ? $entreprises[$offre['entreprise_id']] ?? null : null;
                     ?>
                         <div class="wishlist-bloc">
@@ -298,9 +316,10 @@ unset($_SESSION['success']);
                     $bg = ($i % 2 === 0) ? 'ligne-candidat-bg' : '';
                 ?>
                     <div class="ligne-candidat <?= $bg ?>">
-                        <div class="candidat-eleve"> <?= htmlspecialchars(trim(($eleve['prenom'] ?? '') . ' ' . ($eleve['nom'] ?? ''))) ?> </div>
+                        <div class="candidat-eleve"> <?= htmlspecialchars(($eleve['prenom'] ?? '') . ' ' . ($eleve['nom'] ?? '')) ?> </div>
                         <div class="candidat-cv">
                             <a href="<?= downloadLink($app['cv']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> CV</a>
+
                         </div>
                         <div class="candidat-lm">
                             <a href="<?= downloadLink($app['lm']) ?>" class="button btn-sm"><img src="/assets/telecharger.png" alt="Télécharger" class="menu-icon"> LM</a>

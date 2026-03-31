@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once 'data_helpers.php';
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
@@ -14,26 +15,19 @@ $message = $_SESSION['settings_message'] ?? '';
 $messageType = $_SESSION['settings_message_type'] ?? 'success';
 unset($_SESSION['settings_message'], $_SESSION['settings_message_type']);
 
-function saveUsers(string $usersFile, array $users): bool
-{
-    $json = json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-    if ($json === false) {
-        return false;
-    }
-
-    return file_put_contents($usersFile, $json, LOCK_EX) !== false;
-}
-
-// Vérifier si l'utilisateur est connecté et a le rôle approprié (pilote, eleve ou entreprise)
-if (!$user || !in_array($user['role'], ['pilote', 'eleve', 'entreprise'])) {
-    header("Location: index.php");
+if (!$user || !in_array($user['role'], ['pilote', 'eleve', 'entreprise'], true)) {
+    header('Location: index.php');
     exit;
 }
 
-// Charger la base de données depuis le fichier JSON
-$usersFile = __DIR__ . '/users.json';
-$users = json_decode(file_get_contents($usersFile), true);
+$user = get_user_by_id((int) $user['id']);
+if (!$user) {
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
+$_SESSION['user'] = $user;
 
 $searchStudents = trim($_GET['search_students'] ?? '');
 $searchEnterprises = trim($_GET['search_enterprises'] ?? '');
@@ -47,7 +41,7 @@ function containsSearch(array $account, string $query, array $fields): bool
 
     $needle = mb_strtolower($query, 'UTF-8');
     foreach ($fields as $field) {
-        $value = (string)($account[$field] ?? '');
+        $value = (string) ($account[$field] ?? '');
         if ($value !== '' && mb_strpos(mb_strtolower($value, 'UTF-8'), $needle) !== false) {
             return true;
         }
@@ -56,241 +50,145 @@ function containsSearch(array $account, string $query, array $fields): bool
     return false;
 }
 
-// Filtrer les élèves selon le rôle
-if ($user['role'] === 'pilote') {
-    $allAccounts = array_filter($users, function($u) use ($user) { 
-        return $u['role'] === 'eleve' || ($u['role'] === 'pilote' && $u['email'] === $user['email']); 
-    });
-    $own = null;
-    $students = [];
-    foreach ($allAccounts as $acc) {
-        if ($acc['role'] === 'pilote' && $acc['email'] === $user['email']) {
-            $own = $acc;
-        } elseif (($acc['pilote_id'] ?? null) === $user['id']) {
-            $students[] = $acc;
-        }
-    }
-    $canDelete = true;
-} elseif ($user['role'] === 'entreprise') {
-    $own = array_filter($users, function($u) use ($user) { 
-        return $u['role'] === 'entreprise' && $u['email'] === $user['email']; 
-    });
-    $own = $own ? $own[array_key_first($own)] : null;
-    $students = [];
-    $canDelete = false;
-} else { // eleve
-    $own = array_filter($users, function($u) use ($user) { 
-        return $u['role'] === 'eleve' && $u['email'] === $user['email']; 
-    });
-    $own = $own ? $own[array_key_first($own)] : null;
-    $students = [];
-    $canDelete = false;
-}
-
-// Récupérer les entreprises si l'utilisateur est pilote
+$own = get_user_by_id((int) $user['id']);
+$students = [];
 $enterprises = [];
 $pilots = [];
+$canDelete = $user['role'] === 'pilote';
+
 if ($user['role'] === 'pilote') {
-    $enterprises = array_filter($users, function($u) { 
-        return $u['role'] === 'entreprise'; 
-    });
-    $enterprises = array_values($enterprises);
+    $students = array_values(array_filter(
+        get_students_by_pilot_user_id((int) $user['id']),
+        fn(array $account): bool => containsSearch($account, $searchStudents, ['nom', 'prenom', 'email'])
+    ));
 
-    $pilots = array_filter($users, function($u) use ($user) {
-        return $u['role'] === 'pilote' && $u['id'] !== $user['id'];
-    });
-    $pilots = array_values($pilots);
+    $enterprises = array_values(array_filter(
+        get_all_enterprises(),
+        fn(array $account): bool => containsSearch($account, $searchEnterprises, ['nom', 'secteur', 'ville', 'email'])
+    ));
 
-    $students = array_values(array_filter($students, function($u) use ($searchStudents) {
-        return containsSearch($u, $searchStudents, ['nom', 'prenom', 'email']);
-    }));
-
-    $enterprises = array_values(array_filter($enterprises, function($u) use ($searchEnterprises) {
-        return containsSearch($u, $searchEnterprises, ['nom', 'secteur', 'ville', 'email']);
-    }));
-
-    $pilots = array_values(array_filter($pilots, function($u) use ($searchPilots) {
-        return containsSearch($u, $searchPilots, ['nom', 'prenom', 'email']);
-    }));
+    $pilots = array_values(array_filter(
+        get_all_pilots(),
+        fn(array $account): bool => $account['id'] !== $user['id'] && containsSearch($account, $searchPilots, ['nom', 'prenom', 'email'])
+    ));
 }
 
-// Gestion des actions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action'])) {
-        $action = $_POST['action'];
-        if ($action === 'modifier' && isset($_POST['id'])) {
-            $id = (int)$_POST['id'];
-            $nom = trim($_POST['nom'] ?? '');
-            $email = trim($_POST['email'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
 
-            // Vérifier les permissions
-            $allowed = false;
-            if ($user['role'] === 'pilote') {
-                $allowed = true;
-            } elseif ($user['role'] === 'eleve') {
-                // Vérifier que c'est son propre compte
-                $allowed = ($own && $own['id'] === $id);
-            } elseif ($user['role'] === 'entreprise') {
-                // Vérifier que c'est son propre compte
-                $allowed = ($own && $own['id'] === $id);
-            }
+    if ($action === 'modifier' && isset($_POST['id'])) {
+        $id = (int) $_POST['id'];
+        $targetUser = get_user_by_id($id);
+        $nom = trim($_POST['nom'] ?? '');
+        $email = trim($_POST['email'] ?? '');
 
-            if ($allowed && $nom && $email) {
-                foreach ($users as &$u) {
-                    if ($u['id'] === $id) {
-                        if ($u['role'] === 'eleve') {
-                            $prenom = trim($_POST['prenom'] ?? '');
-                            if ($prenom) {
-                                $u['nom'] = $nom;
-                                $u['prenom'] = $prenom;
-                                $u['email'] = $email;
-                            }
-                        } elseif ($u['role'] === 'entreprise') {
-                            $secteur = trim($_POST['secteur'] ?? '');
-                            $ville = trim($_POST['ville'] ?? '');
-                            if ($secteur && $ville) {
-                                $u['nom'] = $nom;
-                                $u['secteur'] = $secteur;
-                                $u['ville'] = $ville;
-                                $u['email'] = $email;
-                            }
-                        }
-                        if (!saveUsers($usersFile, $users)) {
-                            $message = 'Impossible d\'enregistrer la modification dans users.json.';
-                            $messageType = 'danger';
-                            break;
-                        }
-                        // Mettre à jour la session si c'est son propre compte
-                        if ($u['email'] === $user['email']) {
-                            $_SESSION['user']['nom'] = $nom;
-                            $_SESSION['user']['email'] = $email;
-                            if ($u['role'] === 'entreprise') {
-                                $_SESSION['user']['secteur'] = $secteur;
-                                $_SESSION['user']['ville'] = $ville;
-                            } elseif ($u['role'] === 'eleve') {
-                                $_SESSION['user']['prenom'] = $prenom;
-                            }
-                        }
-                        $_SESSION['settings_message'] = 'Compte modifié avec succès.';
-                        $_SESSION['settings_message_type'] = 'success';
-                        header("Location: parametres.php");
-                        exit;
-                    }
+        $allowed = false;
+        if ($user['role'] === 'pilote') {
+            $allowed = true;
+        } elseif ($own && $own['id'] === $id) {
+            $allowed = true;
+        }
+
+        if (!$allowed || !$targetUser) {
+            $message = 'Action non autorisée.';
+            $messageType = 'danger';
+        } elseif (!$nom || !$email) {
+            $message = 'Tous les champs sont requis.';
+            $messageType = 'danger';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $message = 'Email invalide.';
+            $messageType = 'danger';
+        } elseif (email_exists($email, $id)) {
+            $message = 'Un autre compte utilise déjà cet email.';
+            $messageType = 'danger';
+        } else {
+            $updated = false;
+
+            if ($targetUser['role'] === 'entreprise') {
+                $secteur = trim($_POST['secteur'] ?? '');
+                $ville = trim($_POST['ville'] ?? '');
+                if ($secteur && $ville) {
+                    $updated = update_company_account($id, $nom, $secteur, $ville, $email);
                 }
             } else {
-                $message = $allowed ? 'Tous les champs sont requis.' : 'Action non autorisée.';
-                $messageType = 'danger';
+                $prenom = trim($_POST['prenom'] ?? '');
+                if ($prenom) {
+                    $updated = update_basic_account($id, $nom, $prenom, $email);
+                }
             }
-        } elseif ($action === 'supprimer' && isset($_POST['id']) && $canDelete) {
-            $id = (int)$_POST['id'];
-            $filteredUsers = array_values(array_filter($users, function($u) use ($id) {
-                return !($u['id'] === $id && $u['role'] === 'eleve');
-            }));
 
-            if (count($filteredUsers) === count($users)) {
-                $message = 'Compte étudiant introuvable.';
-                $messageType = 'danger';
-            } elseif (!saveUsers($usersFile, $filteredUsers)) {
-                $message = 'Impossible de supprimer le compte étudiant dans users.json.';
-                $messageType = 'danger';
-            } else {
-                $_SESSION['settings_message'] = 'Compte étudiant supprimé avec succès.';
+            if ($updated) {
+                if ($own && $own['id'] === $id) {
+                    $_SESSION['user'] = get_user_by_id($id) ?? $_SESSION['user'];
+                }
+                $_SESSION['settings_message'] = 'Compte modifié avec succès.';
                 $_SESSION['settings_message_type'] = 'success';
-                header("Location: parametres.php");
+                header('Location: parametres.php');
                 exit;
             }
-        } elseif ($action === 'supprimer_entreprise' && isset($_POST['id'])) {
-            $id = (int)$_POST['id'];
-            $allowed = false;
-            
-            // Vérifier les permissions
-            if ($user['role'] === 'pilote') {
-                $allowed = true;
-            } elseif ($user['role'] === 'entreprise' && $own && $own['id'] === $id) {
-                $allowed = true;
-            }
-            
-            if ($allowed) {
-                $filteredUsers = array_values(array_filter($users, function($u) use ($id) {
-                    return !($u['id'] === $id && $u['role'] === 'entreprise');
-                }));
 
-                if (count($filteredUsers) === count($users)) {
-                    $message = 'Entreprise introuvable.';
-                    $messageType = 'danger';
-                } elseif (!saveUsers($usersFile, $filteredUsers)) {
-                    $message = 'Impossible de supprimer l\'entreprise dans users.json.';
-                    $messageType = 'danger';
-                } elseif ($user['role'] === 'entreprise' && $own && $own['id'] === $id) {
-                    session_destroy();
-                    header('Location: index.php');
-                    exit;
-                } else {
-                    $_SESSION['settings_message'] = 'Entreprise supprimée avec succès.';
-                    $_SESSION['settings_message_type'] = 'success';
-                    header("Location: parametres.php");
-                    exit;
-                }
-            } else {
-                $message = 'Vous n\'êtes pas autorisé à supprimer cette entreprise (rôle: ' . $user['role'] . ').';
+            $message = 'Impossible d\'enregistrer la modification dans la base de données.';
+            $messageType = 'danger';
+        }
+    } elseif ($action === 'supprimer' && isset($_POST['id']) && $canDelete) {
+        $id = (int) $_POST['id'];
+        if (delete_student_account($id)) {
+            $_SESSION['settings_message'] = 'Compte étudiant supprimé avec succès.';
+            $_SESSION['settings_message_type'] = 'success';
+            header('Location: parametres.php');
+            exit;
+        }
+        $message = 'Compte étudiant introuvable ou suppression impossible.';
+        $messageType = 'danger';
+    } elseif ($action === 'supprimer_entreprise' && isset($_POST['id'])) {
+        $id = (int) $_POST['id'];
+        $allowed = $user['role'] === 'pilote' || ($user['role'] === 'entreprise' && $own && $own['id'] === $id);
+
+        if (!$allowed) {
+            $message = 'Vous n\'êtes pas autorisé à supprimer cette entreprise.';
+            $messageType = 'danger';
+        } elseif (delete_company_account($id)) {
+            if ($user['role'] === 'entreprise' && $own && $own['id'] === $id) {
+                session_destroy();
+                header('Location: index.php');
+                exit;
+            }
+
+            $_SESSION['settings_message'] = 'Entreprise supprimée avec succès.';
+            $_SESSION['settings_message_type'] = 'success';
+            header('Location: parametres.php');
+            exit;
+        } else {
+            $message = 'Entreprise introuvable ou suppression impossible.';
+            $messageType = 'danger';
+        }
+    } elseif ($action === 'supprimer_pilote' && isset($_POST['id'])) {
+        $id = (int) $_POST['id'];
+
+        if ($user['role'] !== 'pilote') {
+            $message = 'Vous n\'êtes pas autorisé à supprimer ce pilote.';
+            $messageType = 'danger';
+        } else {
+            $deletedStudentsCount = delete_pilot_account($id);
+            if ($deletedStudentsCount === false) {
+                $message = 'Pilote introuvable ou suppression impossible.';
                 $messageType = 'danger';
-            }
-        } elseif ($action === 'supprimer_pilote' && isset($_POST['id'])) {
-            $id = (int)$_POST['id'];
-            $allowed = false;
-
-            if ($user['role'] === 'pilote') {
-                $allowed = true;
-            }
-
-            if ($allowed) {
-                $studentsToDelete = [];
-                foreach ($users as $account) {
-                    if ($account['role'] === 'eleve' && (($account['pilote_id'] ?? null) === $id)) {
-                        $studentsToDelete[] = $account['id'];
-                    }
-                }
-
-                $filteredUsers = array_values(array_filter($users, function($account) use ($id, $studentsToDelete) {
-                    if ($account['role'] === 'pilote' && $account['id'] === $id) {
-                        return false;
-                    }
-
-                    if ($account['role'] === 'eleve' && in_array($account['id'], $studentsToDelete, true)) {
-                        return false;
-                    }
-
-                    return true;
-                }));
-
-                if (count($filteredUsers) === count($users)) {
-                    $message = 'Pilote introuvable.';
-                    $messageType = 'danger';
-                } elseif (!saveUsers($usersFile, $filteredUsers)) {
-                    $message = 'Impossible de supprimer le pilote dans users.json.';
-                    $messageType = 'danger';
-                } elseif ($own && $own['id'] === $id) {
-                    session_destroy();
-                    header('Location: index.php');
-                    exit;
-                } else {
-                    $deletedStudentsCount = count($studentsToDelete);
-                    $_SESSION['settings_message'] = $deletedStudentsCount > 0
-                        ? 'Pilote supprimé avec succès. ' . $deletedStudentsCount . ' étudiant(s) lié(s) ont aussi été supprimé(s).'
-                        : 'Pilote supprimé avec succès.';
-                    $_SESSION['settings_message_type'] = 'success';
-                    header("Location: parametres.php");
-                    exit;
-                }
+            } elseif ($own && $own['id'] === $id) {
+                session_destroy();
+                header('Location: index.php');
+                exit;
             } else {
-                $message = 'Vous n\'êtes pas autorisé à supprimer ce pilote.';
-                $messageType = 'danger';
+                $_SESSION['settings_message'] = $deletedStudentsCount > 0
+                    ? 'Pilote supprimé avec succès. ' . $deletedStudentsCount . ' étudiant(s) lié(s) ont aussi été supprimé(s).'
+                    : 'Pilote supprimé avec succès.';
+                $_SESSION['settings_message_type'] = 'success';
+                header('Location: parametres.php');
+                exit;
             }
         }
     }
 }
 
-// Préparer les données pour Twig
 echo $twig->render('parametres.twig', [
     'user' => $user,
     'own' => $own,
@@ -305,6 +203,3 @@ echo $twig->render('parametres.twig', [
     'canDelete' => $canDelete,
     'current_page' => 'parametres'
 ]);
-
-
-?>

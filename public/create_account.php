@@ -1,5 +1,6 @@
 <?php
 session_start();
+require 'data_helpers.php';
 
 // Si déjà connecté, rediriger vers l'accueil
 if (isset($_SESSION['user'])) {
@@ -7,28 +8,8 @@ if (isset($_SESSION['user'])) {
     exit;
 }
 
-$usersFile = __DIR__ . '/users.json';
-$users = json_decode(file_get_contents($usersFile), true);
 $errors = [];
 $success = '';
-
-function findUserByEmail($users, $email) {
-    foreach ($users as $u) {
-        if (strcasecmp($u['email'], $email) === 0) {
-            return $u;
-        }
-    }
-    return null;
-}
-
-function findPilotByEmail($users, $email) {
-    foreach ($users as $u) {
-        if (isset($u['role']) && $u['role'] === 'pilote' && strcasecmp($u['email'], $email) === 0) {
-            return $u;
-        }
-    }
-    return null;
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'] ?? '';
@@ -49,12 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Le mot de passe doit contenir au moins 4 caractères.";
     }
 
-    if (findUserByEmail($users, $email)) {
+    if (email_exists($email)) {
         $errors[] = "Un compte existe déjà avec cet email.";
     }
-
-    $newUser = [];
-    $now = date('Y-m-d H:i:s');
 
     if ($role === 'eleve') {
         $nom = trim($_POST['nom'] ?? '');
@@ -69,48 +47,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Email du pilote invalide.";
         }
 
-        $pilote = findPilotByEmail($users, $piloteEmail);
+        $pilote = get_pilot_by_email($piloteEmail);
         if (!$pilote) {
             $errors[] = "Aucun pilote trouvé pour cet email.";
         }
 
         if (empty($errors)) {
-            $newId = max(array_column($users, 'id')) + 1;
-            $newUser = [
-                'id' => $newId,
-                'email' => $email,
-                'password' => $password,
-                'role' => 'eleve',
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'pilote_id' => $pilote['id'],
-                'created_at' => $now
-            ];
-
-            foreach ($users as &$u) {
-                if ($u['id'] === $pilote['id']) {
-                    if (!isset($u['eleves']) || !is_array($u['eleves'])) {
-                        $u['eleves'] = [];
-                    }
-                    $u['eleves'][] = $newId;
-                    break;
-                }
+            if (create_student_account($email, $password, $nom, $prenom, $pilote['id'])) {
+                $_SESSION['success'] = 'Compte élève créé avec succès. Vous pouvez maintenant vous connecter.';
+                header('Location: index.php');
+                exit;
             }
-            unset($u);
 
-            $users[] = $newUser;
-            if (!is_writable($usersFile)) {
-                $errors[] = 'Erreur serveur : impossible d’écrire dans users.json (permission refusée).';
-            } else {
-                $written = file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-                if ($written === false) {
-                    $errors[] = 'Erreur serveur : échec de sauvegarde users.json.';
-                } else {
-                    $_SESSION['success'] = 'Compte élève créé avec succès. Vous pouvez maintenant vous connecter.';
-                    header('Location: index.php');
-                    exit;
-                }
-            }
+            $errors[] = 'Erreur serveur : échec de création du compte élève.';
         }
 
     } elseif ($role === 'pilote') {
@@ -122,31 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors)) {
-            $newId = max(array_column($users, 'id')) + 1;
-            $newUser = [
-                'id' => $newId,
-                'email' => $email,
-                'password' => $password,
-                'role' => 'pilote',
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'eleves' => [],
-                'created_at' => $now
-            ];
-
-            $users[] = $newUser;
-            if (!is_writable($usersFile)) {
-                $errors[] = 'Erreur serveur : impossible d’écrire dans users.json (permission refusée).';
-            } else {
-                $written = file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-                if ($written === false) {
-                    $errors[] = 'Erreur serveur : échec de sauvegarde users.json.';
-                } else {
-                    $_SESSION['success'] = 'Compte pilote créé avec succès. Vous pouvez maintenant vous connecter.';
-                    header('Location: index.php');
-                    exit;
-                }
+            if (create_pilot_account($email, $password, $nom, $prenom)) {
+                $_SESSION['success'] = 'Compte pilote créé avec succès. Vous pouvez maintenant vous connecter.';
+                header('Location: index.php');
+                exit;
             }
+
+            $errors[] = 'Erreur serveur : échec de création du compte pilote.';
         }
 
     } elseif ($role === 'entreprise') {
@@ -159,34 +90,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors)) {
-            $newId = max(array_column($users, 'id')) + 1;
-            $newUser = [
-                'id' => $newId,
-                'email' => $email,
-                'password' => $password,
-                'role' => 'entreprise',
-                'nom' => $companyName,
-                'prenom' => '',
-                'entreprise_id' => $newId,
-                'secteur' => $secteur,
-                'ville' => $ville,
-                'note' => 0,
-                'created_at' => $now
-            ];
-
-            $users[] = $newUser;
-            if (!is_writable($usersFile)) {
-                $errors[] = 'Erreur serveur : impossible d’écrire dans users.json (permission refusée).';
-            } else {
-                $written = file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-                if ($written === false) {
-                    $errors[] = 'Erreur serveur : échec de sauvegarde users.json.';
-                } else {
-                    $_SESSION['success'] = 'Compte entreprise créé avec succès. Vous pouvez maintenant vous connecter.';
-                    header('Location: index.php');
-                    exit;
-                }
+            if (create_company_account($email, $password, $companyName, $secteur, $ville)) {
+                $_SESSION['success'] = 'Compte entreprise créé avec succès. Vous pouvez maintenant vous connecter.';
+                header('Location: index.php');
+                exit;
             }
+
+            $errors[] = 'Erreur serveur : échec de création du compte entreprise.';
         }
     }
 }

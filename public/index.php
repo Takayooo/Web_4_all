@@ -5,11 +5,7 @@ require 'pagination.php';
 
 $current_page = 'accueil';
 
-$users = json_decode(file_get_contents(__DIR__ . '/users.json'), true);
-$eleves = array_filter($users, function($u) {
-    return $u['role'] === 'eleve';
-});
-$nbEleves = count($eleves);
+$nbEleves = get_student_count();
 
 $activeOffres = array_filter($offres, function($o) {
     return isset($o['statut']) && $o['statut'] === 'active';
@@ -41,18 +37,34 @@ $activeOffres = array_filter($offres, function($o) {
 <?php endif; ?>
 
 <section class="stats container" aria-label="Statistiques">
-    <a href="offres.php" class="stats-box">
-        <p><?= count($activeOffres) ?></p>
-        <h3>Offres</h3>
+    <a href="offres.php" class="stats-box stats-box-featured">
+        <span class="stats-box-icon-wrap" aria-hidden="true">
+            <img src="assets/offres.png" alt="" class="stats-box-icon">
+        </span>
+        <span class="stats-box-text">
+            <p><?= count($activeOffres) ?></p>
+            <h3>Offres</h3>
+        </span>
     </a>
-    <a href="entreprises.php" class="stats-box">
-        <p><?= count($entreprises) ?></p>
-        <h3>Entreprises</h3>
+    <a href="entreprises.php" class="stats-box stats-box-featured">
+        <span class="stats-box-icon-wrap" aria-hidden="true">
+            <img src="assets/valise.png" alt="" class="stats-box-icon">
+        </span>
+        <span class="stats-box-text">
+            <p><?= count($entreprises) ?></p>
+            <h3>Entreprises</h3>
+        </span>
     </a>
-    <a href="login.php" class="stats-box">
-        <p><?= $nbEleves ?></p>
-        <h3>Étudiants inscrits</h3>
+    <a href="login.php" class="stats-box stats-box-featured">
+        <span class="stats-box-icon-wrap" aria-hidden="true">
+            <img src="assets/user.png" alt="" class="stats-box-icon">
+        </span>
+        <span class="stats-box-text">
+            <p><?= $nbEleves ?></p>
+            <h3>Étudiants inscrits</h3>
+        </span>
     </a>
+
 </section>
 
 <section class="annonces container">

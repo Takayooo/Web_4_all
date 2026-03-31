@@ -1987,7 +1987,6 @@ INSERT INTO `utilisateur` (`id_utilisateur`, `nom`, `prenom`, `email`, `motdepas
 (231, 'Samson', 'Marion', 'marion.samson@outlook.com', 'Sm$secur9'),
 (232, 'Michon', 'Franck', 'franck.michon@outlook.com', 'Mf!2024!'),
 (233, 'Perrot', 'Coralie', 'coralie.perrot@outlook.com', 'Pc@7kZx!');
-
 -- --------------------------------------------------------
 
 --
